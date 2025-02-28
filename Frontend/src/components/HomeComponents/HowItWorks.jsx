@@ -13,7 +13,7 @@ const HowItWorks = () => {
 
   return (
     <div className={style.howItWorks}> 
-      <div data-aos="slide-left">
+      <div data-aos="zoom-in">
         <h1>How it Works</h1>
         <p>
           We are a platform that connects you with a courier (in your
@@ -30,7 +30,7 @@ const HowItWorks = () => {
           excellent customer service.
         </p>
       </div>
-      <div data-aos="slide-right">
+      <div data-aos="zoom-in">
         <h1>The Benefits</h1>
         <p>
           From time-saving convenience to cost-effective solutions, our platform
