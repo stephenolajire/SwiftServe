@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { FaBars } from "react-icons/fa";
 import { AiOutlineClose } from "react-icons/ai";
-import logo from "../assets/logoo.jpeg";
+import logo from "../assets/logo.jpeg";
 import style from "../css/Navigation.module.css";
 
 const Navigation = () => {
