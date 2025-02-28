@@ -1,0 +1,58 @@
+html {
+  font-size: 62.5%;
+}
+
+body {
+  font-family: var(--font-primary);
+  width: 100%;
+}
+
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+
+:root {
+  /* Colors */
+  --primary-black: #161516;
+  --dark-grey: #3D3D3D;
+  --light-grey: #959394;
+  --accent-yellow: #FFC107;
+  --accent-blue: #007BFF;
+  --background-color: #F5F5F5;
+
+  /* Font Family */
+  --font-primary: 'Poppins', sans-serif;
+  --font-secondary: 'Inter', sans-serif;
+
+  /* Font Sizes */
+  --font-h1: 7rem;
+  --font-h1-mobile:3.2rem;
+  --font-h1-tablet: 4.5rem;
+  --font-h1-bigtablet: 5.5rem;
+  --font-h2: 2.6rem;
+  --font-h3: 3rem;
+  --font-h4: 2.4rem;
+  --font-h5: 2rem;
+  --font-h6: 1.8rem;
+  --font-subheading: 2.1rem;
+  --font-body: 1.6rem;
+  --font-small: 1.4rem;
+  --nav-link: 1.8rem;
+
+  /* Font Weights */
+  --font-bold: 700;
+  --font-semi-bold: 600;
+  --font-medium: 500;
+  --font-regular: 400;
+
+  /* Spacing */
+  --spacing-small: 1rem;
+  --spacing-medium: 1.5rem;
+  --spacing-large: 2rem;
+
+  /* Border Radius */
+  --border-radius: 6px;
+}
