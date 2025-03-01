@@ -3,6 +3,8 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import styles from "../css/RegistrationForm.module.css";
+import Swal from "sweetalert2"; // Import SweetAlert
+import axios from "axios"; // Import axios for API calls
 
 const RegistrationForm = () => {
   const [step, setStep] = useState(1);
@@ -10,6 +12,8 @@ const RegistrationForm = () => {
   const [location, setLocation] = useState({ latitude: null, longitude: null });
   const [profileImage, setProfileImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const [locationPermissionGranted, setLocationPermissionGranted] =
+    useState(false);
 
   // Form validation schema
   const schema = yup.object().shape({
@@ -67,13 +71,14 @@ const RegistrationForm = () => {
     formState: { errors },
     trigger,
     watch,
+    reset,
   } = useForm({
     resolver: yupResolver(schema),
     mode: "onChange",
   });
 
-  // Get user's geolocation
-  useEffect(() => {
+  // Request user's geolocation
+  const requestLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -81,14 +86,41 @@ const RegistrationForm = () => {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
           });
+          setLocationPermissionGranted(true);
         },
         (error) => {
           console.error("Error getting location:", error);
+          // Show SweetAlert when permission is denied
+          if (error.code === error.PERMISSION_DENIED) {
+            Swal.fire({
+              title: "Location Required",
+              text: "This application requires your location to proceed with registration.",
+              icon: "warning",
+              showCancelButton: true,
+              confirmButtonText: "Grant Permission",
+              cancelButtonText: "Cancel",
+            }).then((result) => {
+              if (result.isConfirmed) {
+                // Try requesting permission again
+                requestLocation();
+              }
+            });
+          }
         }
       );
     } else {
-      console.error("Geolocation is not supported by this browser.");
+      Swal.fire({
+        title: "Geolocation Not Supported",
+        text: "Your browser does not support geolocation. Please use a different browser.",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
     }
+  };
+
+  // Get user's geolocation on component mount
+  useEffect(() => {
+    requestLocation();
   }, []);
 
   // Handle profile picture upload
@@ -104,19 +136,101 @@ const RegistrationForm = () => {
     }
   };
 
-  // Form submission handler
-  const onSubmit = (data) => {
-    // Add location data
-    const formData = {
-      ...data,
-      currentLatitude: location.latitude,
-      currentLongitude: location.longitude,
-      profilePicture: profileImage,
-    };
+  // Convert profile image to base64 for API submission
+  const getBase64FromFile = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+  };
 
-    console.log("Form submitted:", formData);
-    // In a real application, you would send this data to your backend
-    // alert("Registration successful!");
+  // Form submission handler
+  const onSubmit = async (data) => {
+    try {
+      // Validate all fields across all steps
+      const isAllValid = await trigger();
+
+      if (!isAllValid) {
+        Swal.fire({
+          title: "Incomplete Form",
+          text: "Please fill in all required fields before submitting.",
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+        return;
+      }
+
+      // Check if location permission is granted
+      if (!location.latitude || !location.longitude) {
+        Swal.fire({
+          title: "Location Required",
+          text: "Please allow location access to complete registration.",
+          icon: "warning",
+          confirmButtonText: "Grant Permission",
+        }).then(() => {
+          requestLocation();
+        });
+        return;
+      }
+
+      // Show loading state
+      Swal.fire({
+        title: "Processing",
+        text: "Submitting your registration...",
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+
+      // Prepare form data
+      let formData = {
+        ...data,
+        currentLatitude: location.latitude,
+        currentLongitude: location.longitude,
+      };
+
+      // Add profile picture if available
+      if (profileImage) {
+        const base64Image = await getBase64FromFile(profileImage);
+        formData.profilePicture = base64Image;
+      }
+
+      // Send data to API
+      const response = await axios.post("api/registration", formData);
+
+      if (response.status === 200 || response.status === 201) {
+        // Success message
+        Swal.fire({
+          title: "Success!",
+          text: "Your registration was completed successfully!",
+          icon: "success",
+          confirmButtonText: "Continue",
+        });
+
+        // Reset form
+        reset();
+        setStep(1);
+        setProgress(25);
+        setProfileImage(null);
+        setImagePreview(null);
+      } else {
+        throw new Error("Registration failed");
+      }
+    } catch (error) {
+      console.error("Registration error:", error);
+      // Error message
+      Swal.fire({
+        title: "Registration Failed",
+        text:
+          error.response?.data?.message ||
+          "Something went wrong. Please try again.",
+        icon: "error",
+        confirmButtonText: "Try Again",
+      });
+    }
   };
 
   // Navigate to next step with validation
@@ -138,6 +252,18 @@ const RegistrationForm = () => {
           "postalCode",
           "country",
         ];
+        // Check location before proceeding to final step
+        if (!location.latitude || !location.longitude) {
+          Swal.fire({
+            title: "Location Required",
+            text: "Please allow location access to proceed.",
+            icon: "warning",
+            confirmButtonText: "Grant Permission",
+          }).then(() => {
+            requestLocation();
+          });
+          return;
+        }
         break;
       default:
         break;
@@ -420,7 +546,17 @@ const RegistrationForm = () => {
                     ? `${location.latitude.toFixed(
                         6
                       )}, ${location.longitude.toFixed(6)}`
-                    : "Detecting location..."}
+                    : "Waiting for location permission..."}
+                  {!location.latitude && (
+                    <button
+                      type="button"
+                      onClick={requestLocation}
+                      className={styles.buttonSecondary}
+                      style={{ marginLeft: "10px", padding: "2px 8px" }}
+                    >
+                      Grant Access
+                    </button>
+                  )}
                 </p>
               </div>
             </div>
