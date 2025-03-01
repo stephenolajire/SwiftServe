@@ -2,95 +2,104 @@
   height: 10rem;
   width: 100%;
   display: flex;
-  flex-direction: row;
   justify-content: space-between;
   align-items: center;
   position: fixed;
-  z-index: 100;
-  padding: 0rem 10rem;
-  top: 0%;
+  top: 0;
+  left: 0;
+  padding: 0 5rem;
   background-color: var(--white);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
 }
 
 .logo {
-  height: 8rem;
-  width: 8rem;
-  border-radius: 4rem;
+  height: 6rem;
+  width: 6rem;
 }
 
-.logo > img {
+.logo img {
   height: 100%;
   width: 100%;
   object-fit: cover;
-  border-radius: 4rem;
+  border-radius: 50%;
 }
 
-.links > ul {
+.links {
+  flex: 1;
+  margin: 0 4rem;
+}
+
+.links ul {
   display: flex;
-  flex-direction: row;
   align-items: center;
-  list-style-type: none;
+  justify-content: center;
+  gap: 3rem;
+  list-style: none;
 }
 
-.links > ul > li {
-  margin-right: 4rem;
-  font-size: var(--nav-link);
-  color: var(--light-grey);
+.links ul li {
+  margin-right: 2rem;
 }
 
 .link {
+  color: var(--secondary-color);
   text-decoration: none;
-  color: var(--dark-grey);
+  font-size: var(--nav-link);
   transition: color 0.3s ease;
 }
 
+.link:hover {
+  color: var(--primary-color);
+}
+
 .activeLink {
-  color: var(--primary-black);
-  font-weight: var(--font-bold);
+  color: var(--primary-color);
+  font-weight: 600;
   text-decoration: none;
+  font-size: var(--nav-link);
 }
 
 .auth {
   display: flex;
-  gap: 2rem;
   align-items: center;
+  gap: 2rem;
 }
 
 .login,
 .signup {
-  width: 14rem;
-  height: 4rem;
-  border-radius: 1rem;
-  background-color: var(--dark-grey);
-  color: white;
-  font-size: var(--nav-link);
-  border: none;
+  padding: 1rem 2.5rem;
+  border-radius: 0.8rem;
+  font-size: var(--font-body);
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
+.login {
+  background-color: transparent;
+  color: var(--primary-color);
+  border: 1px solid var(--border-color);
+}
+
 .signup {
-  background-color: var(--background-color);
-  color: var(--dark-grey);
-  border: 1px solid var(--dark-grey);
+  background-color: var(--primary-color);
+  color: var(--white);
+  border: none;
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 0.5rem;
 }
 
 .login:hover,
 .signup:hover {
-  background-color: var(--accent-yellow);
-  color: var(--primary-black);
+  background-color: var(--light-bg);
+  color: var(--primary-color);
   transform: translateY(-2px);
 }
 
 .hamburger {
   display: none;
   cursor: pointer;
-  z-index: 100;
 }
 
 .authLinks {
@@ -98,48 +107,30 @@
 }
 
 /* Dropdown Styles */
-.dropdownContainer {
+.registerDropdown {
   position: relative;
-}
-
-.dropdownTrigger {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
   cursor: pointer;
-  padding: 0.8rem 1.2rem;
-  border-radius: 0.8rem;
-  transition: background-color 0.3s ease;
-}
-
-.dropdownTrigger:hover {
-  background-color: var(--light-bg);
 }
 
 .dropdownIcon {
-  font-size: 1.5rem;
+  font-size: 2rem;
+  margin-left: 0.5rem;
   transition: transform 0.3s ease;
 }
 
-.registerDropdown {
-  position: relative;
-}
-
-.registerDropdown:hover .dropdownIcon,
-.dropdownContainer:hover .dropdownIcon {
+.registerDropdown:hover .dropdownIcon {
   transform: rotate(180deg);
 }
 
 .dropdown {
   position: absolute;
   top: calc(100% + 1rem);
-  left: 0;
+  right: 0;
   background-color: var(--white);
   min-width: 250px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
   border-radius: 1rem;
   overflow: hidden;
-  z-index: 1000;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   animation: dropdownFade 0.3s ease;
 }
 
@@ -156,38 +147,31 @@
 
 .dropdownLink {
   display: block;
-  padding: 1.2rem 1.6rem;
-  color: var(--dark-grey);
+  padding: 1.2rem 2rem;
+  color: var(--secondary-color);
   text-decoration: none;
+  font-size: var(--font-body);
   transition: all 0.3s ease;
-  font-size: var(--nav-link);
 }
 
 .dropdownLink:hover {
   background-color: var(--light-bg);
-  color: var(--accent-yellow);
-  padding-left: 2rem;
+  color: var(--primary-color);
+  padding-left: 2.5rem;
 }
 
-/* Media Queries */
-@media screen and (max-width: 1280px) {
+@media screen and (max-width: 1024px) {
   .nav {
-    padding: 0rem 5rem;
+    padding: 0 5rem;
   }
 
-  .links > ul > li {
-    margin-right: 2rem;
-  }
-
-  .login,
-  .signup {
-    width: 12rem;
+  .links ul {
+    gap: 2rem;
   }
 }
 
 @media screen and (max-width: 911px) {
   .nav {
-    padding: 0rem 2rem;
     height: 10rem;
   }
 
@@ -197,13 +181,16 @@
 
   .links {
     position: fixed;
-    top: 0;
+    top: 10rem;
     left: -100%;
-    height: 100vh;
     width: 100%;
-    background-color: var(--background-color);
-    transition: 0.3s ease-in-out;
+    height: 100vh;
+    background-color: var(--primary-color);
+    margin: 0;
+    /* padding: rem 2rem; */
+    transition: all 0.3s ease-in-out;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
   }
@@ -212,17 +199,16 @@
     left: 0;
   }
 
-  .links > ul {
+  .links ul {
     flex-direction: column;
-    align-items: center;
-    width: 100%;
-    padding: 2rem;
+    gap: 3.5rem;
+    margin-top: -5rem;
   }
 
-  .links > ul > li {
-    margin: 1.5rem 0;
-    width: 100%;
-    text-align: center;
+  .link,
+  .activeLink {
+    color: var(--white);
+    font-size: var(--nav-link);
   }
 
   .auth {
@@ -231,70 +217,38 @@
 
   .authLinks {
     display: block;
-    width: 100%;
   }
 
   .dropdown {
     position: static;
-    min-width: 100%;
+    width: 100%;
     background-color: rgba(255, 255, 255, 0.1);
-    box-shadow: none;
     margin-top: 1rem;
   }
 
   .dropdownLink {
     color: var(--white);
     text-align: center;
-    padding: 1.2rem;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   .dropdownLink:hover {
     background-color: rgba(255, 255, 255, 0.1);
-    color: var(--accent-yellow);
-  }
-
-  .dropdownTrigger {
-    justify-content: center;
-    color: var(--white);
-  }
-
-  .dropdownContainer {
-    width: 100%;
-  }
-
-  .dropdown > a{
-    color: var(--accent-yellow);
-    font-size: 1.6rem;
   }
 }
 
 @media screen and (max-width: 480px) {
   .nav {
-    padding: 0rem 1.5rem;
     height: 10rem;
+    padding: 0 1.5rem;
   }
 
   .logo {
-    height: 5rem;
-    width: 5rem;
+    height: 6rem;
+    width: 6rem;
   }
 
-  .links > ul > li {
-    margin: 1rem 0;
-  }
-
-  .dropdownLink {
-    padding: 1rem;
-    font-size: 0.9rem;
-  }
-
-  .authLinks {
-    display: block;
-  }
-
-  .dropdown > a{
-    color: var(--accent-yellow);
-    font-size: 1.6rem;
+  .links {
+    padding: 7rem 1.5rem 2rem;
   }
 }

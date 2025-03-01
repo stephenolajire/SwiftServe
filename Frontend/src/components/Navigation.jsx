@@ -4,27 +4,26 @@ import { FaBars } from "react-icons/fa";
 import { AiOutlineClose } from "react-icons/ai";
 import { MdArrowDropDown } from "react-icons/md";
 import logo from "../assets/logoo.jpeg";
-import style from "../css/Navigation.module.css";
+import styles from "../css/Navigation.module.css";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showRegisterDropdown, setShowRegisterDropdown] = useState(false);
-  const [showSignupDropdown, setShowSignupDropdown] = useState(false);
   const dropdownRef = useRef(null);
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
 
-  const closeDropdowns = () => {
+  const closeAll = () => {
+    setIsOpen(false);
     setShowRegisterDropdown(false);
-    setShowSignupDropdown(false);
   };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        closeDropdowns();
+        setShowRegisterDropdown(false);
       }
     };
 
@@ -33,19 +32,20 @@ const Navigation = () => {
   }, []);
 
   return (
-    <nav className={style.nav}>
-      <div className={style.logo}>
+    <nav className={styles.nav}>
+      <div className={styles.logo}>
         <img src={logo} alt="logo" />
       </div>
-      <div className={`${style.links} ${isOpen ? style.active : ""}`}>
+
+      <div className={`${styles.links} ${isOpen ? styles.active : ""}`}>
         <ul>
           <li>
             <NavLink
               to="/"
               className={({ isActive }) =>
-                isActive ? style.activeLink : style.link
+                isActive ? styles.activeLink : styles.link
               }
-              onClick={() => setIsOpen(false)}
+              onClick={closeAll}
             >
               Home
             </NavLink>
@@ -54,9 +54,9 @@ const Navigation = () => {
             <NavLink
               to="about"
               className={({ isActive }) =>
-                isActive ? style.activeLink : style.link
+                isActive ? styles.activeLink : styles.link
               }
-              onClick={() => setIsOpen(false)}
+              onClick={closeAll}
             >
               About
             </NavLink>
@@ -65,9 +65,9 @@ const Navigation = () => {
             <NavLink
               to="courier"
               className={({ isActive }) =>
-                isActive ? style.activeLink : style.link
+                isActive ? styles.activeLink : styles.link
               }
-              onClick={() => setIsOpen(false)}
+              onClick={closeAll}
             >
               Become a courier
             </NavLink>
@@ -76,9 +76,9 @@ const Navigation = () => {
             <NavLink
               to="contact"
               className={({ isActive }) =>
-                isActive ? style.activeLink : style.link
+                isActive ? styles.activeLink : styles.link
               }
-              onClick={() => setIsOpen(false)}
+              onClick={closeAll}
             >
               Contact us
             </NavLink>
@@ -87,9 +87,9 @@ const Navigation = () => {
             <NavLink
               to="listing"
               className={({ isActive }) =>
-                isActive ? style.activeLink : style.link
+                isActive ? styles.activeLink : styles.link
               }
-              onClick={() => setIsOpen(false)}
+              onClick={closeAll}
             >
               Items
             </NavLink>
@@ -98,82 +98,85 @@ const Navigation = () => {
             <NavLink
               to="dashboard"
               className={({ isActive }) =>
-                isActive ? style.activeLink : style.link
+                isActive ? styles.activeLink : styles.link
               }
-              onClick={() => setIsOpen(false)}
+              onClick={closeAll}
             >
               Dashboard
             </NavLink>
           </li>
-          <li className={style.authLinks}>
+
+          {/* Mobile auth links */}
+          <li className={styles.authLinks}>
             <NavLink
               to="login"
               className={({ isActive }) =>
-                isActive ? style.activeLink : style.link
+                isActive ? styles.activeLink : styles.link
               }
-              onClick={() => setIsOpen(false)}
+              onClick={closeAll}
             >
               Login
             </NavLink>
           </li>
-          <div className={style.authLink} ref={dropdownRef}>
+          <li className={styles.authLinks}>
             <div
-              className={style.registerDropdown}
-              onMouseEnter={() => setShowRegisterDropdown(true)}
-              onMouseLeave={() => setShowRegisterDropdown(false)}
+              className={styles.registerDropdown}
+              onClick={() => setShowRegisterDropdown(!showRegisterDropdown)}
             >
-              <button className={style.signup}>
+              <span className={styles.link}>
                 Register
-                <MdArrowDropDown className={style.dropdownIcon} />
-              </button>
+                <MdArrowDropDown className={styles.dropdownIcon} />
+              </span>
               {showRegisterDropdown && (
-                <div className={style.dropdown}>
+                <div className={styles.dropdown}>
                   <Link
                     to="/register"
-                    className={style.dropdownLink}
-                    onClick={closeDropdowns}
+                    className={styles.dropdownLink}
+                    onClick={closeAll}
                   >
-                    Individual
+                    Individual Registration
                   </Link>
                   <Link
                     to="/company"
-                    className={style.dropdownLink}
-                    onClick={closeDropdowns}
+                    className={styles.dropdownLink}
+                    onClick={closeAll}
                   >
-                    Company
+                    Company Registration
                   </Link>
                 </div>
               )}
             </div>
-          </div>
+          </li>
         </ul>
       </div>
-      <div className={style.auth} ref={dropdownRef}>
+
+      {/* Desktop auth buttons */}
+      <div className={styles.auth} ref={dropdownRef}>
         <Link to="login">
-          <button className={style.login}>Login</button>
+          <button className={styles.login}>Login</button>
         </Link>
         <div
-          className={style.registerDropdown}
+          className={styles.registerDropdown}
           onMouseEnter={() => setShowRegisterDropdown(true)}
           onMouseLeave={() => setShowRegisterDropdown(false)}
         >
-          <button className={style.signup}>
+          <button className={styles.signup}>
             Register
-            <MdArrowDropDown className={style.dropdownIcon} />
+            <MdArrowDropDown className={styles.dropdownIcon} />
           </button>
           {showRegisterDropdown && (
-            <div className={style.dropdown}>
+            <div className={styles.dropdown}>
               <Link
                 to="/register"
-                className={style.dropdownLink}
-                onClick={closeDropdowns}
+                className={styles.dropdownLink}
+                onClick={closeAll}
               >
                 Individual Registration
               </Link>
               <Link
                 to="/company"
-                className={style.dropdownLink}
-                onClick={closeDropdowns}
+                className={styles.dropdownLink}
+                onClick={closeAll}
               >
                 Company Registration
               </Link>
@@ -181,8 +184,9 @@ const Navigation = () => {
           )}
         </div>
       </div>
-      <div className={style.hamburger} onClick={toggleMenu}>
-        {isOpen ? <AiOutlineClose size={25} /> : <FaBars size={25} />}
+
+      <div className={styles.hamburger} onClick={toggleMenu}>
+        {isOpen ? <AiOutlineClose className={styles.icon} size={25} /> : <FaBars size={25} />}
       </div>
     </nav>
   );
