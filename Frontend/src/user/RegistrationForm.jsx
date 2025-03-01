@@ -3,8 +3,8 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import styles from "../css/RegistrationForm.module.css";
-import Swal from "sweetalert2"; // Import SweetAlert
-import axios from "axios"; // Import axios for API calls
+import Swal from "sweetalert2";
+import axios from "axios";
 
 const RegistrationForm = () => {
   const [step, setStep] = useState(1);
@@ -12,8 +12,8 @@ const RegistrationForm = () => {
   const [location, setLocation] = useState({ latitude: null, longitude: null });
   const [profileImage, setProfileImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
-  const [locationPermissionGranted, setLocationPermissionGranted] =
-    useState(false);
+  const [isRequestingLocation, setIsRequestingLocation] = useState(false);
+  const [locationAttempts, setLocationAttempts] = useState(0);
 
   // Form validation schema
   const schema = yup.object().shape({
@@ -77,35 +77,70 @@ const RegistrationForm = () => {
     mode: "onChange",
   });
 
-  // Request user's geolocation
+  // Request user's geolocation with improved handling
   const requestLocation = () => {
+    if (isRequestingLocation) return; // Prevent multiple simultaneous requests
+
     if (navigator.geolocation) {
+      setIsRequestingLocation(true);
       navigator.geolocation.getCurrentPosition(
         (position) => {
           setLocation({
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
           });
-          setLocationPermissionGranted(true);
+          setIsRequestingLocation(false);
+          // Clear the location attempts counter once successful
+          setLocationAttempts(0);
         },
         (error) => {
           console.error("Error getting location:", error);
-          // Show SweetAlert when permission is denied
-          if (error.code === error.PERMISSION_DENIED) {
-            Swal.fire({
-              title: "Location Required",
-              text: "This application requires your location to proceed with registration.",
-              icon: "warning",
-              showCancelButton: true,
-              confirmButtonText: "Grant Permission",
-              cancelButtonText: "Cancel",
-            }).then((result) => {
-              if (result.isConfirmed) {
-                // Try requesting permission again
-                requestLocation();
-              }
-            });
+          setIsRequestingLocation(false);
+
+          // Increment attempts counter
+          setLocationAttempts((prev) => prev + 1);
+
+          // Show alert only on first attempt or every third attempt to avoid spamming
+          if (locationAttempts === 0 || locationAttempts % 3 === 0) {
+            // Show different message based on error type
+            if (error.code === error.PERMISSION_DENIED) {
+              Swal.fire({
+                title: "Location Access Required",
+                text: "Please enable location access in your browser settings and try again.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Try Again",
+                cancelButtonText: "Continue Without Location",
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  // Try requesting permission again
+                  requestLocation();
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                  // Allow user to continue without location, but warn them
+                  Swal.fire({
+                    title: "Proceeding Without Location",
+                    text: "You can continue registration, but location will be required before final submission.",
+                    icon: "info",
+                    confirmButtonText: "OK",
+                  });
+                }
+              });
+            } else {
+              // Handle other geolocation errors
+              Swal.fire({
+                title: "Location Error",
+                text: "There was a problem getting your location. Please try again.",
+                icon: "error",
+                confirmButtonText: "OK",
+              });
+            }
           }
+        },
+        // Add options for better geolocation performance
+        {
+          enableHighAccuracy: false, // Set to false for faster response
+          timeout: 10000, // 10 seconds timeout
+          maximumAge: 300000, // Accept cached positions up to 5 minutes old
         }
       );
     } else {
@@ -146,7 +181,7 @@ const RegistrationForm = () => {
     });
   };
 
-  // Form submission handler
+  // Form submission handler - only triggered from step 4 now
   const onSubmit = async (data) => {
     try {
       // Validate all fields across all steps
@@ -162,7 +197,7 @@ const RegistrationForm = () => {
         return;
       }
 
-      // Check if location permission is granted
+      // Final location check
       if (!location.latitude || !location.longitude) {
         Swal.fire({
           title: "Location Required",
@@ -252,15 +287,27 @@ const RegistrationForm = () => {
           "postalCode",
           "country",
         ];
-        // Check location before proceeding to final step
+
+        // Check location before proceeding to final step but don't submit the form
         if (!location.latitude || !location.longitude) {
           Swal.fire({
             title: "Location Required",
-            text: "Please allow location access to proceed.",
+            text: "Location is required to complete registration. Would you like to grant permission now or proceed to the final step and grant permission later?",
             icon: "warning",
-            confirmButtonText: "Grant Permission",
-          }).then(() => {
-            requestLocation();
+            showCancelButton: true,
+            confirmButtonText: "Grant Permission Now",
+            cancelButtonText: "Proceed Anyway",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              requestLocation();
+            } else {
+              // Proceed to next step even without location
+              const isStepValid = trigger(fieldsToValidate);
+              if (isStepValid) {
+                setStep(step + 1);
+                setProgress(progress + 25);
+              }
+            }
           });
           return;
         }
@@ -547,14 +594,15 @@ const RegistrationForm = () => {
                         6
                       )}, ${location.longitude.toFixed(6)}`
                     : "Waiting for location permission..."}
-                  {!location.latitude && (
+                  {!location.latitude && !isRequestingLocation && (
                     <button
                       type="button"
                       onClick={requestLocation}
                       className={styles.buttonSecondary}
                       style={{ marginLeft: "10px", padding: "2px 8px" }}
+                      disabled={isRequestingLocation}
                     >
-                      Grant Access
+                      {isRequestingLocation ? "Requesting..." : "Grant Access"}
                     </button>
                   )}
                 </p>
@@ -595,6 +643,27 @@ const RegistrationForm = () => {
                   Recommended: Square image, at least 200x200 pixels
                 </p>
               </div>
+
+              {/* Final location check notification */}
+              {!location.latitude && (
+                <div className={styles.locationWarning}>
+                  <p>
+                    <strong>Note:</strong> Location permission is required to
+                    complete registration.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={requestLocation}
+                    className={styles.buttonSecondary}
+                    style={{ marginTop: "10px" }}
+                    disabled={isRequestingLocation}
+                  >
+                    {isRequestingLocation
+                      ? "Requesting..."
+                      : "Grant Location Permission"}
+                  </button>
+                </div>
+              )}
 
               {/* Review information summary */}
               <div className={styles.reviewContainer}>
@@ -655,7 +724,11 @@ const RegistrationForm = () => {
                 Continue
               </button>
             ) : (
-              <button type="submit" className={styles.buttonPrimary}>
+              <button
+                type="submit"
+                className={styles.buttonPrimary}
+                disabled={!location.latitude && !location.longitude}
+              >
                 Complete Registration
               </button>
             )}
