@@ -134,14 +134,14 @@ const Navigation = () => {
                     className={styles.dropdownLink}
                     onClick={closeAll}
                   >
-                    Individual Registration
+                    Individual
                   </Link>
                   <Link
                     to="/company"
                     className={styles.dropdownLink}
                     onClick={closeAll}
                   >
-                    Company Registration
+                    Company
                   </Link>
                 </div>
               )}
