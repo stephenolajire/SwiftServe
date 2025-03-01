@@ -1,0 +1,184 @@
+.container {
+  width: 100%;
+  /* overflow-x: hidden; */
+  margin-top: 10rem;
+}
+
+.hero {
+  background-color: var(--primary-color);
+  padding: 12rem 2rem 8rem;
+  text-align: center;
+  color: var(--white);
+}
+
+.hero h1 {
+  font-size: var(--font-h1);
+  margin-bottom: 2rem;
+}
+
+.hero p {
+  font-size: var(--font-subheading);
+  color: var(--secondary-color);
+  max-width: 60rem;
+  margin: 0 auto;
+}
+
+.mission {
+  padding: 8rem 2rem;
+  background-color: var(--white);
+}
+
+.missionContent {
+  max-width: 80rem;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.missionContent h2 {
+  font-size: var(--font-h2);
+  color: var(--primary-color);
+  margin-bottom: 2rem;
+}
+
+.missionContent p {
+  font-size: var(--font-subheading);
+  color: var(--secondary-color);
+  line-height: 1.6;
+}
+
+.values {
+  padding: 8rem 2rem;
+  background-color: var(--light-bg);
+}
+
+.values h2 {
+  text-align: center;
+  font-size: var(--font-h2);
+  color: var(--primary-color);
+  margin-bottom: 6rem;
+}
+
+.valuesGrid {
+  max-width: 120rem;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 4rem;
+}
+
+.valueCard {
+  background-color: var(--white);
+  padding: 4rem 3rem;
+  border-radius: 2rem;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.valueCard:hover {
+  transform: translateY(-10px);
+}
+
+.icon {
+  font-size: 4rem;
+  color: var(--accent-yellow);
+  margin-bottom: 2rem;
+}
+
+.valueCard h3 {
+  font-size: var(--font-h5);
+  color: var(--primary-color);
+  margin-bottom: 1.5rem;
+}
+
+.valueCard p {
+  color: var(--secondary-color);
+  font-size: var(--font-body);
+  line-height: 1.6;
+}
+
+.story {
+  padding: 8rem 2rem;
+  background-color: var(--white);
+}
+
+.storyContent {
+  max-width: 120rem;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6rem;
+  align-items: center;
+}
+
+.storyText h2 {
+  font-size: var(--font-h2);
+  color: var(--primary-color);
+  margin-bottom: 3rem;
+}
+
+.storyText p {
+  font-size: var(--font-body);
+  color: var(--secondary-color);
+  line-height: 1.8;
+  margin-bottom: 2rem;
+}
+
+.storyImage img {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+  border-radius: 2rem;
+}
+
+.stats {
+  padding: 8rem 2rem;
+  background-color: var(--primary-color);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 4rem;
+  max-width: 120rem;
+  margin: 0 auto;
+  margin-bottom: 3rem;
+}
+
+.stat {
+  text-align: center;
+  color: var(--white);
+}
+
+.stat h3 {
+  font-size: var(--font-h2);
+  color: var(--accent-yellow);
+  margin-bottom: 1rem;
+}
+
+.stat p {
+  font-size: var(--font-body);
+  color: var(--secondary-color);
+}
+
+@media screen and (max-width: 768px) {
+  .hero {
+    padding: 8rem 2rem 4rem;
+  }
+
+  .hero h1 {
+    font-size: var(--font-h1-mobile);
+  }
+
+  .storyContent {
+    grid-template-columns: 1fr;
+  }
+
+  .storyImage {
+    order: -1;
+  }
+
+  .values,
+  .mission,
+  .story,
+  .stats {
+    padding: 4rem 2rem;
+  }
+}

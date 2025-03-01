@@ -5,6 +5,9 @@ import Landing from './pages/Home'
 import RegistrationForm from './user/RegistrationForm';
 import Login from './user/Registration';
 import CourierListings from './pages/ListingPage';
+import Contact from './pages/ContactUs';
+import About from './pages/About';
+import BecomeCourier from './pages/BecomeCourier';
 
 
 const App = () => { 
@@ -14,6 +17,9 @@ const App = () => {
         <Route path="/" element={<Layout />}>
           <Route index element={<Landing />} />
           <Route path="listing" element={<CourierListings />} />
+          <Route path='contact' element={<Contact/>}/>
+          <Route path='about' element={<About/>} />
+          <Route path='courier' element={<BecomeCourier/>}/>
         </Route>
         <Route path='/register' element={<RegistrationForm/>}/>
         <Route path='/login' element={<Login/>}/>
