@@ -8,6 +8,7 @@ import CourierListings from './pages/ListingPage';
 import Contact from './pages/ContactUs';
 import About from './pages/About';
 import BecomeCourier from './pages/BecomeCourier';
+import Dashboard from './pages/Dashboard';
 
 
 const App = () => { 
@@ -20,6 +21,7 @@ const App = () => {
           <Route path='contact' element={<Contact/>}/>
           <Route path='about' element={<About/>} />
           <Route path='courier' element={<BecomeCourier/>}/>
+          <Route path='dashboard' element={<Dashboard/>}/>
         </Route>
         <Route path='/register' element={<RegistrationForm/>}/>
         <Route path='/login' element={<Login/>}/>

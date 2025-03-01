@@ -1,0 +1,232 @@
+.container {
+  padding: 2rem;
+  margin-top: 10rem;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.statCard {
+  background-color: var(--white);
+  padding: 2rem;
+  border-radius: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.icon {
+  font-size: 3rem;
+  color: var(--accent-yellow);
+}
+
+.statInfo h3 {
+  color: var(--secondary-color);
+  font-size: var(--font-body);
+  margin-bottom: 0.5rem;
+}
+
+.statNumber {
+  color: var(--primary-color);
+  font-size: var(--font-h3);
+  font-weight: var(--font-bold);
+  margin-bottom: 0.5rem;
+}
+
+.trend {
+  color: var(--secondary-color);
+  font-size: var(--font-small);
+}
+
+.dashboardContent {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.sectionHeader h2 {
+  color: var(--primary-color);
+  font-size: var(--font-h3);
+}
+
+.refreshButton {
+  padding: 0.8rem 1.5rem;
+  background-color: var(--light-bg);
+  border: none;
+  border-radius: 0.8rem;
+  color: var(--primary-color);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.refreshButton:hover {
+  background-color: var(--accent-yellow);
+}
+
+.deliveriesList {
+  display: grid;
+  gap: 2rem;
+}
+
+.deliveryCard {
+  background-color: var(--white);
+  padding: 2rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.deliveryStatus {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.statusIcon {
+  color: var(--accent-yellow);
+}
+
+.deliveryCard h3 {
+  color: var(--primary-color);
+  font-size: var(--font-h5);
+  margin-bottom: 1.5rem;
+}
+
+.addressInfo {
+  display: grid;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.address {
+  display: flex;
+  gap: 1rem;
+  color: var(--secondary-color);
+}
+
+.addressLabel {
+  font-size: var(--font-small);
+  color: var(--secondary-color);
+  margin-bottom: 0.3rem;
+}
+
+.deliveryFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.estimatedTime {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--secondary-color);
+}
+
+.viewDetailsButton {
+  padding: 0.8rem 1.5rem;
+  background-color: var(--primary-color);
+  color: var(--white);
+  border: none;
+  border-radius: 0.8rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.viewDetailsButton:hover {
+  background-color: var(--accent-yellow);
+  color: var(--primary-color);
+}
+
+.sideSection {
+  display: grid;
+  gap: 2rem;
+}
+
+.performanceMetrics,
+.recentActivity {
+  background-color: var(--white);
+  padding: 2rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.metrics {
+  display: grid;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.metric h4 {
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+}
+
+.progressBar {
+  background-color: var(--light-bg);
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.progress {
+  background-color: var(--accent-yellow);
+  color: var(--primary-color);
+  padding: 0.5rem;
+  text-align: right;
+  font-size: var(--font-small);
+  transition: width 0.3s ease;
+}
+
+.activityList {
+  margin-top: 2rem;
+}
+
+.activityItem {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.activityIcon {
+  color: var(--accent-yellow);
+}
+
+.activityInfo p {
+  color: var(--primary-color);
+  margin-bottom: 0.3rem;
+}
+
+.activityInfo span {
+  color: var(--secondary-color);
+  font-size: var(--font-small);
+}
+
+@media screen and (max-width: 1024px) {
+  .dashboardContent {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+}

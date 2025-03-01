@@ -76,6 +76,18 @@ const Navigation = () => {
             </NavLink>
           </li>
 
+          <li>
+            <NavLink
+              to="dashboard"
+              className={({ isActive }) =>
+                isActive ? style.activeLink : style.link
+              }
+              onClick={() => setIsOpen(false)}
+            >
+              Dashboard
+            </NavLink>
+          </li>
+
           <li className={style.authLinks}>
             <NavLink
               to="login"
