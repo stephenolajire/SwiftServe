@@ -35,7 +35,7 @@ const BecomeCourier = () => {
               <li>Transportation (Bike/Car)</li>
             </ul>
           </div>
-          <Link to="/register/individual" className={styles.registerButton}>
+          <Link to="/register" className={styles.registerButton}>
             Register as Individual
           </Link>
         </div>
@@ -61,7 +61,7 @@ const BecomeCourier = () => {
               <li>Tax Registration</li>
             </ul>
           </div>
-          <Link to="/register/company" className={styles.registerButton}>
+          <Link to="/company" className={styles.registerButton}>
             Register as Company
           </Link>
         </div>
@@ -122,10 +122,10 @@ const BecomeCourier = () => {
         <h2>Ready to Start?</h2>
         <p>Join thousands of successful couriers on SwiftServe</p>
         <div className={styles.ctaButtons}>
-          <Link to="/register/individual" className={styles.primaryButton}>
+          <Link to="/register" className={styles.primaryButton}>
             Register as Individual
           </Link>
-          <Link to="/register/company" className={styles.secondaryButton}>
+          <Link to="/company" className={styles.secondaryButton}>
             Register as Company
           </Link>
         </div>

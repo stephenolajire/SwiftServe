@@ -9,6 +9,7 @@ import Contact from './pages/ContactUs';
 import About from './pages/About';
 import BecomeCourier from './pages/BecomeCourier';
 import Dashboard from './pages/Dashboard';
+import CompanyRegistration from './user/CompanyRegistration';
 
 
 const App = () => { 
@@ -18,16 +19,17 @@ const App = () => {
         <Route path="/" element={<Layout />}>
           <Route index element={<Landing />} />
           <Route path="listing" element={<CourierListings />} />
-          <Route path='contact' element={<Contact/>}/>
-          <Route path='about' element={<About/>} />
-          <Route path='courier' element={<BecomeCourier/>}/>
-          <Route path='dashboard' element={<Dashboard/>}/>
+          <Route path="contact" element={<Contact />} />
+          <Route path="about" element={<About />} />
+          <Route path="courier" element={<BecomeCourier />} />
+          <Route path="dashboard" element={<Dashboard />} />
         </Route>
-        <Route path='/register' element={<RegistrationForm/>}/>
-        <Route path='/login' element={<Login/>}/>
+        <Route path="/register" element={<RegistrationForm />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/company" element={<CompanyRegistration />} />
       </Routes>
     </Router>
-  )
+  );
 }
 
 export default App;

@@ -25,12 +25,13 @@ const Landing = () => {
             Door-to-door delivery solutions that you can trust. Quick, secure,
             and professional service.
           </p>
+          <p>Get Started Below</p>
           <div className={styles.heroCTA}>
             <Link to="/register" className={styles.primaryButton}>
-              Get Started
+              Individual 
             </Link>
-            <Link to="/about" className={styles.secondaryButton}>
-              Learn More
+            <Link to="/company" className={styles.secondaryButton}>
+              Comapany
             </Link>
           </div>
         </div>

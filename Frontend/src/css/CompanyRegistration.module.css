@@ -1,0 +1,221 @@
+.container {
+  padding: 4rem 2rem;
+  margin-top: 8rem;
+  background-color: var(--light-bg);
+  min-height: 100vh;
+}
+
+.formContainer {
+  max-width: 80rem;
+  margin: 0 auto;
+  background-color: var(--white);
+  padding: 4rem;
+  border-radius: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.formContainer h1 {
+  color: var(--primary-color);
+  font-size: var(--font-h2);
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.subtitle {
+  text-align: center;
+  color: var(--secondary-color);
+  font-size: var(--font-subheading);
+  margin-bottom: 4rem;
+}
+
+.section {
+  margin-bottom: 4rem;
+}
+
+.section h2 {
+  color: var(--primary-color);
+  font-size: var(--font-h4);
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.formGroup {
+  margin-bottom: 2rem;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.formGroup label {
+  display: block;
+  color: var(--primary-color);
+  font-size: var(--font-body);
+  margin-bottom: 0.8rem;
+  font-weight: var(--font-medium);
+}
+
+.formGroup input,
+.formGroup select {
+  width: 100%;
+  padding: 1.2rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.8rem;
+  font-size: var(--font-body);
+  transition: border-color 0.3s ease;
+}
+
+.formGroup input:focus,
+.formGroup select:focus {
+  outline: none;
+  border-color: var(--accent-yellow);
+}
+
+.errorInput {
+  border-color: var(--error-color) !important;
+}
+
+.errorMessage {
+  color: var(--error-color);
+  font-size: var(--font-small);
+  margin-top: 0.5rem;
+  display: block;
+}
+
+.uploadInfo {
+  color: var(--secondary-color);
+  margin-bottom: 2rem;
+  font-size: var(--font-small);
+}
+
+.documentGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.uploadBox {
+  margin-bottom: 2rem;
+}
+
+.uploadArea {
+  border: 2px dashed var(--border-color);
+  border-radius: 0.8rem;
+  padding: 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.uploadArea:hover {
+  border-color: var(--accent-yellow);
+}
+
+.uploadPrompt {
+  position: relative;
+  color: var(--secondary-color);
+}
+
+.uploadPrompt svg {
+  font-size: 2.4rem;
+  margin-bottom: 1rem;
+}
+
+.uploadPrompt input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.uploadedFile {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  background-color: var(--light-bg);
+  border-radius: 0.8rem;
+}
+
+.removeButton {
+  background: none;
+  border: none;
+  color: var(--error-color);
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.removeButton:hover {
+  color: var(--primary-color);
+}
+
+.submitButton {
+  width: 100%;
+  padding: 1.5rem;
+  background-color: var(--primary-color);
+  color: var(--white);
+  border: none;
+  border-radius: 0.8rem;
+  font-size: var(--font-body);
+  font-weight: var(--font-medium);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 2rem;
+}
+
+.submitButton:hover {
+  background-color: var(--accent-yellow);
+  color: var(--primary-color);
+}
+
+.formGroup select {
+  width: 100%;
+  padding: 1.2rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.8rem;
+  font-size: var(--font-body);
+  background-color: var(--white);
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1em;
+}
+
+.documentGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+}
+
+
+@media screen and (max-width: 768px) {
+  .container {
+    padding: 2rem 1rem;
+  }
+
+  .documentGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .formContainer {
+    padding: 2rem;
+  }
+
+  .formRow,
+  .documentGrid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .section {
+    margin-bottom: 3rem;
+  }
+}
