@@ -181,10 +181,28 @@ const RegistrationForm = () => {
     });
   };
 
-  // Form submission handler - only triggered from step 4 now
-  const onSubmit = async (data) => {
+  // Separate API call function
+  const submitRegistration = async (formData) => {
     try {
-      // Validate all fields across all steps
+      const response = await axios.post("api/registration", formData);
+      if (response.status === 200 || response.status === 201) {
+        return response.data;
+      }
+      throw new Error("Registration failed");
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  // Form submission handler
+  const onSubmit = async (data) => {
+    // Only process submission on step 4
+    if (step !== 4) {
+      return;
+    }
+
+    try {
+      // Validate all fields
       const isAllValid = await trigger();
 
       if (!isAllValid) {
@@ -197,7 +215,7 @@ const RegistrationForm = () => {
         return;
       }
 
-      // Final location check
+      // Check location
       if (!location.latitude || !location.longitude) {
         Swal.fire({
           title: "Location Required",
@@ -233,30 +251,25 @@ const RegistrationForm = () => {
         formData.profilePicture = base64Image;
       }
 
-      // Send data to API
-      const response = await axios.post("api/registration", formData);
+      // Submit registration
+      await submitRegistration(formData);
 
-      if (response.status === 200 || response.status === 201) {
-        // Success message
-        Swal.fire({
-          title: "Success!",
-          text: "Your registration was completed successfully!",
-          icon: "success",
-          confirmButtonText: "Continue",
-        });
+      // Show success message
+      Swal.fire({
+        title: "Success!",
+        text: "Your registration was completed successfully!",
+        icon: "success",
+        confirmButtonText: "Continue",
+      });
 
-        // Reset form
-        reset();
-        setStep(1);
-        setProgress(25);
-        setProfileImage(null);
-        setImagePreview(null);
-      } else {
-        throw new Error("Registration failed");
-      }
+      // Reset form
+      reset();
+      setStep(1);
+      setProgress(25);
+      setProfileImage(null);
+      setImagePreview(null);
     } catch (error) {
       console.error("Registration error:", error);
-      // Error message
       Swal.fire({
         title: "Registration Failed",
         text:
@@ -268,7 +281,7 @@ const RegistrationForm = () => {
     }
   };
 
-  // Navigate to next step with validation
+  // Modify nextStep to prevent accidental submission
   const nextStep = async () => {
     let fieldsToValidate = [];
 
@@ -287,30 +300,6 @@ const RegistrationForm = () => {
           "postalCode",
           "country",
         ];
-
-        // Check location before proceeding to final step but don't submit the form
-        if (!location.latitude || !location.longitude) {
-          Swal.fire({
-            title: "Location Required",
-            text: "Location is required to complete registration. Would you like to grant permission now or proceed to the final step and grant permission later?",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonText: "Grant Permission Now",
-            cancelButtonText: "Proceed Anyway",
-          }).then((result) => {
-            if (result.isConfirmed) {
-              requestLocation();
-            } else {
-              // Proceed to next step even without location
-              const isStepValid = trigger(fieldsToValidate);
-              if (isStepValid) {
-                setStep(step + 1);
-                setProgress(progress + 25);
-              }
-            }
-          });
-          return;
-        }
         break;
       default:
         break;

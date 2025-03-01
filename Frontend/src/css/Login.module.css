@@ -1,0 +1,134 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: var(--light-bg);
+  padding: 2rem;
+}
+
+.formContainer {
+  background-color: var(--white);
+  padding: 4rem;
+  border-radius: 1rem;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 45rem;
+}
+
+.title {
+  color: var(--primary-color);
+  font-size: var(--font-h2);
+  margin-bottom: 3rem;
+  text-align: center;
+  font-weight: var(--font-bold);
+}
+
+.formGroup {
+  margin-bottom: 2.5rem;
+}
+
+.label {
+  display: block;
+  font-size: var(--nav-link);
+  color: var(--primary-color);
+  margin-bottom: 0.8rem;
+  font-weight: var(--font-medium);
+}
+
+.input {
+  width: 100%;
+  padding: 1.2rem;
+  font-size: var(--font-body);
+  border: 1px solid var(--border-color);
+  border-radius: 0.8rem;
+  background-color: var(--white);
+  transition: border-color 0.3s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.inputError {
+  border-color: var(--error-color);
+}
+
+.errorMessage {
+  color: var(--error-color);
+  font-size: var(--font-small);
+  margin-top: 0.5rem;
+}
+
+.submitButton {
+  width: 100%;
+  padding: 1.2rem;
+  background-color: var(--primary-color);
+  color: var(--white);
+  border: none;
+  border-radius: 0.8rem;
+  font-size: var(--nav-link);
+  font-weight: var(--font-medium);
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.submitButton:hover {
+  background-color: var(--secondary-color);
+}
+
+.submitButton:disabled {
+  background-color: var(--border-color);
+  cursor: not-allowed;
+}
+
+.passwordHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.8rem;
+}
+
+.forgotPassword {
+  font-size: var(--font-small);
+  color: blue;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.forgotPassword:hover {
+  color: var(--secondary-color);
+}
+
+.signupText {
+  margin-top: 2rem;
+  text-align: center;
+  font-size: var(--font-small);
+  color: var(--secondary-color);
+}
+
+.signupLink {
+  color: blue;
+  text-decoration: none;
+  font-weight: var(--font-medium);
+  transition: color 0.3s ease;
+}
+
+.signupLink:hover {
+  color: blue;
+}
+
+@media screen and (max-width: 480px) {
+  .formContainer {
+    padding: 2rem;
+  }
+
+  .title {
+    font-size: var(--font-h3);
+  }
+
+  .input {
+    padding: 1rem;
+  }
+}

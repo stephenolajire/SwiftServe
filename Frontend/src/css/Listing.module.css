@@ -1,0 +1,224 @@
+.container {
+  background-color: var(--primary-color);
+  min-height: 100vh;
+  padding: 4rem;
+}
+
+.title {
+  color: var(--white);
+  font-size: var(--font-h2);
+  margin-bottom: 4rem;
+  text-align: center;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 3rem;
+}
+
+.card {
+  background-color: var(--white);
+  border-radius: 1.5rem;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+.imageContainer {
+  position: relative;
+  height: 150px;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.status {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background-color: var(--accent-yellow);
+  color: var(--primary-color);
+  padding: 0.5rem 1rem;
+  border-radius: 2rem;
+  font-size: var(--font-small);
+  font-weight: var(--font-medium);
+}
+
+.content {
+  padding: 2rem;
+}
+
+.itemName {
+  color: var(--primary-color);
+  font-size: var(--font-h5);
+  margin-bottom: 2rem;
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.actionButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 0.8rem;
+  font-size: var(--font-small);
+  font-weight: var(--font-medium);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.applyButton {
+  background-color: var(--accent-yellow);
+  color: var(--primary-color);
+}
+
+.applyButton:hover {
+  background-color: var(--primary-color);
+  color: var(--accent-yellow);
+}
+
+.saveButton {
+  background-color: var(--light-bg);
+  color: var(--primary-color);
+}
+
+.saved {
+  background-color: var(--accent-yellow);
+  color: var(--primary-color);
+}
+
+.detailsButton {
+  background-color: var(--primary-color);
+  color: var(--white);
+}
+
+.detailsButton:hover {
+  background-color: var(--secondary-color);
+}
+
+/* Modal Styles */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background-color: var(--white);
+  border-radius: 2rem;
+  width: 90%;
+  max-width: 800px;
+  position: relative;
+  animation: modalFade 0.3s ease;
+}
+
+.closeButton {
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  font-size: 2.4rem;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.modalContent {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  padding: 3rem;
+}
+
+.modalImage {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 1rem;
+}
+
+.modalDetails {
+  color: var(--primary-color);
+}
+
+.modalDetails h2 {
+  font-size: var(--font-h3);
+  margin-bottom: 2rem;
+}
+
+.modalDetails p {
+  font-size: var(--font-body);
+  margin-bottom: 1.5rem;
+}
+
+.modalApplyButton {
+  background-color: var(--accent-yellow);
+  color: var(--primary-color);
+  border: none;
+  padding: 1.2rem 2.4rem;
+  border-radius: 0.8rem;
+  font-size: var(--nav-link);
+  font-weight: var(--font-medium);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 2rem;
+}
+
+.modalApplyButton:hover {
+  background-color: var(--primary-color);
+  color: var(--accent-yellow);
+}
+
+@keyframes modalFade {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Styles */
+@media screen and (max-width: 768px) {
+  .container {
+    padding: 2rem;
+  }
+
+  .modalContent {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .actionButton {
+    width: 100%;
+    justify-content: center;
+  }
+}
