@@ -1,0 +1,128 @@
+.footer {
+  background-color: var(--primary-color);
+  color: var(--white);
+  padding: 6rem 0 0 0;
+}
+
+.footerContent {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 4rem;
+}
+
+.companyInfo h3 {
+  font-size: var(--font-h3);
+  margin-bottom: 2rem;
+  color: var(--accent-yellow);
+}
+
+.companyInfo p {
+  font-size: var(--font-body);
+  color: var(--secondary-color);
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.socialLinks {
+  display: flex;
+  gap: 2rem;
+}
+
+.socialLinks a {
+  color: var(--secondary-color);
+  font-size: 2.4rem;
+  transition: color 0.3s ease;
+}
+
+.socialLinks a:hover {
+  color: var(--accent-yellow);
+}
+
+.linksSection h4,
+.contactInfo h4 {
+  font-size: var(--font-h5);
+  color: var(--white);
+  margin-bottom: 2rem;
+}
+
+.linksSection ul,
+.contactInfo ul {
+  list-style: none;
+}
+
+.linksSection ul li,
+.contactInfo ul li {
+  margin-bottom: 1.5rem;
+}
+
+.linksSection ul li a {
+  color: var(--secondary-color);
+  text-decoration: none;
+  transition: color 0.3s ease;
+  font-size: var(--font-body);
+}
+
+.linksSection ul li a:hover {
+  color: var(--accent-yellow);
+}
+
+.contactInfo ul li {
+  color: var(--secondary-color);
+  font-size: var(--font-body);
+}
+
+.bottomBar {
+  margin-top: 6rem;
+  padding: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.bottomBar p {
+  color: var(--secondary-color);
+  font-size: var(--font-small);
+}
+
+.legal {
+  display: flex;
+  gap: 2rem;
+}
+
+.legal a {
+  color: var(--secondary-color);
+  text-decoration: none;
+  font-size: var(--font-small);
+  transition: color 0.3s ease;
+}
+
+.legal a:hover {
+  color: var(--accent-yellow);
+}
+
+@media screen and (max-width: 768px) {
+  .footer {
+    padding: 4rem 0 0 0;
+  }
+
+  .footerContent {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+
+  .bottomBar {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .legal {
+    justify-content: center;
+  }
+}

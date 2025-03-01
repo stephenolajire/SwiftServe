@@ -14,7 +14,7 @@ const HowItWorks = () => {
   return (
     <div className={style.howItWorks}> 
       <div data-aos="zoom-in">
-        <h1>How it Works</h1>
+        <h1>About Us</h1>
         <p>
           We are a platform that connects you with a courier (in your
           neighborhood) who can deliver your package to your desired location.
@@ -23,7 +23,7 @@ const HowItWorks = () => {
         </p>
       </div>
       <div data-aos="slide-up">
-        <h1>Why Choose Us</h1>
+        <h1>Our Platform</h1>
         <p>
           We offer a seamless and user-friendly experience, with real-time
           tracking of your package. We also offer competitive prices and

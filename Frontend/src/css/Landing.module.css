@@ -1,0 +1,271 @@
+.container {
+  width: 100%;
+  margin-top: 10rem;
+}
+
+.hero {
+  background-color: var(--primary-color);
+  min-height: 80vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  padding: 8rem 10rem;
+  position: relative;
+}
+
+.heroContent {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.heroContent h1 {
+  color: var(--white);
+  font-size: var(--font-h1);
+  line-height: 1.2;
+  margin-bottom: 2rem;
+}
+
+.heroContent p {
+  color: var(--secondary-color);
+  font-size: var(--font-subheading);
+  margin-bottom: 4rem;
+  line-height: 1.6;
+}
+
+.heroCTA {
+  display: flex;
+  gap: 2rem;
+}
+
+.primaryButton, .primaryButton2 {
+  background-color: var(--accent-yellow);
+  color: var(--primary-color);
+  /* padding: 1.5rem 3rem; */
+  border-radius: 0.8rem;
+  font-size: var(--nav-link);
+  font-weight: var(--font-medium);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  height: 4rem;
+  width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.primaryButton2 {
+    width: 20rem;
+}
+
+.cta > div {
+    width: 20rem;
+    margin: auto;
+}
+
+.primaryButton:hover {
+  background-color: var(--white);
+}
+
+.secondaryButton {
+  background-color: transparent;
+  color: var(--white);
+  /* padding: 1.5rem 3rem; */
+  border-radius: 0.8rem;
+  font-size: var(--nav-link);
+  font-weight: var(--font-medium);
+  text-decoration: none;
+  border: 2px solid var(--white);
+  transition: all 0.3s ease;
+  height: 4rem;
+  width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.secondaryButton:hover {
+  background-color: var(--white);
+  color: var(--primary-color);
+}
+
+.features {
+  padding: 10rem;
+  background-color: var(--light-bg);
+}
+
+.features h2 {
+  text-align: center;
+  color: var(--primary-color);
+  font-size: var(--font-h2);
+  margin-bottom: 6rem;
+}
+
+.featureGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 4rem;
+}
+
+.featureCard {
+  text-align: center;
+  padding: 3rem;
+  background-color: var(--white);
+  border-radius: 1.5rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.featureCard:hover {
+  transform: translateY(-10px);
+}
+
+.featureIcon {
+  font-size: 4rem;
+  color: var(--accent-yellow);
+  margin-bottom: 2rem;
+}
+
+.featureCard h3 {
+  color: var(--primary-color);
+  font-size: var(--font-h5);
+  margin-bottom: 1.5rem;
+}
+
+.featureCard p {
+  color: var(--secondary-color);
+  font-size: var(--font-body);
+}
+
+.howItWorks {
+  padding: 10rem;
+  background-color: var(--white);
+}
+
+.howItWorks h2 {
+  text-align: center;
+  color: var(--primary-color);
+  font-size: var(--font-h2);
+  margin-bottom: 6rem;
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 4rem;
+}
+
+.step {
+  text-align: center;
+}
+
+.stepNumber {
+  width: 6rem;
+  height: 6rem;
+  background-color: var(--accent-yellow);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-h3);
+  font-weight: var(--font-bold);
+  color: var(--primary-color);
+  margin: 0 auto 2rem;
+}
+
+.step h3 {
+  color: var(--primary-color);
+  font-size: var(--font-h5);
+  margin-bottom: 1rem;
+}
+
+.step p {
+  color: var(--secondary-color);
+  font-size: var(--font-body);
+}
+
+.cta {
+  background-color: var(--primary-color);
+  padding: 10rem;
+  text-align: center;
+}
+
+.cta h2 {
+  color: var(--white);
+  font-size: var(--font-h2);
+  margin-bottom: 2rem;
+}
+
+.cta p {
+  color: var(--secondary-color);
+  font-size: var(--font-subheading);
+  margin-bottom: 4rem;
+}
+
+.heroImage {
+    width: 100%;
+    height: 100%;
+}
+
+.heroImage > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+@media screen and (max-width: 1024px) {
+  .hero {
+    padding: 6rem 4rem;
+  }
+
+  .heroContent h1 {
+    font-size: var(--font-h1-tablet);
+  }
+
+  .features,
+  .howItWorks,
+  .cta {
+    padding: 6rem 4rem;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .hero {
+    grid-template-columns: 1fr;
+    text-align: center;
+    padding:5rem 2rem;
+    min-height: 100vh;
+    gap: 2rem;
+  }
+
+  .heroCTA {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    width: 100%;
+  }
+
+  .heroContent h1 {
+    font-size: var(--font-h1-mobile);
+  }
+
+  .features,
+  .howItWorks,
+  .cta {
+    padding: 4rem 2rem;
+  }
+
+  .featureGrid {
+    gap: 2rem;
+  }
+
+  .heroImage {
+    height: 45rem;
+    width: 100%;
+  }
+}
+

@@ -4,13 +4,14 @@
     gap: 4rem;
     padding: 0rem 10rem;
     margin-bottom: 10rem;
-    margin-top: -3rem;
+    margin-top: 10rem;
     width: 100%;
 }
 
 .howItWorks > div {
-    box-shadow: 0px 0px 4px 3px rgba(214, 211, 211, 0.25);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     padding: 2.5rem;
+    border-radius: 0.8rem;
 }
 
 .howItWorks > div > h1 {
@@ -32,6 +33,7 @@
     .howItWorks {
         grid-template-columns: 1fr;
         padding: 0rem 2rem;
+        margin: 4rem 0rem;
     }
 }
 
@@ -39,6 +41,7 @@
     .howItWorks {
         grid-template-columns: 1fr;
         padding: 0rem 5rem;
+        margin: 5rem 0rem;
     }
 }
 
@@ -46,6 +49,7 @@
     .howItWorks {
         grid-template-columns:  1fr 1fr;
         padding: 0rem 5rem;
+        margin: 6rem 0rem;
     }
 }
 
@@ -53,5 +57,6 @@
     .howItWorks {
         grid-template-columns: 1fr 1fr 1fr;
         padding: 0rem 5rem;
+        margin: 7rem 0rem;
     }
 }
