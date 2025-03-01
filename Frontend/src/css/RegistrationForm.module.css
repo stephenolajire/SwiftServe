@@ -1,0 +1,210 @@
+.cont {
+  margin-top: 5vh;
+}
+
+
+.formContainer {
+  /* font-family: Arial, sans-serif; */
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: var(--white);
+  border-radius: 8px;
+  box-shadow: 0 0 4px 5px rgba(0, 0, 0, 0.1);
+  height: 90vh;
+}
+
+/* Headings */
+.title {
+  color: var(--primary-color);
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.sectionTitle {
+  color: var(--primary-color);
+  margin-bottom: 15px;
+}
+
+.subTitle {
+  color: var(--primary-color);
+  margin-top: 0;
+}
+
+/* Progress Bar */
+.progressContainer {
+  margin-bottom: 30px;
+}
+
+.progressBar {
+  width: 100%;
+  background-color: #e0e0e0;
+  border-radius: 20px;
+  height: 10px;
+}
+
+.progressFill {
+  background-color: var(--primary-color);
+  border-radius: 20px;
+  height: 10px;
+  transition: width 0.3s ease-in-out;
+}
+
+.progressText {
+  text-align: center;
+  color: var(--secondary-color);
+  margin-top: 8px;
+}
+
+/* Form Elements */
+.formGroup {
+  margin-bottom: 15px;
+}
+
+.formRow {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.formColumn {
+  flex: 1;
+}
+
+.label {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--primary-color);
+  font-size: var(--font-body);
+}
+
+.input {
+  width: 100%;
+  padding-left: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.4rem;
+  font-size: var(--font-body);
+  height: 4rem;
+}
+
+.inputError {
+  border-color: var(--error-color);
+}
+
+.errorMessage {
+  color: var(--error-color);
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+/* Profile Picture Section */
+.profileUploadContainer {
+  margin-bottom: 20px;
+  padding: 20px;
+  border: 2px dashed var(--secondary-color);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.profilePlaceholder {
+  width: 150px;
+  height: 150px;
+  background-color: #e0e0e0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 15px;
+  color: var(--secondary-color);
+  font-size: 40px;
+}
+
+.profilePreview {
+  max-width: 200px;
+  max-height: 200px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 15px;
+}
+
+.uploadButton {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: var(--primary-color);
+  color: var(--white);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.fileInput {
+  display: none;
+}
+
+.uploadHint {
+  color: var(--secondary-color);
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+/* Review Section */
+.reviewContainer {
+  background-color: var(--light-bg);
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.reviewItem {
+  margin: 5px 0;
+}
+
+/* Location Info */
+.locationInfo {
+  color: var(--secondary-color);
+}
+
+/* Buttons */
+.buttonContainer {
+  display: flex;
+  margin-top: 30px;
+}
+
+.buttonContainerEnd {
+  justify-content: flex-end;
+}
+
+.buttonContainerBetween {
+  justify-content: space-between;
+}
+
+.buttonSecondary {
+  padding: 10px 20px;
+  background-color: var(--white);
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.buttonPrimary {
+  padding: 10px 20px;
+  background-color: var(--primary-color);
+  color: var(--white);
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 600px) {
+  .formRow {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .formContainer {
+    padding: 15px;
+  }
+}

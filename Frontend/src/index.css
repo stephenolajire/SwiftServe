@@ -23,6 +23,13 @@ body {
   --accent-blue: #007BFF;
   --background-color: #F5F5F5;
 
+  --primary-color: #161516;
+  --secondary-color: #959394;
+  --error-color: #ff3333;
+  --border-color: #ccc;
+  --light-bg: #f7f7f7;
+  --white: #fff;
+
   /* Font Family */
   --font-primary: 'Poppins', sans-serif;
   --font-secondary: 'Inter', sans-serif;
