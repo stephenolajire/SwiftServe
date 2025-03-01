@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate} from "react-router-dom";
 import { FaBars } from "react-icons/fa";
 import { AiOutlineClose } from "react-icons/ai";
 import { MdArrowDropDown } from "react-icons/md";
@@ -10,6 +10,16 @@ const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showRegisterDropdown, setShowRegisterDropdown] = useState(false);
   const dropdownRef = useRef(null);
+
+  const navigate = useNavigate();
+
+  const handleNavToRegister = () => {
+    navigate('/register');
+  };
+
+  const handleNavToCompany = () => {
+    navigate('/company');
+  };
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -119,34 +129,28 @@ const Navigation = () => {
             </NavLink>
           </li>
           <li className={styles.authLinks}>
-            <div
-              className={styles.registerDropdown}
-              onClick={() => setShowRegisterDropdown(!showRegisterDropdown)}
+            <NavLink
+              to="register"
+              className={({ isActive }) =>
+                isActive ? styles.activeLink : styles.link
+              }
+              onClick={closeAll}
             >
-              <span className={styles.link}>
-                Register
-                <MdArrowDropDown className={styles.dropdownIcon} />
-              </span>
-              {showRegisterDropdown && (
-                <div className={styles.dropdown}>
-                  <Link
-                    to="/register"
-                    className={styles.dropdownLink}
-                    onClick={closeAll}
-                  >
-                    Individual
-                  </Link>
-                  <Link
-                    to="/company"
-                    className={styles.dropdownLink}
-                    onClick={closeAll}
-                  >
-                    Company
-                  </Link>
-                </div>
-              )}
-            </div>
+              Individual Registration
+            </NavLink>
           </li>
+          <li className={styles.authLinks}>
+            <NavLink
+              to="company"
+              className={({ isActive }) =>
+                isActive ? styles.activeLink : styles.link
+              }
+              onClick={closeAll}
+            >
+              Company Registration
+            </NavLink>
+          </li>
+          
         </ul>
       </div>
 
@@ -186,7 +190,11 @@ const Navigation = () => {
       </div>
 
       <div className={styles.hamburger} onClick={toggleMenu}>
-        {isOpen ? <AiOutlineClose className={styles.icon} size={25} /> : <FaBars size={25} />}
+        {isOpen ? (
+          <AiOutlineClose className={styles.icon} size={25} />
+        ) : (
+          <FaBars size={25} />
+        )}
       </div>
     </nav>
   );

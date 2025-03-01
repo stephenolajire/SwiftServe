@@ -215,14 +215,14 @@
   }
 
   .dropdown {
-    position: static;
+    position: relative;
     width: 100%;
     background-color: rgba(255, 255, 255, 0.1);
-    margin-top: 1rem;
+    margin-top: 3rem;
   }
 
   .dropdownLink {
-    color: var(--white);
+    color: var(--accent-yellow);
     text-align: center;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
   }
