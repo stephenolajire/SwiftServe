@@ -138,9 +138,9 @@ const RegistrationForm = () => {
         },
         // Add options for better geolocation performance
         {
-          enableHighAccuracy: false, // Set to false for faster response
+          enableHighAccuracy: true, // Set to false for faster response
           timeout: 10000, // 10 seconds timeout
-          maximumAge: 300000, // Accept cached positions up to 5 minutes old
+          maximumAge: 0, // Accept cached positions up to 5 minutes old
         }
       );
     } else {

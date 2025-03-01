@@ -51,6 +51,11 @@ const Login = () => {
             icon: "error",
             confirmButtonText: "OK",
           });
+        },
+        {
+          enableHighAccuracy: true, // Set to false for faster response
+          timeout: 10000, // 10 seconds timeout
+          maximumAge: 0, // Accept only current positions
         }
       );
     }
