@@ -187,12 +187,8 @@
     height: 100vh;
     background-color: var(--primary-color);
     margin: 0;
-    /* padding: rem 2rem; */
+    padding: 8rem 2rem 2rem;
     transition: all 0.3s ease-in-out;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
   }
 
   .links.active {
@@ -201,8 +197,7 @@
 
   .links ul {
     flex-direction: column;
-    gap: 3.5rem;
-    margin-top: -5rem;
+    gap: 2rem;
   }
 
   .link,
