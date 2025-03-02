@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { FaShieldAlt, FaClock, FaTruck } from "react-icons/fa";
 import { MdLocationOn } from "react-icons/md";
 import styles from "../css/Landing.module.css";
-import truck from "../assets/truck2.jpg";
+import truck from "../assets/courier.png";
 import HowItWorks from "../components/HomeComponents/HowItWorks";
 import AOS from 'aos'
 import "aos/dist/aos.css";
