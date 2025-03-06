@@ -1,85 +1,102 @@
 import React, { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
 import styles from "../css/RegistrationForm.module.css";
 import Swal from "sweetalert2";
 import axios from "axios";
+import api from "../constant/api";
+import { useNavigate } from "react-router-dom";
 
 const RegistrationForm = () => {
+  const navigate = useNavigate();
+
   const [step, setStep] = useState(1);
   const [progress, setProgress] = useState(25);
   const [location, setLocation] = useState({ latitude: null, longitude: null });
   const [profileImage, setProfileImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [isRequestingLocation, setIsRequestingLocation] = useState(false);
-  const [locationAttempts, setLocationAttempts] = useState(0);
-
-  // Form validation schema
-  const schema = yup.object().shape({
-    // Account credentials
-    email: yup
-      .string()
-      .email("Invalid email format")
-      .required("Email is required"),
-    username: yup
-      .string()
-      .min(4, "Username must be at least 4 characters")
-      .required("Username is required"),
-    password: yup
-      .string()
-      .min(8, "Password must be at least 8 characters")
-      .matches(/[A-Z]/, "Password must contain at least one uppercase letter")
-      .matches(/[a-z]/, "Password must contain at least one lowercase letter")
-      .matches(/[0-9]/, "Password must contain at least one number")
-      .matches(
-        /[^A-Za-z0-9]/,
-        "Password must contain at least one special character"
-      )
-      .required("Password is required"),
-    confirmPassword: yup
-      .string()
-      .oneOf([yup.ref("password")], "Passwords must match")
-      .required("Confirm password is required"),
-
-    // Personal info
-    firstName: yup.string().required("First name is required"),
-    lastName: yup.string().required("Last name is required"),
-    phoneNumber: yup
-      .string()
-      .matches(/^\+?[0-9]{8,15}$/, "Phone number must be valid (8-15 digits)")
-      .required("Phone number is required"),
-    dob: yup
-      .date()
-      .max(
-        new Date(new Date().setFullYear(new Date().getFullYear() - 13)),
-        "You must be at least 13 years old"
-      )
-      .required("Date of birth is required"),
-
-    // Address
-    address: yup.string().required("Address is required"),
-    city: yup.string().required("City is required"),
-    state: yup.string().required("State is required"),
-    postalCode: yup.string().required("Postal code is required"),
-    country: yup.string().required("Country is required"),
+  const [errors, setErrors] = useState({});
+  const [formData, setFormData] = useState({
+    email: "",
+    username: "",
+    password: "",
+    confirmPassword: "",
+    firstName: "",
+    lastName: "",
+    phoneNumber: "",
+    dob: "",
+    address: "",
+    city: "",
+    state: "",
+    postalCode: "",
+    country: "",
   });
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    trigger,
-    watch,
-    reset,
-  } = useForm({
-    resolver: yupResolver(schema),
-    mode: "onChange",
-  });
+  // Validation functions
+  const validateEmail = (email) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email) return "Email is required";
+    if (!regex.test(email)) return "Invalid email format";
+    return "";
+  };
 
-  // Request user's geolocation with improved handling
+  const validatePassword = (password) => {
+    if (!password) return "Password is required";
+    if (password.length < 8) return "Password must be at least 8 characters";
+    if (!/[A-Z]/.test(password)) return "Must contain an uppercase letter";
+    if (!/[a-z]/.test(password)) return "Must contain a lowercase letter";
+    if (!/[0-9]/.test(password)) return "Must contain a number";
+    if (!/[^A-Za-z0-9]/.test(password))
+      return "Must contain a special character";
+    return "";
+  };
+
+  const validateField = (name, value) => {
+    switch (name) {
+      case "email":
+        return validateEmail(value);
+      case "username":
+        return !value
+          ? "Username is required"
+          : value.length < 4
+          ? "Username must be at least 4 characters"
+          : "";
+      case "password":
+        return validatePassword(value);
+      case "confirmPassword":
+        return !value
+          ? "Confirm password is required"
+          : value !== formData.password
+          ? "Passwords must match"
+          : "";
+      case "firstName":
+      case "lastName":
+        return !value ? `${name} is required` : "";
+      case "phoneNumber":
+        return !value
+          ? "Phone number is required"
+          : !/^\+?[0-9]{8,15}$/.test(value)
+          ? "Invalid phone number"
+          : "";
+      case "dob":
+        if (!value) return "Date of birth is required";
+        const age = new Date().getFullYear() - new Date(value).getFullYear();
+        return age < 13 ? "Must be at least 13 years old" : "";
+      default:
+        return !value ? `${name} is required` : "";
+    }
+  };
+
+  // Handle input changes
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    const error = validateField(name, value);
+    setErrors((prev) => ({ ...prev, [name]: error }));
+  };
+
+  // Location handling
   const requestLocation = () => {
-    if (isRequestingLocation) return; // Prevent multiple simultaneous requests
+    if (isRequestingLocation) return;
 
     if (navigator.geolocation) {
       setIsRequestingLocation(true);
@@ -90,202 +107,55 @@ const RegistrationForm = () => {
             longitude: position.coords.longitude,
           });
           setIsRequestingLocation(false);
-          // Clear the location attempts counter once successful
-          setLocationAttempts(0);
         },
         (error) => {
           console.error("Error getting location:", error);
           setIsRequestingLocation(false);
-
-          // Increment attempts counter
-          setLocationAttempts((prev) => prev + 1);
-
-          // Show alert only on first attempt or every third attempt to avoid spamming
-          if (locationAttempts === 0 || locationAttempts % 3 === 0) {
-            // Show different message based on error type
-            if (error.code === error.PERMISSION_DENIED) {
-              Swal.fire({
-                title: "Location Access Required",
-                text: "Please enable location access in your browser settings and try again.",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonText: "Try Again",
-                cancelButtonText: "Continue Without Location",
-              }).then((result) => {
-                if (result.isConfirmed) {
-                  // Try requesting permission again
-                  requestLocation();
-                } else if (result.dismiss === Swal.DismissReason.cancel) {
-                  // Allow user to continue without location, but warn them
-                  Swal.fire({
-                    title: "Proceeding Without Location",
-                    text: "You can continue registration, but location will be required before final submission.",
-                    icon: "info",
-                    confirmButtonText: "OK",
-                  });
-                }
-              });
-            } else {
-              // Handle other geolocation errors
-              Swal.fire({
-                title: "Location Error",
-                text: "There was a problem getting your location. Please try again.",
-                icon: "error",
-                confirmButtonText: "OK",
-              });
-            }
-          }
+          Swal.fire({
+            title: "Location Error",
+            text: "Unable to get your location. Please try again.",
+            icon: "error",
+            confirmButtonText: "OK",
+          });
         },
-        // Add options for better geolocation performance
         {
-          enableHighAccuracy: true, // Set to false for faster response
-          timeout: 10000, // 10 seconds timeout
-          maximumAge: 0, // Accept cached positions up to 5 minutes old
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0,
         }
       );
-    } else {
-      Swal.fire({
-        title: "Geolocation Not Supported",
-        text: "Your browser does not support geolocation. Please use a different browser.",
-        icon: "error",
-        confirmButtonText: "OK",
-      });
     }
   };
 
-  // Get user's geolocation on component mount
   useEffect(() => {
     requestLocation();
   }, []);
 
-  // Handle profile picture upload
+  // Handle image upload
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        Swal.fire({
+          title: "File Too Large",
+          text: "Please select an image under 5MB",
+          icon: "error",
+        });
+        return;
+      }
       setProfileImage(file);
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result);
-      };
+      reader.onloadend = () => setImagePreview(reader.result);
       reader.readAsDataURL(file);
     }
   };
 
-  // Convert profile image to base64 for API submission
-  const getBase64FromFile = (file) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = (error) => reject(error);
-    });
-  };
-
-  // Separate API call function
-  const submitRegistration = async (formData) => {
-    try {
-      const response = await axios.post("api/registration", formData);
-      if (response.status === 200 || response.status === 201) {
-        return response.data;
-      }
-      throw new Error("Registration failed");
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  // Form submission handler
-  const onSubmit = async (data) => {
-    // Only process submission on step 4
-    if (step !== 4) {
-      return;
-    }
-
-    try {
-      // Validate all fields
-      const isAllValid = await trigger();
-
-      if (!isAllValid) {
-        Swal.fire({
-          title: "Incomplete Form",
-          text: "Please fill in all required fields before submitting.",
-          icon: "error",
-          confirmButtonText: "OK",
-        });
-        return;
-      }
-
-      // Check location
-      if (!location.latitude || !location.longitude) {
-        Swal.fire({
-          title: "Location Required",
-          text: "Please allow location access to complete registration.",
-          icon: "warning",
-          confirmButtonText: "Grant Permission",
-        }).then(() => {
-          requestLocation();
-        });
-        return;
-      }
-
-      // Show loading state
-      Swal.fire({
-        title: "Processing",
-        text: "Submitting your registration...",
-        allowOutsideClick: false,
-        didOpen: () => {
-          Swal.showLoading();
-        },
-      });
-
-      // Prepare form data
-      let formData = {
-        ...data,
-        currentLatitude: location.latitude,
-        currentLongitude: location.longitude,
-      };
-
-      // Add profile picture if available
-      if (profileImage) {
-        const base64Image = await getBase64FromFile(profileImage);
-        formData.profilePicture = base64Image;
-      }
-
-      // Submit registration
-      await submitRegistration(formData);
-
-      // Show success message
-      Swal.fire({
-        title: "Success!",
-        text: "Your registration was completed successfully!",
-        icon: "success",
-        confirmButtonText: "Continue",
-      });
-
-      // Reset form
-      reset();
-      setStep(1);
-      setProgress(25);
-      setProfileImage(null);
-      setImagePreview(null);
-    } catch (error) {
-      console.error("Registration error:", error);
-      Swal.fire({
-        title: "Registration Failed",
-        text:
-          error.response?.data?.message ||
-          "Something went wrong. Please try again.",
-        icon: "error",
-        confirmButtonText: "Try Again",
-      });
-    }
-  };
-
-  // Modify nextStep to prevent accidental submission
-  const nextStep = async () => {
+  // Validate current step
+  const validateStep = (currentStep) => {
+    const newErrors = {};
     let fieldsToValidate = [];
 
-    switch (step) {
+    switch (currentStep) {
       case 1:
         fieldsToValidate = ["email", "username", "password", "confirmPassword"];
         break;
@@ -305,20 +175,117 @@ const RegistrationForm = () => {
         break;
     }
 
-    const isStepValid = await trigger(fieldsToValidate);
+    fieldsToValidate.forEach((field) => {
+      const error = validateField(field, formData[field]);
+      if (error) newErrors[field] = error;
+    });
 
-    if (isStepValid) {
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  // Navigation functions
+  const nextStep = () => {
+    if (validateStep(step)) {
       setStep(step + 1);
       setProgress(progress + 25);
     }
   };
 
-  // Go back to previous step
   const prevStep = () => {
     setStep(step - 1);
     setProgress(progress - 25);
   };
 
+  // Form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (step !== 4) return;
+
+    try {
+      if (!location.latitude || !location.longitude) {
+        Swal.fire({
+          title: "Location Required",
+          text: "Please allow location access to complete registration.",
+          icon: "warning",
+        });
+        return;
+      }
+
+      // Show loading state
+      Swal.fire({
+        title: "Processing",
+        text: "Submitting your registration...",
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading(),
+      });
+
+      const formDataToSubmit = new FormData();
+
+      // Add form fields except confirmPassword
+      Object.keys(formData).forEach((key) => {
+        if (key !== "confirmPassword") {
+          // Convert date format for DOB
+          if (key === "dob") {
+            formDataToSubmit.append(
+              key,
+              new Date(formData[key]).toISOString().split("T")[0]
+            );
+          } else {
+            formDataToSubmit.append(key, formData[key]);
+          }
+        }
+      });
+
+      // Add location data
+      formDataToSubmit.append("latitude", location.latitude.toString());
+      formDataToSubmit.append("longitude", location.longitude.toString());
+      formDataToSubmit.append("user_type", "INDIVIDUAL");
+    
+
+      // Add profile image if exists
+      if (profileImage) {
+        formDataToSubmit.append("profileImage", profileImage);
+      }
+
+      // Debug: Log form data
+      console.log("Form Data being sent:");
+      for (let pair of formDataToSubmit.entries()) {
+        console.log(pair[0], pair[1]);
+      }
+
+      const response = await api.post(
+        "register/individual/",
+        formDataToSubmit,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      if (response.status === 201 || response.status === 200) {
+        await Swal.fire({
+          title: "Success!",
+          text: "Registration completed successfully!",
+          icon: "success",
+        });
+        navigate("/listing");
+      }
+    } catch (error) {
+      console.error("Registration error:", error.response?.data);
+      Swal.fire({
+        title: "Registration Failed",
+        text:
+          error.response?.data?.message ||
+          Object.values(error.response?.data || {})
+            .flat()
+            .join("\n") ||
+          "Something went wrong",
+        icon: "error",
+      });
+    }
+  };
   return (
     <div className={styles.cont}>
       <div className={styles.formContainer}>
@@ -335,74 +302,75 @@ const RegistrationForm = () => {
           <p className={styles.progressText}>Step {step} of 4</p>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit}>
           {/* Step 1: Account Details */}
           {step === 1 && (
             <div>
               <h2 className={styles.sectionTitle}>Account Details</h2>
-
               <div className={styles.formGroup}>
                 <label className={styles.label}>Email *</label>
                 <input
                   type="email"
-                  {...register("email")}
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
                   className={`${styles.input} ${
                     errors.email ? styles.inputError : ""
                   }`}
                   placeholder="Enter your email"
                 />
                 {errors.email && (
-                  <p className={styles.errorMessage}>{errors.email.message}</p>
+                  <p className={styles.errorMessage}>{errors.email}</p>
                 )}
               </div>
-
               <div className={styles.formGroup}>
                 <label className={styles.label}>Username *</label>
                 <input
                   type="text"
-                  {...register("username")}
+                  name="username"
+                  value={formData.username}
+                  onChange={handleChange}
                   className={`${styles.input} ${
                     errors.username ? styles.inputError : ""
                   }`}
-                  placeholder="Choose a username"
+                  placeholder="Enter your username"
                 />
                 {errors.username && (
-                  <p className={styles.errorMessage}>
-                    {errors.username.message}
-                  </p>
+                  <p className={styles.errorMessage}>{errors.username}</p>
                 )}
               </div>
-
+              
               <div className={styles.formGroup}>
                 <label className={styles.label}>Password *</label>
                 <input
                   type="password"
-                  {...register("password")}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
                   className={`${styles.input} ${
                     errors.password ? styles.inputError : ""
                   }`}
-                  placeholder="Create a password"
+                  placeholder="Enter your password"
                 />
                 {errors.password && (
-                  <p className={styles.errorMessage}>
-                    {errors.password.message}
-                  </p>
+                  <p className={styles.errorMessage}>{errors.password}</p>
                 )}
               </div>
-
               <div className={styles.formGroup}>
                 <label className={styles.label}>Confirm Password *</label>
                 <input
                   type="password"
-                  {...register("confirmPassword")}
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
                   className={`${styles.input} ${
-                    errors.confirmPassword ? styles.inputError : ""
+                    errors.confirmPassword ? styles.inputError : "" // Changed from errors.email
                   }`}
-                  placeholder="Confirm your password"
+                  placeholder="Enter your password again"
                 />
-                {errors.confirmPassword && (
+                {errors.confirmPassword && ( // Changed from errors.email
                   <p className={styles.errorMessage}>
-                    {errors.confirmPassword.message}
+                    {errors.confirmPassword}
                   </p>
                 )}
               </div>
@@ -415,20 +383,20 @@ const RegistrationForm = () => {
               <h2 className={styles.sectionTitle}>Personal Information</h2>
 
               <div className={styles.formRow}>
-                <div className={styles.formColumn}>
+                <div className={styles.formGroup}>
                   <label className={styles.label}>First Name *</label>
                   <input
                     type="text"
-                    {...register("firstName")}
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleChange}
                     className={`${styles.input} ${
                       errors.firstName ? styles.inputError : ""
                     }`}
-                    placeholder="First name"
+                    placeholder="Enter your first name"
                   />
                   {errors.firstName && (
-                    <p className={styles.errorMessage}>
-                      {errors.firstName.message}
-                    </p>
+                    <p className={styles.errorMessage}>{errors.firstName}</p>
                   )}
                 </div>
 
@@ -436,16 +404,16 @@ const RegistrationForm = () => {
                   <label className={styles.label}>Last Name *</label>
                   <input
                     type="text"
-                    {...register("lastName")}
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleChange}
                     className={`${styles.input} ${
                       errors.lastName ? styles.inputError : ""
                     }`}
                     placeholder="Last name"
                   />
                   {errors.lastName && (
-                    <p className={styles.errorMessage}>
-                      {errors.lastName.message}
-                    </p>
+                    <p className={styles.errorMessage}>{errors.lastName}</p>
                   )}
                 </div>
               </div>
@@ -454,30 +422,31 @@ const RegistrationForm = () => {
                 <label className={styles.label}>Phone Number *</label>
                 <input
                   type="tel"
-                  {...register("phoneNumber")}
+                  name="phoneNumber"
+                  value={formData.phoneNumber}
+                  onChange={handleChange}
                   className={`${styles.input} ${
                     errors.phoneNumber ? styles.inputError : ""
                   }`}
                   placeholder="Enter your phone number"
                 />
                 {errors.phoneNumber && (
-                  <p className={styles.errorMessage}>
-                    {errors.phoneNumber.message}
-                  </p>
+                  <p className={styles.errorMessage}>{errors.phoneNumber}</p>
                 )}
               </div>
-
               <div className={styles.formGroup}>
                 <label className={styles.label}>Date of Birth *</label>
                 <input
                   type="date"
-                  {...register("dob")}
+                  name="dob"
+                  value={formData.dob}
+                  onChange={handleChange}
                   className={`${styles.input} ${
                     errors.dob ? styles.inputError : ""
                   }`}
                 />
                 {errors.dob && (
-                  <p className={styles.errorMessage}>{errors.dob.message}</p>
+                  <p className={styles.errorMessage}>{errors.dob}</p>
                 )}
               </div>
             </div>
@@ -487,21 +456,20 @@ const RegistrationForm = () => {
           {step === 3 && (
             <div>
               <h2 className={styles.sectionTitle}>Address Information</h2>
-
               <div className={styles.formGroup}>
                 <label className={styles.label}>Address *</label>
                 <input
                   type="text"
-                  {...register("address")}
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
                   className={`${styles.input} ${
                     errors.address ? styles.inputError : ""
                   }`}
                   placeholder="Enter your street address"
                 />
                 {errors.address && (
-                  <p className={styles.errorMessage}>
-                    {errors.address.message}
-                  </p>
+                  <p className={styles.errorMessage}>{errors.address}</p>
                 )}
               </div>
 
@@ -510,14 +478,16 @@ const RegistrationForm = () => {
                   <label className={styles.label}>City *</label>
                   <input
                     type="text"
-                    {...register("city")}
+                    name="city"
+                    value={formData.city}
+                    onChange={handleChange}
                     className={`${styles.input} ${
                       errors.city ? styles.inputError : ""
                     }`}
                     placeholder="City"
                   />
                   {errors.city && (
-                    <p className={styles.errorMessage}>{errors.city.message}</p>
+                    <p className={styles.errorMessage}>{errors.city}</p>
                   )}
                 </div>
 
@@ -525,35 +495,34 @@ const RegistrationForm = () => {
                   <label className={styles.label}>State/Province *</label>
                   <input
                     type="text"
-                    {...register("state")}
+                    name="state"
+                    value={formData.state}
+                    onChange={handleChange}
                     className={`${styles.input} ${
                       errors.state ? styles.inputError : ""
                     }`}
                     placeholder="State/Province"
                   />
                   {errors.state && (
-                    <p className={styles.errorMessage}>
-                      {errors.state.message}
-                    </p>
+                    <p className={styles.errorMessage}>{errors.state}</p>
                   )}
                 </div>
               </div>
-
               <div className={styles.formRow}>
                 <div className={styles.formColumn}>
                   <label className={styles.label}>Postal/Zip Code *</label>
                   <input
                     type="text"
-                    {...register("postalCode")}
+                    name="postalCode"
+                    value={formData.postalCode}
+                    onChange={handleChange}
                     className={`${styles.input} ${
                       errors.postalCode ? styles.inputError : ""
                     }`}
                     placeholder="Postal/Zip code"
                   />
                   {errors.postalCode && (
-                    <p className={styles.errorMessage}>
-                      {errors.postalCode.message}
-                    </p>
+                    <p className={styles.errorMessage}>{errors.postalCode}</p>
                   )}
                 </div>
 
@@ -561,16 +530,16 @@ const RegistrationForm = () => {
                   <label className={styles.label}>Country *</label>
                   <input
                     type="text"
-                    {...register("country")}
+                    name="country"
+                    value={formData.country}
+                    onChange={handleChange}
                     className={`${styles.input} ${
                       errors.country ? styles.inputError : ""
                     }`}
                     placeholder="Country"
                   />
                   {errors.country && (
-                    <p className={styles.errorMessage}>
-                      {errors.country.message}
-                    </p>
+                    <p className={styles.errorMessage}>{errors.country}</p>
                   )}
                 </div>
               </div>
@@ -658,21 +627,21 @@ const RegistrationForm = () => {
               <div className={styles.reviewContainer}>
                 <h3 className={styles.subTitle}>Review Your Information</h3>
                 <p className={styles.reviewItem}>
-                  <strong>Name:</strong> {watch("firstName")}{" "}
-                  {watch("lastName")}
+                  <strong>Name:</strong> {formData.firstName}{" "}
+                  {formData.lastName}
                 </p>
                 <p className={styles.reviewItem}>
-                  <strong>Email:</strong> {watch("email")}
+                  <strong>Email:</strong> {formData.email}
                 </p>
                 <p className={styles.reviewItem}>
-                  <strong>Username:</strong> {watch("username")}
+                  <strong>Username:</strong> {formData.username}
                 </p>
                 <p className={styles.reviewItem}>
-                  <strong>Phone:</strong> {watch("phoneNumber")}
+                  <strong>Phone:</strong> {formData.phoneNumber}
                 </p>
                 <p className={styles.reviewItem}>
-                  <strong>Address:</strong> {watch("address")}, {watch("city")},{" "}
-                  {watch("state")} {watch("postalCode")}, {watch("country")}
+                  <strong>Address:</strong> {formData.address}, {formData.city},{" "}
+                  {formData.state} {formData.postalCode}, {formData.country}
                 </p>
                 <p className={styles.reviewItem}>
                   <strong>Location:</strong>{" "}

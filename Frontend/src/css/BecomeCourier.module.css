@@ -41,6 +41,11 @@
   gap: 2rem;
 }
 
+.optionCard > p {
+  color: var(--accent-yellow);
+  font-size: var(--font-body);
+}
+
 .optionHeader {
   display: flex;
   align-items: center;
@@ -147,6 +152,17 @@
 
 .step {
   text-align: center;
+}
+
+.step > h3 {
+  font-size: var(--font-subheading);
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.step > p {
+  font-size: var(--font-body);
+  color: var(--secondary-color);
 }
 
 .stepNumber {
