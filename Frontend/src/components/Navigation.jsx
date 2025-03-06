@@ -1,24 +1,27 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Link, NavLink, useNavigate} from "react-router-dom";
+import React, { useState, useEffect, useRef, useContext } from "react";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { FaBars } from "react-icons/fa";
 import { AiOutlineClose } from "react-icons/ai";
 import { MdArrowDropDown } from "react-icons/md";
 import logo from "../assets/logoo.jpeg";
 import styles from "../css/Navigation.module.css";
+import { GlobalContext } from "../constant/GlobalContext";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showRegisterDropdown, setShowRegisterDropdown] = useState(false);
   const dropdownRef = useRef(null);
 
+  const { isAuthenticated } = useContext(GlobalContext);
+
   const navigate = useNavigate();
 
   const handleNavToRegister = () => {
-    navigate('/register');
+    navigate("/register");
   };
 
   const handleNavToCompany = () => {
-    navigate('/company');
+    navigate("/company");
   };
 
   const toggleMenu = () => {
@@ -117,40 +120,55 @@ const Navigation = () => {
           </li>
 
           {/* Mobile auth links */}
-          <li className={styles.authLinks}>
-            <NavLink
-              to="login"
-              className={({ isActive }) =>
-                isActive ? styles.activeLink : styles.link
-              }
-              onClick={closeAll}
-            >
-              Login
-            </NavLink>
-          </li>
-          <li className={styles.authLinks}>
-            <NavLink
-              to="register"
-              className={({ isActive }) =>
-                isActive ? styles.activeLink : styles.link
-              }
-              onClick={closeAll}
-            >
-              Individual Registration
-            </NavLink>
-          </li>
-          <li className={styles.authLinks}>
-            <NavLink
-              to="company"
-              className={({ isActive }) =>
-                isActive ? styles.activeLink : styles.link
-              }
-              onClick={closeAll}
-            >
-              Company Registration
-            </NavLink>
-          </li>
-          
+          {isAuthenticated ? (
+            <li className={styles.authLinks}>
+              <NavLink
+                to="login"
+                className={({ isActive }) =>
+                  isActive ? styles.activeLink : styles.link
+                }
+                onClick={closeAll}
+              >
+                Logout
+              </NavLink>
+            </li>
+          ) : (
+            <>
+              <li className={styles.authLinks}>
+                <NavLink
+                  to="login"
+                  className={({ isActive }) =>
+                    isActive ? styles.activeLink : styles.link
+                  }
+                  onClick={closeAll}
+                >
+                  Login
+                </NavLink>
+              </li>
+              <li className={styles.authLinks}>
+                <NavLink
+                  to="register"
+                  className={({ isActive }) =>
+                    isActive ? styles.activeLink : styles.link
+                  }
+                  onClick={closeAll}
+                >
+                  Individual Registration
+                </NavLink>
+              </li>
+              <li className={styles.authLinks}>
+                <NavLink
+                  to="company"
+                  className={({ isActive }) =>
+                    isActive ? styles.activeLink : styles.link
+                  }
+                  onClick={closeAll}
+                >
+                  Company Registration
+                </NavLink>
+              </li>
+            </>
+          )}
         </ul>
       </div>
 
