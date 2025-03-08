@@ -10,6 +10,7 @@ import About from './pages/About';
 import BecomeCourier from './pages/BecomeCourier';
 import Dashboard from './pages/Dashboard';
 import CompanyRegistration from './user/CompanyRegistration';
+import RegistrationType from './constant/RegistrationType';
 
 
 const App = () => { 
@@ -24,9 +25,10 @@ const App = () => {
           <Route path="courier" element={<BecomeCourier />} />
           <Route path="dashboard" element={<Dashboard />} />
         </Route>
-        <Route path="/register" element={<RegistrationForm />} />
+        <Route path="/individual" element={<RegistrationForm />} />
         <Route path="/login" element={<Login />} />
         <Route path="/company" element={<CompanyRegistration />} />
+        <Route path='/register' element={<RegistrationType/>} />
       </Routes>
     </Router>
   );

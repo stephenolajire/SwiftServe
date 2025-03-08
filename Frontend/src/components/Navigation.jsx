@@ -1,48 +1,22 @@
-import React, { useState, useEffect, useRef, useContext } from "react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import React, { useState, useContext } from "react";
+import { Link, NavLink } from "react-router-dom";
 import { FaBars } from "react-icons/fa";
 import { AiOutlineClose } from "react-icons/ai";
-import { MdArrowDropDown } from "react-icons/md";
 import logo from "../assets/logoo.jpeg";
 import styles from "../css/Navigation.module.css";
 import { GlobalContext } from "../constant/GlobalContext";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [showRegisterDropdown, setShowRegisterDropdown] = useState(false);
-  const dropdownRef = useRef(null);
-
   const { isAuthenticated } = useContext(GlobalContext);
-
-  const navigate = useNavigate();
-
-  const handleNavToRegister = () => {
-    navigate("/register");
-  };
-
-  const handleNavToCompany = () => {
-    navigate("/company");
-  };
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
 
-  const closeAll = () => {
+  const closeMenu = () => {
     setIsOpen(false);
-    setShowRegisterDropdown(false);
   };
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setShowRegisterDropdown(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   return (
     <nav className={styles.nav}>
@@ -58,7 +32,7 @@ const Navigation = () => {
               className={({ isActive }) =>
                 isActive ? styles.activeLink : styles.link
               }
-              onClick={closeAll}
+              onClick={closeMenu}
             >
               Home
             </NavLink>
@@ -69,7 +43,7 @@ const Navigation = () => {
               className={({ isActive }) =>
                 isActive ? styles.activeLink : styles.link
               }
-              onClick={closeAll}
+              onClick={closeMenu}
             >
               About
             </NavLink>
@@ -80,7 +54,7 @@ const Navigation = () => {
               className={({ isActive }) =>
                 isActive ? styles.activeLink : styles.link
               }
-              onClick={closeAll}
+              onClick={closeMenu}
             >
               Become a courier
             </NavLink>
@@ -91,7 +65,7 @@ const Navigation = () => {
               className={({ isActive }) =>
                 isActive ? styles.activeLink : styles.link
               }
-              onClick={closeAll}
+              onClick={closeMenu}
             >
               Contact us
             </NavLink>
@@ -102,7 +76,7 @@ const Navigation = () => {
               className={({ isActive }) =>
                 isActive ? styles.activeLink : styles.link
               }
-              onClick={closeAll}
+              onClick={closeMenu}
             >
               Items
             </NavLink>
@@ -113,7 +87,7 @@ const Navigation = () => {
               className={({ isActive }) =>
                 isActive ? styles.activeLink : styles.link
               }
-              onClick={closeAll}
+              onClick={closeMenu}
             >
               Dashboard
             </NavLink>
@@ -127,7 +101,7 @@ const Navigation = () => {
                 className={({ isActive }) =>
                   isActive ? styles.activeLink : styles.link
                 }
-                onClick={closeAll}
+                onClick={closeMenu}
               >
                 Logout
               </NavLink>
@@ -140,7 +114,7 @@ const Navigation = () => {
                   className={({ isActive }) =>
                     isActive ? styles.activeLink : styles.link
                   }
-                  onClick={closeAll}
+                  onClick={closeMenu}
                 >
                   Login
                 </NavLink>
@@ -151,20 +125,9 @@ const Navigation = () => {
                   className={({ isActive }) =>
                     isActive ? styles.activeLink : styles.link
                   }
-                  onClick={closeAll}
+                  onClick={closeMenu}
                 >
-                  Individual Registration
-                </NavLink>
-              </li>
-              <li className={styles.authLinks}>
-                <NavLink
-                  to="company"
-                  className={({ isActive }) =>
-                    isActive ? styles.activeLink : styles.link
-                  }
-                  onClick={closeAll}
-                >
-                  Company Registration
+                  Register
                 </NavLink>
               </li>
             </>
@@ -173,38 +136,21 @@ const Navigation = () => {
       </div>
 
       {/* Desktop auth buttons */}
-      <div className={styles.auth} ref={dropdownRef}>
-        <Link to="login">
-          <button className={styles.login}>Login</button>
-        </Link>
-        <div
-          className={styles.registerDropdown}
-          onMouseEnter={() => setShowRegisterDropdown(true)}
-          onMouseLeave={() => setShowRegisterDropdown(false)}
-        >
-          <button className={styles.signup}>
-            Register
-            <MdArrowDropDown className={styles.dropdownIcon} />
-          </button>
-          {showRegisterDropdown && (
-            <div className={styles.dropdown}>
-              <Link
-                to="/register"
-                className={styles.dropdownLink}
-                onClick={closeAll}
-              >
-                Individual Registration
-              </Link>
-              <Link
-                to="/company"
-                className={styles.dropdownLink}
-                onClick={closeAll}
-              >
-                Company Registration
-              </Link>
-            </div>
-          )}
-        </div>
+      <div className={styles.auth}>
+        {isAuthenticated ? (
+          <Link to="login">
+            <button className={styles.login}>Logout</button>
+          </Link>
+        ) : (
+          <>
+            <Link to="login">
+              <button className={styles.login}>Login</button>
+            </Link>
+            <Link to="register">
+              <button className={styles.signup}>Register</button>
+            </Link>
+          </>
+        )}
       </div>
 
       <div className={styles.hamburger} onClick={toggleMenu}>

@@ -1,221 +1,167 @@
 .container {
-  padding: 4rem 2rem;
-  margin-top: 8rem;
-  background-color: var(--light-bg);
-  min-height: 100vh;
-}
-
-.formContainer {
-  max-width: 80rem;
+  max-width: 1200px;
   margin: 0 auto;
-  background-color: var(--white);
-  padding: 4rem;
-  border-radius: 2rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
 }
 
-.formContainer h1 {
+.formWrapper {
+  background: var(--light-bg);
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+}
+
+.title {
   color: var(--primary-color);
-  font-size: var(--font-h2);
-  margin-bottom: 1rem;
   text-align: center;
+  margin-bottom: 0.5rem;
+  font-size: var(--font-h3);
 }
 
-.subtitle {
+.description {
   text-align: center;
-  color: var(--secondary-color);
-  font-size: var(--font-subheading);
-  margin-bottom: 4rem;
+  color: #666;
+  margin-bottom: 2rem;
+  font-size: var(--font-body);
 }
 
 .section {
-  margin-bottom: 4rem;
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #eee;
 }
 
-.section h2 {
+.section:last-child {
+  border-bottom: none;
+}
+
+.sectionTitle {
   color: var(--primary-color);
-  font-size: var(--font-h4);
-  margin-bottom: 2rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.formGroup {
-  margin-bottom: 2rem;
+  font-size: var(--font-subheading);
+  margin-bottom: 1.5rem;
 }
 
 .formRow {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2rem;
+  gap: 1rem;
 }
 
-.formGroup label {
+.formGroup {
+  margin-bottom: 1rem;
+}
+
+.label {
   display: block;
-  color: var(--primary-color);
+  margin-bottom: 0.5rem;
+  color: #333;
+  font-weight: 500;
   font-size: var(--font-body);
-  margin-bottom: 0.8rem;
-  font-weight: var(--font-medium);
 }
 
-.formGroup input,
-.formGroup select {
+.input {
   width: 100%;
-  padding: 1.2rem;
-  border: 1px solid var(--border-color);
-  border-radius: 0.8rem;
+  padding-left: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
   font-size: var(--font-body);
-  transition: border-color 0.3s ease;
+  height: 4rem;
 }
 
-.formGroup input:focus,
-.formGroup select:focus {
+.input:focus {
   outline: none;
-  border-color: var(--accent-yellow);
+  border-color: var(--primary-color);
 }
 
 .errorInput {
-  border-color: var(--error-color) !important;
+  border-color: #dc3545;
 }
 
-.errorMessage {
-  color: var(--error-color);
-  font-size: var(--font-small);
-  margin-top: 0.5rem;
-  display: block;
-}
-
-.uploadInfo {
-  color: var(--secondary-color);
-  margin-bottom: 2rem;
-  font-size: var(--font-small);
+.error {
+  color: #dc3545;
+  font-size: var(--font-body);
+  margin-top: 0.25rem;
 }
 
 .documentGrid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.documentUpload {
+  margin-bottom: 1rem;
+}
+
+.documentLabel {
+  cursor: pointer;
+  font-size: 1.6rem;
+}
+
+.fileInput {
+  display: none;
 }
 
 .uploadBox {
-  margin-bottom: 2rem;
-}
-
-.uploadArea {
-  border: 2px dashed var(--border-color);
-  border-radius: 0.8rem;
+  border: 2px dashed #ddd;
+  border-radius: 4px;
   padding: 2rem;
   text-align: center;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
-.uploadArea:hover {
-  border-color: var(--accent-yellow);
+.uploadBox:hover {
+  border-color: var(--primary-color);
 }
 
-.uploadPrompt {
-  position: relative;
-  color: var(--secondary-color);
+.fileName {
+  display: block;
+  margin-bottom: 0.5rem;
+  word-break: break-all;
+  font-size: var(--font-body);
 }
 
-.uploadPrompt svg {
-  font-size: 2.4rem;
-  margin-bottom: 1rem;
-}
-
-.uploadPrompt input {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  cursor: pointer;
-}
-
-.uploadedFile {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem;
-  background-color: var(--light-bg);
-  border-radius: 0.8rem;
-}
-
-.removeButton {
+.removeFile {
   background: none;
   border: none;
-  color: var(--error-color);
+  color: #dc3545;
   cursor: pointer;
-  padding: 0.5rem;
+  padding: 0.25rem;
 }
 
-.removeButton:hover {
-  color: var(--primary-color);
-}
-
-.submitButton {
-  width: 100%;
-  padding: 1.5rem;
-  background-color: var(--primary-color);
-  color: var(--white);
-  border: none;
-  border-radius: 0.8rem;
-  font-size: var(--font-body);
-  font-weight: var(--font-medium);
-  cursor: pointer;
-  transition: all 0.3s ease;
+.submitSection {
+  text-align: center;
   margin-top: 2rem;
 }
 
-.submitButton:hover {
-  background-color: var(--accent-yellow);
-  color: var(--primary-color);
-}
-
-.formGroup select {
-  width: 100%;
-  padding: 1.2rem;
-  border: 1px solid var(--border-color);
-  border-radius: 0.8rem;
-  font-size: var(--font-body);
-  background-color: var(--white);
+.submitButton {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  /* padding: 1rem 2rem; */
+  border-radius: 4px;
+  font-size: 1.6rem;
   cursor: pointer;
-  appearance: none;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-  background-repeat: no-repeat;
-  background-position: right 1rem center;
-  background-size: 1em;
+  transition: background-color 0.3s ease;
+  height: 4rem;
+  width: 30rem;
 }
 
-.documentGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 2rem;
+.submitButton:hover {
+  background-color: var(--primary-dark);
 }
 
-
-@media screen and (max-width: 768px) {
+@media (max-width: 768px) {
   .container {
-    padding: 2rem 1rem;
+    padding: 1rem;
+  }
+
+  .formRow {
+    grid-template-columns: 1fr;
   }
 
   .documentGrid {
     grid-template-columns: 1fr;
-  }
-
-  .formContainer {
-    padding: 2rem;
-  }
-
-  .formRow,
-  .documentGrid {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-
-  .section {
-    margin-bottom: 3rem;
   }
 }
