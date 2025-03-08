@@ -1,11 +1,11 @@
-import React, {useEffect} from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FaShieldAlt, FaClock, FaTruck } from "react-icons/fa";
 import { MdLocationOn } from "react-icons/md";
 import styles from "../css/Landing.module.css";
 import truck from "../assets/courier.png";
 import HowItWorks from "../components/HomeComponents/HowItWorks";
-import AOS from 'aos'
+import AOS from "aos";
 import "aos/dist/aos.css";
 
 const Landing = () => {
@@ -23,15 +23,13 @@ const Landing = () => {
           <h1>Fast & Reliable Courier Services</h1>
           <p>
             Door-to-door delivery solutions that you can trust. Quick, secure,
-            and professional service.
+            and professional service. The service provides you with individual
+            in your neighborhood that are ready to deliver your items within few
+            kilometers and also trusted courier service within your country
           </p>
-          <p>Get Started Below</p>
           <div className={styles.heroCTA}>
             <Link to="/register" className={styles.primaryButton}>
-              Individual 
-            </Link>
-            <Link to="/company" className={styles.secondaryButton}>
-              Comapany
+              Get Started
             </Link>
           </div>
         </div>
@@ -71,22 +69,22 @@ const Landing = () => {
       <section className={styles.howItWorks}>
         <h2>How It Works</h2>
         <div className={styles.steps}>
-          <div className={styles.step}>
+          <div className={styles.step} data-aos="fade-up">
             <div className={styles.stepNumber}>1</div>
             <h3>Register</h3>
             <p>Create your account in minutes</p>
           </div>
-          <div className={styles.step}>
+          <div className={styles.step} data-aos="fade-down">
             <div className={styles.stepNumber}>2</div>
             <h3>Book</h3>
             <p>Schedule your pickup</p>
           </div>
-          <div className={styles.step}>
+          <div className={styles.step} data-aos="fade-up">
             <div className={styles.stepNumber}>3</div>
             <h3>Track</h3>
             <p>Monitor delivery progress</p>
           </div>
-          <div className={styles.step}>
+          <div className={styles.step} data-aos="fade-down">
             <div className={styles.stepNumber}>4</div>
             <h3>Receive</h3>
             <p>Get your package delivered</p>
