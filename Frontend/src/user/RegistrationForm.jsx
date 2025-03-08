@@ -113,7 +113,7 @@ const RegistrationForm = () => {
           setIsRequestingLocation(false);
           Swal.fire({
             title: "Location Error",
-            text: "Unable to get your location. Please try again.",
+            text: "Unable to get your location. Please turn on your device location.",
             icon: "error",
             confirmButtonText: "OK",
           });
