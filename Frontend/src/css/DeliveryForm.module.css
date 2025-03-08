@@ -1,0 +1,149 @@
+.formOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.formContainer {
+  background: var(--white);
+  border-radius: var(--border-radius);
+  padding: 3rem;
+  width: 90%;
+  max-width: 80rem;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.formTitle {
+  font-size: var(--font-h3);
+  color: var(--primary-black);
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.section {
+  margin-bottom: 3rem;
+  padding-bottom: 2rem;
+  border-bottom: 0.1rem solid var(--border-color);
+}
+
+.section h3 {
+  font-size: var(--font-h5);
+  color: var(--primary-black);
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.formGroup {
+  margin-bottom: 1.6rem;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.formGroup label {
+  display: block;
+  font-size: var(--font-body);
+  color: var(--dark-grey);
+  margin-bottom: 0.8rem;
+}
+
+.formGroup input,
+.formGroup select,
+.formGroup textarea {
+  width: 100%;
+  padding: 1.2rem;
+  border: 0.1rem solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-size: var(--font-body);
+  color: var(--primary-black);
+  background: var(--white);
+}
+
+.formGroup textarea {
+  min-height: 10rem;
+  resize: vertical;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
+}
+
+.checkboxLabel input[type="checkbox"] {
+  width: 1.8rem;
+  height: 1.8rem;
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1.6rem;
+  margin-top: 3rem;
+}
+
+.submitBtn,
+.cancelBtn {
+  padding: 1.2rem 2.4rem;
+  border-radius: var(--border-radius);
+  font-size: var(--font-body);
+  font-weight: var(--font-medium);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.submitBtn {
+  background: var(--accent-blue);
+  color: var(--white);
+  border: none;
+}
+
+.submitBtn:hover {
+  background: #0056b3;
+  transform: translateY(-2px);
+}
+
+.cancelBtn {
+  background: var(--white);
+  color: var(--dark-grey);
+  border: 0.1rem solid var(--border-color);
+}
+
+.cancelBtn:hover {
+  background: var(--background-color);
+}
+
+@media (max-width: 768px) {
+  .formContainer {
+    padding: 2rem;
+    width: 95%;
+  }
+
+  .formRow {
+    grid-template-columns: 1fr;
+    gap: 1.6rem;
+  }
+
+  .formActions {
+    flex-direction: column-reverse;
+  }
+
+  .submitBtn,
+  .cancelBtn {
+    width: 100%;
+  }
+}

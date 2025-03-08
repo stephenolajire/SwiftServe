@@ -1,0 +1,152 @@
+.dashboard {
+  padding: 2.4rem;
+  background: var(--background-color);
+  min-height: 100vh;
+  margin-top: 12rem;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(25rem, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.statCard {
+  background: var(--white);
+  border-radius: var(--border-radius);
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.statCard:hover {
+  transform: translateY(-0.5rem);
+}
+
+.statIcon {
+  font-size: 3rem;
+  color: var(--accent-blue);
+  margin-right: 2rem;
+  padding: 1.5rem;
+  background: rgba(0, 123, 255, 0.1);
+  border-radius: 50%;
+}
+
+.statInfo h3 {
+  font-size: var(--font-h6);
+  color: var(--light-grey);
+  margin-bottom: 0.5rem;
+}
+
+.statInfo p {
+  font-size: var(--font-h4);
+  color: var(--primary-black);
+  font-weight: var(--font-bold);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 3rem;
+}
+
+.header h1 {
+  font-size: var(--font-h2);
+  color: var(--primary-black);
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: var(--font-body);
+  color: var(--dark-grey);
+}
+
+.statusIndicator {
+  width: 1.2rem;
+  height: 1.2rem;
+  background: #4CAF50;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.contentGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.deliveriesSection,
+.routeSection {
+  background: var(--white);
+  border-radius: var(--border-radius);
+  padding: 2rem;
+  box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.1);
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.deliveryTabs {
+  display: flex;
+  gap: 1rem;
+}
+
+.deliveryTabs button {
+  padding: 0.8rem 1.6rem;
+  border: none;
+  background: var(--light-bg);
+  color: var(--dark-grey);
+  border-radius: var(--border-radius);
+  font-size: var(--font-body);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.activeTab {
+  background: var(--accent-blue) !important;
+  color: var(--white) !important;
+}
+
+.map {
+  height: 40rem;
+  background: var(--light-bg);
+  border-radius: var(--border-radius);
+}
+
+@media (max-width: 768px) {
+  .dashboard {
+    padding: 1.6rem;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .contentGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .statsGrid {
+    grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+  }
+
+  .sectionHeader {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .map {
+    height: 30rem;
+  }
+}
