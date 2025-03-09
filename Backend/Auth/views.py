@@ -7,12 +7,15 @@ from .models import CustomUser
 from django.core.cache import cache
 from .utils import generate_otp, send_otp_email
 from django.utils import timezone
+from .utils import send_registration_email
 
 class CompanyRegistrationView(APIView):
     def post(self, request):
         serializer = CompanyUserSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(user_type='COMPANY')
+             # Send registration email
+            send_registration_email('COMPANY', serializer.validated_data)
             return Response({
                 'message': 'Company registered successfully'
             }, status=status.HTTP_201_CREATED)
@@ -20,10 +23,15 @@ class CompanyRegistrationView(APIView):
     
 class IndividualRegistrationView(APIView):
     def post(self, request):
+
+        data = request.data
+        print(data)
         
         serializer = IndividualSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+             # Send registration email
+            send_registration_email('INDIVIDUAL', serializer.validated_data)
             return Response({
                 'message': 'Individual registered successfully'
             }, status=status.HTTP_201_CREATED)
@@ -50,6 +58,8 @@ class WorkerRegistrationView(APIView):
         serializer = IndividualSerializer(data=worker_data)
         if serializer.is_valid():
             worker = serializer.save()
+            # Send registration email
+            send_registration_email('WORKER', serializer.validated_data)
             return Response({
                 'message': 'Worker registered successfully',
                 'worker_id': worker.id,

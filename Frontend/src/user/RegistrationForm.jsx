@@ -200,8 +200,14 @@ const RegistrationForm = () => {
   // Form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (step !== 4) return;
-
+    if (step === 4 && !profileImage) {
+      Swal.fire({
+        title: "Profile Image Required",
+        text: "Please upload a profile picture to complete registration.",
+        icon: "warning",
+      });
+      return;
+    }
     try {
       if (!location.latitude || !location.longitude) {
         Swal.fire({
@@ -270,10 +276,10 @@ const RegistrationForm = () => {
           text: "Registration completed successfully!",
           icon: "success",
         });
-        navigate("/listing");
+        navigate("/login");
       }
     } catch (error) {
-      console.error("Registration error:", error.response?.data);
+      console.error("Registration error:", error.response?.message);
       Swal.fire({
         title: "Registration Failed",
         text:

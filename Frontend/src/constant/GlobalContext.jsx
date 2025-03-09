@@ -39,7 +39,8 @@ export const GlobalProvider = ({ children }) => {
   return (
     <GlobalContext.Provider
       value={{
-       isAuthenticated
+       isAuthenticated,
+       auth
       }}
     >
       {children}

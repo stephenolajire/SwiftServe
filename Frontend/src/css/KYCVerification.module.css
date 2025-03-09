@@ -1,0 +1,111 @@
+.container {
+  padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.formWrapper {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.section {
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #eee;
+}
+
+.section h2 {
+  color: #333;
+  margin-bottom: 1.5rem;
+  font-size: var(--font-h3);
+}
+
+.formGroup {
+  margin-bottom: 1.5rem;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #555;
+  font-weight: 500;
+  font-size: var(--font-body);
+}
+
+.formGroup input,
+.formGroup select {
+  width: 100%;
+  padding-left: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: var(--font-body);
+  height: 4rem;
+}
+
+.uploadSection {
+  margin-top: 1rem;
+}
+
+.preview {
+  margin-top: 1rem;
+  position: relative;
+}
+
+.preview img {
+  max-width: 100%;
+  max-height: 300px;
+  border-radius: 4px;
+}
+
+.cameraSection {
+  position: relative;
+  margin-top: 1rem;
+}
+
+.camera {
+  width: 100%;
+  max-height: 400px;
+  border-radius: 4px;
+}
+
+.cameraButton,
+.captureButton,
+.retakeButton,
+.submitButton {
+  /* padding: 1; */
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  height: 4rem;
+  width: 100%;
+  text-align: center;
+  font-size: var(--font-body);
+}
+
+.cameraButton,
+.captureButton {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.retakeButton {
+  background-color: #ff9800;
+  color: white;
+  margin-top: 1rem;
+}
+
+.submitButton {
+  background-color: #2196F3;
+  color: white;
+  width: 100%;
+  margin-top: 2rem;
+}
+
+.submitButton:hover {
+  background-color: #1976D2;
+}

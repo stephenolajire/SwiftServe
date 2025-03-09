@@ -254,7 +254,7 @@ const WorkerRegistration = () => {
       }
 
       const response = await api.post(
-        "register/individual/",
+        "register/worker/",
         formDataToSubmit,
         {
           headers: {

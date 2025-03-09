@@ -1,34 +1,57 @@
-import React, { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
+import React, { useState, useEffect, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import styles from "../css/Login.module.css";
 import Swal from "sweetalert2";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import api from "../constant/api";
+import { GlobalContext } from "../constant/GlobalContext";
 
 const Login = () => {
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const {auth} = useContext(GlobalContext)
+  const [errors, setErrors] = useState({});
   const [location, setLocation] = useState({ latitude: null, longitude: null });
   const [isRequestingLocation, setIsRequestingLocation] = useState(false);
 
-  // Form validation schema
-  const schema = yup.object().shape({
-    email: yup
-      .string()
-      .email("Invalid email format")
-      .required("Email is required"),
-    password: yup.string().required("Password is required"),
-  });
+  const validateForm = () => {
+    const newErrors = {};
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
-    resolver: yupResolver(schema),
-  });
+    if (!formData.email) {
+      newErrors.email = "Email is required";
+    } else if (!emailRegex.test(formData.email)) {
+      newErrors.email = "Invalid email format";
+    }
 
-  // Request location
+    if (!formData.password) {
+      newErrors.password = "Password is required";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    // Clear error when user types
+    if (errors[name]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: ""
+      }));
+    }
+  };
+
   const requestLocation = () => {
     if (isRequestingLocation) return;
 
@@ -53,9 +76,9 @@ const Login = () => {
           });
         },
         {
-          enableHighAccuracy: true, // Set to false for faster response
-          timeout: 10000, // 10 seconds timeout
-          maximumAge: 0, // Accept only current positions
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0,
         }
       );
     }
@@ -65,24 +88,17 @@ const Login = () => {
     requestLocation();
   }, []);
 
-  const updateUserLocation = async (email, locationData) => {
-    try {
-      await axios.post("api/update-location", {
-        email,
-        latitude: locationData.latitude,
-        longitude: locationData.longitude,
-      });
-    } catch (error) {
-      console.error("Error updating location:", error);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
     }
-  };
 
-  const onSubmit = async (data) => {
     try {
       // Show loading state
       Swal.fire({
-        title: "Processing",
-        text: "Logging you in...",
+        title: "Logging in...",
         allowOutsideClick: false,
         didOpen: () => {
           Swal.showLoading();
@@ -90,31 +106,45 @@ const Login = () => {
       });
 
       // Login request
-      const response = await axios.post("api/token", {
-        email: data.email,
-        password: data.password,
+      const response = await api.post("token/", {
+        email: formData.email,
+        password: formData.password,
       });
 
-      // Update location if available
-      if (location.latitude && location.longitude) {
-        await updateUserLocation(data.email, location);
+      if (response.status === 200) {
+        Swal.fire({
+          title: "Logged In",
+          icon: "success",
+          text: "Successfully logged in",
+          allowOutsideClick: true, // Changed from True to true
+        });
+        localStorage.setItem("access", response.data.access);
+        localStorage.setItem("refresh", response.data.refresh);
+        navigate("/kyc");
+        auth();
       }
 
-      // Handle successful login
-      if (response.data) {
-        Swal.fire({
-          title: "Success!",
-          text: "Login successful!",
-          icon: "success",
-          timer: 1500,
-        });
-        // Add your navigation logic here
-      }
+      // Save tokens to localStorage
+
+      // Update location if available
+      // if (location.latitude && location.longitude) {
+      //   await axios.post("/api/update-location/", {
+      //     latitude: location.latitude,
+      //     longitude: location.longitude,
+      //   });
+      // }
+
+      // await Swal.fire({
+      //   title: "Success!",
+      //   text: "Login successful!",
+      //   icon: "success",
+      //   timer: 1500,
+      // });
     } catch (error) {
       console.error("Login error:", error);
       Swal.fire({
         title: "Login Failed",
-        text: error.response?.data?.message || "Invalid credentials",
+        text: error.response?.data?.detail || "Invalid credentials",
         icon: "error",
         confirmButtonText: "Try Again",
       });
@@ -125,19 +155,21 @@ const Login = () => {
     <div className={styles.container}>
       <div className={styles.formContainer}>
         <h1 className={styles.title}>Welcome Back</h1>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit}>
           <div className={styles.formGroup}>
             <label className={styles.label}>Email</label>
             <input
               type="email"
-              {...register("email")}
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
               className={`${styles.input} ${
                 errors.email ? styles.inputError : ""
               }`}
               placeholder="Enter your email"
             />
             {errors.email && (
-              <p className={styles.errorMessage}>{errors.email.message}</p>
+              <p className={styles.errorMessage}>{errors.email}</p>
             )}
           </div>
 
@@ -150,14 +182,16 @@ const Login = () => {
             </div>
             <input
               type="password"
-              {...register("password")}
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
               className={`${styles.input} ${
                 errors.password ? styles.inputError : ""
               }`}
               placeholder="Enter your password"
             />
             {errors.password && (
-              <p className={styles.errorMessage}>{errors.password.message}</p>
+              <p className={styles.errorMessage}>{errors.password}</p>
             )}
           </div>
 

@@ -81,17 +81,6 @@ const Navigation = () => {
               Items
             </NavLink>
           </li>
-          <li>
-            <NavLink
-              to="dashboard"
-              className={({ isActive }) =>
-                isActive ? styles.activeLink : styles.link
-              }
-              onClick={closeMenu}
-            >
-              Dashboard
-            </NavLink>
-          </li>
 
           {/* Mobile auth links */}
           {isAuthenticated ? (

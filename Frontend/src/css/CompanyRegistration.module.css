@@ -165,3 +165,35 @@
     grid-template-columns: 1fr;
   }
 }
+
+.passwordRequirements {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: var(--light-bg);
+  border-radius: var(--border-radius);
+}
+
+.requirementNote {
+  font-size: var(--font-small);
+  color: var(--dark-grey);
+  margin-bottom: 0.5rem;
+}
+
+.requirementsList {
+  list-style: none;
+  padding-left: 1rem;
+}
+
+.requirementsList li {
+  font-size: var(--font-small);
+  color: var(--dark-grey);
+  margin-bottom: 0.3rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.requirementsList li::before {
+  content: "•";
+  color: var(--accent-blue);
+}

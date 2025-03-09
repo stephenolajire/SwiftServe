@@ -1,25 +1,26 @@
-import {BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import React from 'react';
-import Layout from './layout/Layout';
-import Landing from './pages/Home'
-import RegistrationForm from './user/RegistrationForm';
-import Login from './user/Registration';
-import CourierListings from './pages/ListingPage';
-import Contact from './pages/ContactUs';
-import About from './pages/About';
-import BecomeCourier from './pages/BecomeCourier';
-import Dashboard from './pages/Dashboard';
-import CompanyRegistration from './user/CompanyRegistration';
-import RegistrationType from './constant/RegistrationType';
-import IndividualDashboard from './Dashboard/IndividualDashboard';
-import CompanyDashboard from './Dashboard/CompanyDashboard';
-import WorkerRegistration from './user/WorkerRegistration';
-import WorkerDashboard from './Dashboard/WorkerDashboard';
-import ClientDashboard from './Dashboard/ClientDashboard';
-import DeliveryForm from './user/DeliveryForm';
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import React from "react";
+import Layout from "./layout/Layout";
+import Landing from "./pages/Home";
+import RegistrationForm from "./user/RegistrationForm";
+import Login from "./user/Registration";
+import CourierListings from "./pages/ListingPage";
+import Contact from "./pages/ContactUs";
+import About from "./pages/About";
+import BecomeCourier from "./pages/BecomeCourier";
+import Dashboard from "./pages/Dashboard";
+import CompanyRegistration from "./user/CompanyRegistration";
+import RegistrationType from "./constant/RegistrationType";
+import IndividualDashboard from "./Dashboard/IndividualDashboard";
+import CompanyDashboard from "./Dashboard/CompanyDashboard";
+import WorkerRegistration from "./user/WorkerRegistration";
+import WorkerDashboard from "./Dashboard/WorkerDashboard";
+import ClientDashboard from "./Dashboard/ClientDashboard";
+import DeliveryForm from "./user/DeliveryForm";
+import KYCVerification from "./pages/KYCVerification";
+import ProtectedRoute from "./constant/ProtectedRoute";
 
-
-const App = () => { 
+const App = () => {
   return (
     <Router>
       <Routes>
@@ -44,9 +45,17 @@ const App = () => {
         <Route path="/register" element={<RegistrationType />} />
         <Route path="/worker" element={<WorkerRegistration />} />
         <Route path="/add-item" element={<DeliveryForm />} />
+        <Route
+          path="/kyc"
+          element={
+            <ProtectedRoute>
+              <KYCVerification />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </Router>
   );
-}
+};
 
 export default App;

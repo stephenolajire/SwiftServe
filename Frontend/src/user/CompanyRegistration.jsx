@@ -3,24 +3,29 @@ import { FaUpload, FaTrash } from "react-icons/fa";
 import styles from "../css/CompanyRegistration.module.css";
 import Swal from "sweetalert2";
 import api from "../constant/api";
+import {useNavigate} from 'react-router-dom'
 
 const CompanyRegistration = () => {
+
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
     companyName: "",
     registrationNumber: "",
     taxId: "",
     website: "",
-    countryOfOperation: "",
+    country: "",
     cacNumber: "",
     contactName: "",
-    contactEmail: "",
-    contactPhone: "",
+    email: "",
+    phoneNumber: "",
     address: "",
     city: "",
     state: "",
     postalCode: "",
     fleetSize: "",
     fleetType: "",
+    password: "",
+    confirm_password: "",
   });
 
   const [errors, setErrors] = useState({});
@@ -45,21 +50,21 @@ const CompanyRegistration = () => {
           return "Must be a valid URL";
         }
         return "";
-      case "countryOfOperation":
+      case "country":
         return !value ? "Country of operation is required" : "";
       case "cacNumber":
-        return formData.countryOfOperation === "Nigeria" && !value
+        return formData.country === "Nigeria" && !value
           ? "CAC number is required for Nigerian companies"
           : "";
       case "contactName":
         return !value ? "Contact person name is required" : "";
-      case "contactEmail":
+      case "email":
         return !value
           ? "Email is required"
           : !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
           ? "Invalid email format"
           : "";
-      case "contactPhone":
+      case "phoneNumber":
         return !value
           ? "Phone number is required"
           : !/^\+?[0-9]{8,15}$/.test(value)
@@ -67,6 +72,19 @@ const CompanyRegistration = () => {
           : "";
       case "address":
         return !value ? "Address is required" : "";
+      case "password":
+        if (!value) return "Password is required";
+        if (value.length < 8) return "Password must be at least 8 characters";
+        if (!/[A-Z]/.test(value)) return "Must contain an uppercase letter";
+        if (!/[a-z]/.test(value)) return "Must contain a lowercase letter";
+        if (!/[0-9]/.test(value)) return "Must contain a number";
+        if (!/[^A-Za-z0-9]/.test(value))
+          return "Must contain a special character";
+        return "";
+      case "confirm_password":
+        if (!value) return "Please confirm your password";
+        if (value !== formData.password) return "Passwords do not match";
+        return "";
       case "city":
         return !value ? "City is required" : "";
       case "state":
@@ -165,7 +183,7 @@ const CompanyRegistration = () => {
       Object.keys(formData).forEach((key) => {
         formDataToSubmit.append(key, formData[key]);
       });
-       formDataToSubmit.append("user_type", "COMPANY");
+      formDataToSubmit.append("user_type", "COMPANY");
 
       // Add documents
       Object.keys(documents).forEach((key) => {
@@ -201,17 +219,19 @@ const CompanyRegistration = () => {
           registrationNumber: "",
           taxId: "",
           website: "",
-          countryOfOperation: "",
+          country: "",
           cacNumber: "",
           contactName: "",
-          contactEmail: "",
-          contactPhone: "",
+          email: "",
+          phoneNumber: "",
           address: "",
           city: "",
           state: "",
           postalCode: "",
           fleetSize: "",
           fleetType: "",
+          password: "",
+          confirm_password: ""
         });
         setDocuments({
           businessLicense: null,
@@ -219,6 +239,7 @@ const CompanyRegistration = () => {
           taxClearance: null,
           cacCertificate: null,
         });
+        navigate('/company/dashboard')
       }
     } catch (error) {
       console.error("Registration error:", error);
@@ -320,8 +341,8 @@ const CompanyRegistration = () => {
               <div className={styles.formGroup}>
                 <label className={styles.label}>Country of Operation *</label>
                 <select
-                  name="countryOfOperation"
-                  value={formData.countryOfOperation}
+                  name="country"
+                  value={formData.country}
                   onChange={handleChange}
                   className={`${styles.input} ${
                     errors.countryOfOperation ? styles.errorInput : ""
@@ -331,7 +352,7 @@ const CompanyRegistration = () => {
                   <option value="Nigeria">Nigeria</option>
                   {/* Add more countries as needed */}
                 </select>
-                {errors.countryOfOperation && (
+                {errors.country && (
                   <span className={styles.error}>
                     {errors.countryOfOperation}
                   </span>
@@ -339,7 +360,7 @@ const CompanyRegistration = () => {
               </div>
             </div>
 
-            {formData.countryOfOperation === "Nigeria" && (
+            {formData.country === "Nigeria" && (
               <div className={styles.formGroup}>
                 <label className={styles.label}>CAC Number *</label>
                 <input
@@ -385,11 +406,11 @@ const CompanyRegistration = () => {
                 <label className={styles.label}>Contact Email *</label>
                 <input
                   type="email"
-                  name="contactEmail"
-                  value={formData.contactEmail}
+                  name="email"
+                  value={formData.email}
                   onChange={handleChange}
                   className={`${styles.input} ${
-                    errors.contactEmail ? styles.errorInput : ""
+                    errors.email ? styles.errorInput : ""
                   }`}
                   placeholder="Enter contact email"
                 />
@@ -402,18 +423,72 @@ const CompanyRegistration = () => {
                 <label className={styles.label}>Contact Phone *</label>
                 <input
                   type="tel"
-                  name="contactPhone"
-                  value={formData.contactPhone}
+                  name="phoneNumber"
+                  value={formData.phoneNumber}
                   onChange={handleChange}
                   className={`${styles.input} ${
-                    errors.contactPhone ? styles.errorInput : ""
+                    errors.phoneNumber ? styles.errorInput : ""
                   }`}
                   placeholder="Enter contact phone"
                 />
-                {errors.contactPhone && (
+                {errors.phoneNumber && (
                   <span className={styles.error}>{errors.contactPhone}</span>
                 )}
               </div>
+            </div>
+          </div>
+
+          {/* Security Information Section */}
+          <div className={styles.section}>
+            <h2 className={styles.sectionTitle}>Security Information</h2>
+
+            <div className={styles.formRow}>
+              <div className={styles.formGroup}>
+                <label className={styles.label}>Password *</label>
+                <input
+                  type="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className={`${styles.input} ${
+                    errors.password ? styles.errorInput : ""
+                  }`}
+                  placeholder="Enter password"
+                />
+                {errors.password && (
+                  <span className={styles.error}>{errors.password}</span>
+                )}
+              </div>
+
+              <div className={styles.formGroup}>
+                <label className={styles.label}>Confirm Password *</label>
+                <input
+                  type="password"
+                  name="confirm_password"
+                  value={formData.confirm_password}
+                  onChange={handleChange}
+                  className={`${styles.input} ${
+                    errors.confirm_password ? styles.errorInput : ""
+                  }`}
+                  placeholder="Confirm password"
+                />
+                {errors.confirm_password && (
+                  <span className={styles.error}>
+                    {errors.confirm_password}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <div className={styles.passwordRequirements}>
+              <p className={styles.requirementNote}>Password must:</p>
+              <ul className={styles.requirementsList}>
+                <li>Be at least 8 characters long</li>
+                <li>Include at least one uppercase letter</li>
+                <li>Include at least one lowercase letter</li>
+                <li>Include at least one number</li>
+                <li>Include at least one special character</li>
+              </ul>
             </div>
           </div>
 
@@ -614,7 +689,7 @@ const CompanyRegistration = () => {
                 </label>
               </div>
 
-              {formData.countryOfOperation === "Nigeria" && (
+              {formData.country === "Nigeria" && (
                 <div className={styles.documentUpload}>
                   <label className={styles.documentLabel}>
                     CAC Certificate *
