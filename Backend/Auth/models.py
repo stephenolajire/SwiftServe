@@ -37,6 +37,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     lastName = models.CharField(max_length=200)
     dob = models.DateField(null=True, blank=True)
     profileImage = models.ImageField(upload_to='profile_images/', null=True, blank=True)
+    localGovernment = models.CharField(max_length=200, default="")
 
     # Company Information Fields
     companyName = models.CharField(max_length=200, null=True, blank=True)

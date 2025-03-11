@@ -29,6 +29,7 @@ const RegistrationForm = () => {
     state: "",
     postalCode: "",
     country: "",
+    localGovernment:"",
   });
 
   // Validation functions
@@ -169,6 +170,7 @@ const RegistrationForm = () => {
           "state",
           "postalCode",
           "country",
+          "localGovernment"
         ];
         break;
       default:
@@ -247,7 +249,6 @@ const RegistrationForm = () => {
       formDataToSubmit.append("latitude", location.latitude.toString());
       formDataToSubmit.append("longitude", location.longitude.toString());
       formDataToSubmit.append("user_type", "INDIVIDUAL");
-    
 
       // Add profile image if exists
       if (profileImage) {
@@ -345,7 +346,7 @@ const RegistrationForm = () => {
                   <p className={styles.errorMessage}>{errors.username}</p>
                 )}
               </div>
-              
+
               <div className={styles.formGroup}>
                 <label className={styles.label}>Password *</label>
                 <input
@@ -462,21 +463,39 @@ const RegistrationForm = () => {
           {step === 3 && (
             <div>
               <h2 className={styles.sectionTitle}>Address Information</h2>
-              <div className={styles.formGroup}>
-                <label className={styles.label}>Address *</label>
-                <input
-                  type="text"
-                  name="address"
-                  value={formData.address}
-                  onChange={handleChange}
-                  className={`${styles.input} ${
-                    errors.address ? styles.inputError : ""
-                  }`}
-                  placeholder="Enter your street address"
-                />
-                {errors.address && (
-                  <p className={styles.errorMessage}>{errors.address}</p>
-                )}
+              <div className={styles.formRow}>
+                <div className={styles.formColumn}>
+                  <label className={styles.label}>Address *</label>
+                  <input
+                    type="text"
+                    name="address"
+                    value={formData.address}
+                    onChange={handleChange}
+                    className={`${styles.input} ${
+                      errors.address ? styles.inputError : ""
+                    }`}
+                    placeholder="Enter your street address"
+                  />
+                  {errors.address && (
+                    <p className={styles.errorMessage}>{errors.address}</p>
+                  )}
+                </div>
+                <div className={styles.formColumn}>
+                  <label className={styles.label}>State/Province *</label>
+                  <input
+                    type="text"
+                    name="state"
+                    value={formData.state}
+                    onChange={handleChange}
+                    className={`${styles.input} ${
+                      errors.state ? styles.inputError : ""
+                    }`}
+                    placeholder="State/Province"
+                  />
+                  {errors.state && (
+                    <p className={styles.errorMessage}>{errors.state}</p>
+                  )}
+                </div>
               </div>
 
               <div className={styles.formRow}>
@@ -498,19 +517,19 @@ const RegistrationForm = () => {
                 </div>
 
                 <div className={styles.formColumn}>
-                  <label className={styles.label}>State/Province *</label>
+                  <label className={styles.label}>Local Government *</label>
                   <input
                     type="text"
-                    name="state"
-                    value={formData.state}
+                    name="localGovernment"
+                    value={formData.localGovernment}
                     onChange={handleChange}
                     className={`${styles.input} ${
                       errors.state ? styles.inputError : ""
                     }`}
-                    placeholder="State/Province"
+                    placeholder="Local Government"
                   />
                   {errors.state && (
-                    <p className={styles.errorMessage}>{errors.state}</p>
+                    <p className={styles.errorMessage}>{errors.localGovernment}</p>
                   )}
                 </div>
               </div>
@@ -647,7 +666,7 @@ const RegistrationForm = () => {
                 </p>
                 <p className={styles.reviewItem}>
                   <strong>Address:</strong> {formData.address}, {formData.city},{" "}
-                  {formData.state} {formData.postalCode}, {formData.country}
+                  {formData.state} {formData.postalCode}, {formData.country}, {formData.localGovernment}
                 </p>
                 <p className={styles.reviewItem}>
                   <strong>Location:</strong>{" "}

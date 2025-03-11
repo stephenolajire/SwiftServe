@@ -107,7 +107,7 @@
 }
 
 .submitBtn {
-  background: var(--accent-blue);
+  background: var(--primary-black);
   color: var(--white);
   border: none;
 }

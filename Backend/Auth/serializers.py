@@ -162,7 +162,8 @@ class IndividualSerializer(serializers.ModelSerializer):
             'profileImage',
             'user_type',
             'latitude',
-            'longitude'
+            'longitude',
+            'localGovernment'
         ]
     
     def validate_email(self, value):
@@ -199,7 +200,7 @@ class IndividualSerializer(serializers.ModelSerializer):
             'email', 'username', 'password', 'firstName', 
             'lastName', 'phoneNumber', 'dob', 'address',
             'city', 'state', 'country', 'postalCode',
-            'latitude', 'longitude', 'user_type'
+            'latitude', 'longitude', 'user_type', 'localGovernment'
         ]
         
         for field in required_fields:
@@ -247,12 +248,27 @@ class WorkersSerializer(serializers.ModelSerializer):
             'postalCode',
             'profileImage',
             'user_type',
+            'localGovernment',
         ]
 
     def validate(self, data):
 
         # Validate required personal information
-        required_fields = ['firstname', 'last_name', 'phonenumber', 'address']
+        required_fields = [ 'email',
+            'username',
+            'password',
+            'firstName',
+            'lastName',
+            'phoneNumber',
+            'dob',
+            'address',
+            'city',
+            'state',
+            'country',
+            'postalCode',
+            'profileImage',
+            'user_type',
+            'localGovernment',]
         for field in required_fields:
             if not data.get(field):
                 raise serializers.ValidationError({
