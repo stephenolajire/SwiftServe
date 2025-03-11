@@ -249,6 +249,10 @@ class WorkersSerializer(serializers.ModelSerializer):
             'profileImage',
             'user_type',
             'localGovernment',
+            'vehicleType',
+            'vehiclePlateNumber',
+            'vehicleRegistration',
+            'driversLicense',
         ]
 
     def validate(self, data):
@@ -268,7 +272,11 @@ class WorkersSerializer(serializers.ModelSerializer):
             'postalCode',
             'profileImage',
             'user_type',
-            'localGovernment',]
+            'localGovernment',
+            'vehicleType',
+            'vehiclePlateNumber',
+            'vehicleRegistration',
+            'driversLicense',]
         for field in required_fields:
             if not data.get(field):
                 raise serializers.ValidationError({

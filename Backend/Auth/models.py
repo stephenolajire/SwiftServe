@@ -24,6 +24,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         ('INDIVIDUAL', 'Individual'),
         ('COMPANY', 'Company'),
         ('WORKER', 'Worker'),
+        ('CLIENT', 'Client'),
     ]
 
     # Base Authentication Fields
@@ -38,6 +39,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     dob = models.DateField(null=True, blank=True)
     profileImage = models.ImageField(upload_to='profile_images/', null=True, blank=True)
     localGovernment = models.CharField(max_length=200, default="")
+    vehicleType = models.CharField(max_length=200, default="")
+    vehiclePlateNumber = models.CharField(max_length=200, default="")
 
     # Company Information Fields
     companyName = models.CharField(max_length=200, null=True, blank=True)
@@ -66,6 +69,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     insuranceCert = models.ImageField(upload_to='insurance_certificates/', null=True, blank=True)
     cacCertificate = models.ImageField(upload_to='cac_certificates/', null=True, blank=True)
     taxClearance = models.ImageField(upload_to='tax_clearance/', null=True, blank=True)
+    vehicleRegistration = models.ImageField(upload_to="vehicleReg", default="")
+    driversLicense = models.ImageField(upload_to="License", default="")
 
     # Verification Fields
     kyc_status = models.BooleanField(default=False)

@@ -19,6 +19,7 @@ import ClientDashboard from "./Dashboard/ClientDashboard";
 import DeliveryForm from "./user/DeliveryForm";
 import KYCVerification from "./pages/KYCVerification";
 import ProtectedRoute from "./constant/ProtectedRoute";
+import ClientRegistration from "./user/ClientRegistration";
 
 const App = () => {
   return (
@@ -43,6 +44,7 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/company" element={<CompanyRegistration />} />
         <Route path="/register" element={<RegistrationType />} />
+        <Route path="/client" element={<ClientRegistration />} />
         <Route path="/worker" element={<WorkerRegistration />} />
         <Route path="/add-item" element={<DeliveryForm />} />
         <Route

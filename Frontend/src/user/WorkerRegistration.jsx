@@ -37,6 +37,11 @@ const WorkerRegistration = () => {
     postalCode: "",
     country: "",
     localGovernment: "",
+    vehiclePlateNumber: "",
+    vehicleType: "",
+    emergencyContact: "",
+    vehicleRegistration: null,
+    driversLicense: null,
   });
 
   const tabs = [
@@ -138,6 +143,22 @@ const WorkerRegistration = () => {
     setErrors((prev) => ({ ...prev, [name]: error }));
   };
 
+  // Handle document uploads
+  const handleDocumentUpload = (docType, e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        Swal.fire({
+          title: "File Too Large",
+          text: "Please select a file under 5MB",
+          icon: "error",
+        });
+        return;
+      }
+      setFormData((prev) => ({ ...prev, [docType]: file }));
+    }
+  };
+
   // Location handling
   const requestLocation = () => {
     if (isRequestingLocation) return;
@@ -213,7 +234,7 @@ const WorkerRegistration = () => {
           "state",
           "postalCode",
           "country",
-          "localgovernment",
+          "localGovernment",
         ];
         break;
       default:
@@ -245,7 +266,6 @@ const WorkerRegistration = () => {
   // Form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (step !== 4) return;
 
     try {
       if (!location.latitude || !location.longitude) {
@@ -269,7 +289,11 @@ const WorkerRegistration = () => {
 
       // Add form fields except confirmPassword
       Object.keys(formData).forEach((key) => {
-        if (key !== "confirmPassword") {
+        if (
+          key !== "confirmPassword" &&
+          key !== "vehicleRegistration" &&
+          key !== "driversLicense"
+        ) {
           // Convert date format for DOB
           if (key === "dob") {
             formDataToSubmit.append(
@@ -292,17 +316,31 @@ const WorkerRegistration = () => {
         formDataToSubmit.append("profileImage", profileImage);
       }
 
+      // Add vehicle documents if they exist
+      if (formData.vehicleRegistration) {
+        formDataToSubmit.append(
+          "vehicleRegistration",
+          formData.vehicleRegistration
+        );
+      }
+
+      if (formData.driversLicense) {
+        formDataToSubmit.append("driversLicense", formData.driversLicense);
+      }
+
       // Debug: Log form data
       console.log("Form Data being sent:");
       for (let pair of formDataToSubmit.entries()) {
         console.log(pair[0], pair[1]);
       }
 
+      console.log("Submitting form data...");
       const response = await api.post("register/worker/", formDataToSubmit, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
+      console.log("Response received:", response);
 
       if (response.status === 201 || response.status === 200) {
         await Swal.fire({
@@ -313,7 +351,10 @@ const WorkerRegistration = () => {
         navigate("/company/dashboard");
       }
     } catch (error) {
-      console.error("Registration error:", error.response?.data);
+      console.error("Registration error:", error);
+      console.error("Response data:", error.response?.data);
+      console.error("Response status:", error.response?.status);
+
       Swal.fire({
         title: "Registration Failed",
         text:
@@ -321,7 +362,7 @@ const WorkerRegistration = () => {
           Object.values(error.response?.data || {})
             .flat()
             .join("\n") ||
-          "Something went wrong",
+          "Something went wrong. See console for details.",
         icon: "error",
       });
     }
@@ -645,14 +686,14 @@ const WorkerRegistration = () => {
             <div className={styles.formGrid}>
               <div className={styles.inputGroup}>
                 <div className={styles.imageUpload}>
-                  {/* <label>Profile Image</label>
+                  <label>Profile Image</label>
                   {imagePreview && (
                     <img
                       src={imagePreview}
                       alt="Preview"
                       className={styles.imagePreview}
                     />
-                  )} */}
+                  )}
                   <input
                     type="file"
                     accept="image/*"
@@ -727,6 +768,7 @@ const WorkerRegistration = () => {
               </div>
 
               <div className={styles.inputGroup}>
+                <label>Vehicle Registration Document</label>
                 <input
                   type="file"
                   accept=".pdf,.jpg,.jpeg,.png"
@@ -735,17 +777,16 @@ const WorkerRegistration = () => {
                   }
                   className={styles.fileInput}
                 />
-                <label>Vehicle Registration Document</label>
               </div>
 
               <div className={styles.inputGroup}>
+                <label>Driver's License</label>
                 <input
                   type="file"
                   accept=".pdf,.jpg,.jpeg,.png"
                   onChange={(e) => handleDocumentUpload("driversLicense", e)}
                   className={styles.fileInput}
                 />
-                <label>Driver's License</label>
               </div>
             </div>
           </div>

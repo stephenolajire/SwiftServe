@@ -64,7 +64,7 @@
   align-items: center;
   gap: 1rem;
   padding: 1.2rem 2.4rem;
-  background: var(--accent-blue);
+  background: var(--primary-color);
   color: var(--white);
   border: none;
   border-radius: var(--border-radius);
@@ -75,7 +75,7 @@
 }
 
 .addWorkerBtn:hover {
-  background: #0056b3;
+  background: var(--accent-yellow);
   transform: translateY(-2px);
 }
 
