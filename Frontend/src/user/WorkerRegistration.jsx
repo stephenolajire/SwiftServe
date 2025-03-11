@@ -1,9 +1,16 @@
 import React, { useState, useEffect } from "react";
-import styles from "../css/RegistrationForm.module.css";
-import Swal from "sweetalert2";
-import axios from "axios";
-import api from "../constant/api";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
+import api from "../constant/api";
+import styles from "../css/WorkerRegistration.module.css";
+import {
+  FaUser,
+  FaLock,
+  FaAddressCard,
+  FaIdCard,
+  FaCar,
+  FaPhone,
+} from "react-icons/fa";
 
 const WorkerRegistration = () => {
   const navigate = useNavigate();
@@ -29,7 +36,44 @@ const WorkerRegistration = () => {
     state: "",
     postalCode: "",
     country: "",
+    localGovernment: "",
   });
+
+  const tabs = [
+    {
+      id: "personal",
+      label: "Personal Info",
+      icon: <FaUser />,
+      color: "#4CAF50",
+    },
+    {
+      id: "contact",
+      label: "Contact Details",
+      icon: <FaPhone />,
+      color: "#2196F3",
+    },
+    {
+      id: "address",
+      label: "Address",
+      icon: <FaAddressCard />,
+      color: "#9C27B0",
+    },
+    {
+      id: "documents",
+      label: "Documents",
+      icon: <FaIdCard />,
+      color: "#FF9800",
+    },
+    {
+      id: "vehicle",
+      label: "Vehicle Info",
+      icon: <FaCar />,
+      color: "#795548",
+    },
+  ];
+
+  const [activeTab, setActiveTab] = useState("personal");
+  const [completedTabs, setCompletedTabs] = useState([]);
 
   // Validation functions
   const validateEmail = (email) => {
@@ -169,6 +213,7 @@ const WorkerRegistration = () => {
           "state",
           "postalCode",
           "country",
+          "localgovernment",
         ];
         break;
       default:
@@ -253,15 +298,11 @@ const WorkerRegistration = () => {
         console.log(pair[0], pair[1]);
       }
 
-      const response = await api.post(
-        "register/worker/",
-        formDataToSubmit,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const response = await api.post("register/worker/", formDataToSubmit, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       if (response.status === 201 || response.status === 200) {
         await Swal.fire({
@@ -269,7 +310,7 @@ const WorkerRegistration = () => {
           text: "Registration completed successfully!",
           icon: "success",
         });
-        navigate("/listing");
+        navigate("/company/dashboard");
       }
     } catch (error) {
       console.error("Registration error:", error.response?.data);
@@ -285,412 +326,484 @@ const WorkerRegistration = () => {
       });
     }
   };
-  return (
-    <div className={styles.cont}>
-      <div className={styles.formContainer}>
-        <h1 className={styles.title}>Create Worker Account</h1>
 
-        {/* Progress Bar */}
-        <div className={styles.progressContainer}>
-          <div className={styles.progressBar}>
-            <div
-              className={styles.progressFill}
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-          <p className={styles.progressText}>Step {step} of 4</p>
-        </div>
+  const handleTabChange = (direction) => {
+    // Find current tab index
+    const currentIndex = tabs.findIndex((tab) => tab.id === activeTab);
 
-        <form onSubmit={handleSubmit}>
-          {/* Step 1: Account Details */}
-          {step === 1 && (
-            <div>
-              <h2 className={styles.sectionTitle}>Account Details</h2>
-              <div className={styles.formGroup}>
-                <label className={styles.label}>Email *</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className={`${styles.input} ${
-                    errors.email ? styles.inputError : ""
-                  }`}
-                  placeholder="Enter your email"
-                />
-                {errors.email && (
-                  <p className={styles.errorMessage}>{errors.email}</p>
-                )}
-              </div>
-              <div className={styles.formGroup}>
-                <label className={styles.label}>Username *</label>
+    if (direction === "next") {
+      // Validate current tab before proceeding
+      const isValid = validateCurrentTab(activeTab);
+      if (!isValid) return;
+
+      // If validation passes, move to next tab
+      if (currentIndex < tabs.length - 1) {
+        const nextTab = tabs[currentIndex + 1].id;
+        setActiveTab(nextTab);
+        // Add current tab to completed tabs if not already included
+        if (!completedTabs.includes(activeTab)) {
+          setCompletedTabs([...completedTabs, activeTab]);
+        }
+      }
+    } else if (direction === "prev") {
+      // Move to previous tab if not on first tab
+      if (currentIndex > 0) {
+        const prevTab = tabs[currentIndex - 1].id;
+        setActiveTab(prevTab);
+      }
+    }
+  };
+
+  const validateCurrentTab = (tabId) => {
+    let fieldsToValidate = [];
+
+    switch (tabId) {
+      case "personal":
+        fieldsToValidate = [
+          "firstName",
+          "lastName",
+          "dob",
+          "email",
+          "username",
+        ];
+        break;
+      case "contact":
+        fieldsToValidate = ["password", "confirmPassword", "phoneNumber"];
+        break;
+      case "address":
+        fieldsToValidate = [
+          "address",
+          "city",
+          "state",
+          "postalCode",
+          "country",
+          "localGovernment",
+        ];
+        break;
+      case "documents":
+        // Add document validation if needed
+        return true;
+      case "vehicle":
+        fieldsToValidate = ["vehicleType", "vehiclePlateNumber"];
+        break;
+      default:
+        return true;
+    }
+
+    const newErrors = {};
+    fieldsToValidate.forEach((field) => {
+      const error = validateField(field, formData[field]);
+      if (error) newErrors[field] = error;
+    });
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case "personal":
+        return (
+          <div className={styles.tabContent}>
+            <div className={styles.formGrid}>
+              <div className={styles.inputGroup}>
                 <input
                   type="text"
-                  name="username"
-                  value={formData.username}
+                  name="firstName"
+                  value={formData.firstName}
                   onChange={handleChange}
-                  className={`${styles.input} ${
-                    errors.username ? styles.inputError : ""
-                  }`}
-                  placeholder="Enter your username"
+                  placeholder="First Name"
+                  className={errors.firstName ? styles.error : ""}
                 />
-                {errors.username && (
-                  <p className={styles.errorMessage}>{errors.username}</p>
+                {errors.firstName && (
+                  <span className={styles.errorText}>{errors.firstName}</span>
                 )}
               </div>
 
-              <div className={styles.formGroup}>
-                <label className={styles.label}>Password *</label>
+              <div className={styles.inputGroup}>
                 <input
-                  type="password"
-                  name="password"
-                  value={formData.password}
+                  type="text"
+                  name="lastName"
+                  value={formData.lastName}
                   onChange={handleChange}
-                  className={`${styles.input} ${
-                    errors.password ? styles.inputError : ""
-                  }`}
-                  placeholder="Enter your password"
+                  placeholder="Last Name"
+                  className={errors.lastName ? styles.error : ""}
                 />
-                {errors.password && (
-                  <p className={styles.errorMessage}>{errors.password}</p>
+                {errors.lastName && (
+                  <span className={styles.errorText}>{errors.lastName}</span>
                 )}
               </div>
-              <div className={styles.formGroup}>
-                <label className={styles.label}>Confirm Password *</label>
-                <input
-                  type="password"
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  className={`${styles.input} ${
-                    errors.confirmPassword ? styles.inputError : "" // Changed from errors.email
-                  }`}
-                  placeholder="Enter your password again"
-                />
-                {errors.confirmPassword && ( // Changed from errors.email
-                  <p className={styles.errorMessage}>
-                    {errors.confirmPassword}
-                  </p>
-                )}
-              </div>
-            </div>
-          )}
 
-          {/* Step 2: Personal Information */}
-          {step === 2 && (
-            <div>
-              <h2 className={styles.sectionTitle}>Personal Information</h2>
-
-              <div className={styles.formRow}>
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>First Name *</label>
-                  <input
-                    type="text"
-                    name="firstName"
-                    value={formData.firstName}
-                    onChange={handleChange}
-                    className={`${styles.input} ${
-                      errors.firstName ? styles.inputError : ""
-                    }`}
-                    placeholder="Enter your first name"
-                  />
-                  {errors.firstName && (
-                    <p className={styles.errorMessage}>{errors.firstName}</p>
-                  )}
-                </div>
-
-                <div className={styles.formColumn}>
-                  <label className={styles.label}>Last Name *</label>
-                  <input
-                    type="text"
-                    name="lastName"
-                    value={formData.lastName}
-                    onChange={handleChange}
-                    className={`${styles.input} ${
-                      errors.lastName ? styles.inputError : ""
-                    }`}
-                    placeholder="Last name"
-                  />
-                  {errors.lastName && (
-                    <p className={styles.errorMessage}>{errors.lastName}</p>
-                  )}
-                </div>
-              </div>
-
-              <div className={styles.formGroup}>
-                <label className={styles.label}>Phone Number *</label>
-                <input
-                  type="tel"
-                  name="phoneNumber"
-                  value={formData.phoneNumber}
-                  onChange={handleChange}
-                  className={`${styles.input} ${
-                    errors.phoneNumber ? styles.inputError : ""
-                  }`}
-                  placeholder="Enter your phone number"
-                />
-                {errors.phoneNumber && (
-                  <p className={styles.errorMessage}>{errors.phoneNumber}</p>
-                )}
-              </div>
-              <div className={styles.formGroup}>
-                <label className={styles.label}>Date of Birth *</label>
+              <div className={styles.inputGroup}>
                 <input
                   type="date"
                   name="dob"
                   value={formData.dob}
                   onChange={handleChange}
-                  className={`${styles.input} ${
-                    errors.dob ? styles.inputError : ""
-                  }`}
+                  placeholder="Date of Birth"
+                  className={errors.dob ? styles.error : ""}
                 />
                 {errors.dob && (
-                  <p className={styles.errorMessage}>{errors.dob}</p>
+                  <span className={styles.errorText}>{errors.dob}</span>
+                )}
+              </div>
+
+              <div className={styles.inputGroup}>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="Email Address"
+                  className={errors.email ? styles.error : ""}
+                />
+                {errors.email && (
+                  <span className={styles.errorText}>{errors.email}</span>
+                )}
+              </div>
+
+              <div className={styles.inputGroup}>
+                <input
+                  type="text"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  placeholder="Username"
+                  className={errors.username ? styles.error : ""}
+                />
+                {errors.username && (
+                  <span className={styles.errorText}>{errors.username}</span>
                 )}
               </div>
             </div>
-          )}
+          </div>
+        );
 
-          {/* Step 3: Address Information */}
-          {step === 3 && (
-            <div>
-              <h2 className={styles.sectionTitle}>Address Information</h2>
-              <div className={styles.formGroup}>
-                <label className={styles.label}>Address *</label>
+      case "contact":
+        return (
+          <div className={styles.tabContent}>
+            <div className={styles.formGrid}>
+              <div className={styles.inputGroup}>
+                <input
+                  type="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="Password"
+                  className={errors.password ? styles.error : ""}
+                />
+                {errors.password && (
+                  <span className={styles.errorText}>{errors.password}</span>
+                )}
+              </div>
+
+              <div className={styles.inputGroup}>
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  placeholder="Confirm Password"
+                  className={errors.confirmPassword ? styles.error : ""}
+                />
+                {errors.confirmPassword && (
+                  <span className={styles.errorText}>
+                    {errors.confirmPassword}
+                  </span>
+                )}
+              </div>
+
+              <div className={styles.inputGroup}>
+                <input
+                  type="tel"
+                  name="phoneNumber"
+                  value={formData.phoneNumber}
+                  onChange={handleChange}
+                  placeholder="Phone Number"
+                  className={errors.phoneNumber ? styles.error : ""}
+                />
+                {errors.phoneNumber && (
+                  <span className={styles.errorText}>{errors.phoneNumber}</span>
+                )}
+              </div>
+
+              <div className={styles.inputGroup}>
+                <input
+                  type="text"
+                  name="emergencyContact"
+                  value={formData.emergencyContact}
+                  onChange={handleChange}
+                  placeholder="Emergency Contact"
+                  className={errors.emergencyContact ? styles.error : ""}
+                />
+                {errors.emergencyContact && (
+                  <span className={styles.errorText}>
+                    {errors.emergencyContact}
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+
+      case "address":
+        return (
+          <div className={styles.tabContent}>
+            <div className={styles.formGrid}>
+              <div className={styles.inputGroup}>
                 <input
                   type="text"
                   name="address"
                   value={formData.address}
                   onChange={handleChange}
-                  className={`${styles.input} ${
-                    errors.address ? styles.inputError : ""
-                  }`}
-                  placeholder="Enter your street address"
+                  placeholder="Street Address"
+                  className={errors.address ? styles.error : ""}
                 />
                 {errors.address && (
-                  <p className={styles.errorMessage}>{errors.address}</p>
+                  <span className={styles.errorText}>{errors.address}</span>
                 )}
               </div>
 
-              <div className={styles.formRow}>
-                <div className={styles.formColumn}>
-                  <label className={styles.label}>City *</label>
-                  <input
-                    type="text"
-                    name="city"
-                    value={formData.city}
-                    onChange={handleChange}
-                    className={`${styles.input} ${
-                      errors.city ? styles.inputError : ""
-                    }`}
-                    placeholder="City"
-                  />
-                  {errors.city && (
-                    <p className={styles.errorMessage}>{errors.city}</p>
-                  )}
-                </div>
-
-                <div className={styles.formColumn}>
-                  <label className={styles.label}>State/Province *</label>
-                  <input
-                    type="text"
-                    name="state"
-                    value={formData.state}
-                    onChange={handleChange}
-                    className={`${styles.input} ${
-                      errors.state ? styles.inputError : ""
-                    }`}
-                    placeholder="State/Province"
-                  />
-                  {errors.state && (
-                    <p className={styles.errorMessage}>{errors.state}</p>
-                  )}
-                </div>
-              </div>
-              <div className={styles.formRow}>
-                <div className={styles.formColumn}>
-                  <label className={styles.label}>Postal/Zip Code *</label>
-                  <input
-                    type="text"
-                    name="postalCode"
-                    value={formData.postalCode}
-                    onChange={handleChange}
-                    className={`${styles.input} ${
-                      errors.postalCode ? styles.inputError : ""
-                    }`}
-                    placeholder="Postal/Zip code"
-                  />
-                  {errors.postalCode && (
-                    <p className={styles.errorMessage}>{errors.postalCode}</p>
-                  )}
-                </div>
-
-                <div className={styles.formColumn}>
-                  <label className={styles.label}>Country *</label>
-                  <input
-                    type="text"
-                    name="country"
-                    value={formData.country}
-                    onChange={handleChange}
-                    className={`${styles.input} ${
-                      errors.country ? styles.inputError : ""
-                    }`}
-                    placeholder="Country"
-                  />
-                  {errors.country && (
-                    <p className={styles.errorMessage}>{errors.country}</p>
-                  )}
-                </div>
+              <div className={styles.inputGroup}>
+                <input
+                  type="text"
+                  name="city"
+                  value={formData.city}
+                  onChange={handleChange}
+                  placeholder="City"
+                  className={errors.city ? styles.error : ""}
+                />
+                {errors.city && (
+                  <span className={styles.errorText}>{errors.city}</span>
+                )}
               </div>
 
-              <div className={styles.formGroup}>
-                <p className={styles.locationInfo}>
-                  Your location:{" "}
-                  {location.latitude
-                    ? `${location.latitude.toFixed(
-                        6
-                      )}, ${location.longitude.toFixed(6)}`
-                    : "Waiting for location permission..."}
-                  {!location.latitude && !isRequestingLocation && (
-                    <button
-                      type="button"
-                      onClick={requestLocation}
-                      className={styles.buttonSecondary}
-                      style={{ marginLeft: "10px", padding: "2px 8px" }}
-                      disabled={isRequestingLocation}
-                    >
-                      {isRequestingLocation ? "Requesting..." : "Grant Access"}
-                    </button>
-                  )}
-                </p>
+              <div className={styles.inputGroup}>
+                <input
+                  type="text"
+                  name="state"
+                  value={formData.state}
+                  onChange={handleChange}
+                  placeholder="State"
+                  className={errors.state ? styles.error : ""}
+                />
+                {errors.state && (
+                  <span className={styles.errorText}>{errors.state}</span>
+                )}
+              </div>
+
+              <div className={styles.inputGroup}>
+                <input
+                  type="text"
+                  name="postalCode"
+                  value={formData.postalCode}
+                  onChange={handleChange}
+                  placeholder="Postal Code"
+                  className={errors.postalCode ? styles.error : ""}
+                />
+                {errors.postalCode && (
+                  <span className={styles.errorText}>{errors.postalCode}</span>
+                )}
+              </div>
+
+              <div className={styles.inputGroup}>
+                <input
+                  type="text"
+                  name="country"
+                  value={formData.country}
+                  onChange={handleChange}
+                  placeholder="Country"
+                  className={errors.country ? styles.error : ""}
+                />
+                {errors.country && (
+                  <span className={styles.errorText}>{errors.country}</span>
+                )}
+              </div>
+
+              <div className={styles.inputGroup}>
+                <input
+                  type="text"
+                  name="localGovernment"
+                  value={formData.localGovernment}
+                  onChange={handleChange}
+                  placeholder="Local Government Area"
+                  className={errors.localGovernment ? styles.error : ""}
+                />
+                {errors.localGovernment && (
+                  <span className={styles.errorText}>
+                    {errors.localGovernment}
+                  </span>
+                )}
               </div>
             </div>
-          )}
+          </div>
+        );
 
-          {/* Step 4: Profile Picture */}
-          {step === 4 && (
-            <div>
-              <h2 className={styles.sectionTitle}>Profile Picture</h2>
-
-              <div className={styles.profileUploadContainer}>
-                {imagePreview ? (
-                  <div>
+      case "documents":
+        return (
+          <div className={styles.tabContent}>
+            <div className={styles.formGrid}>
+              <div className={styles.inputGroup}>
+                <div className={styles.imageUpload}>
+                  {/* <label>Profile Image</label>
+                  {imagePreview && (
                     <img
                       src={imagePreview}
-                      alt="Profile Preview"
-                      className={styles.profilePreview}
+                      alt="Preview"
+                      className={styles.imagePreview}
                     />
-                  </div>
-                ) : (
-                  <div className={styles.profilePlaceholder}>
-                    <span>+</span>
-                  </div>
-                )}
-
-                <label className={styles.uploadButton}>
-                  Choose a Profile Picture
+                  )} */}
                   <input
                     type="file"
                     accept="image/*"
                     onChange={handleImageChange}
                     className={styles.fileInput}
                   />
-                </label>
-                <p className={styles.uploadHint}>
-                  Recommended: Square image, at least 200x200 pixels
-                </p>
+                </div>
               </div>
 
-              {/* Final location check notification */}
-              {!location.latitude && (
-                <div className={styles.locationWarning}>
+              <div className={styles.inputGroup}>
+                <div className={styles.locationStatus}>
+                  <label>Location Status</label>
                   <p>
-                    <strong>Note:</strong> Location permission is required to
-                    complete registration.
+                    {location.latitude && location.longitude
+                      ? "Location detected"
+                      : "Detecting location..."}
                   </p>
-                  <button
-                    type="button"
-                    onClick={requestLocation}
-                    className={styles.buttonSecondary}
-                    style={{ marginTop: "10px" }}
-                    disabled={isRequestingLocation}
-                  >
-                    {isRequestingLocation
-                      ? "Requesting..."
-                      : "Grant Location Permission"}
-                  </button>
+                  {(!location.latitude || !location.longitude) && (
+                    <button
+                      type="button"
+                      onClick={requestLocation}
+                      className={styles.locationButton}
+                      disabled={isRequestingLocation}
+                    >
+                      {isRequestingLocation
+                        ? "Requesting..."
+                        : "Request Location Access"}
+                    </button>
+                  )}
                 </div>
-              )}
-
-              {/* Review information summary */}
-              <div className={styles.reviewContainer}>
-                <h3 className={styles.subTitle}>Review Your Information</h3>
-                <p className={styles.reviewItem}>
-                  <strong>Name:</strong> {formData.firstName}{" "}
-                  {formData.lastName}
-                </p>
-                <p className={styles.reviewItem}>
-                  <strong>Email:</strong> {formData.email}
-                </p>
-                <p className={styles.reviewItem}>
-                  <strong>Username:</strong> {formData.username}
-                </p>
-                <p className={styles.reviewItem}>
-                  <strong>Phone:</strong> {formData.phoneNumber}
-                </p>
-                <p className={styles.reviewItem}>
-                  <strong>Address:</strong> {formData.address}, {formData.city},{" "}
-                  {formData.state} {formData.postalCode}, {formData.country}
-                </p>
-                <p className={styles.reviewItem}>
-                  <strong>Location:</strong>{" "}
-                  {location.latitude
-                    ? `${location.latitude.toFixed(
-                        6
-                      )}, ${location.longitude.toFixed(6)}`
-                    : "Not detected"}
-                </p>
               </div>
             </div>
-          )}
-
-          {/* Navigation Buttons */}
-          <div
-            className={`${styles.buttonContainer} ${
-              step === 1
-                ? styles.buttonContainerEnd
-                : styles.buttonContainerBetween
-            }`}
-          >
-            {step > 1 && (
-              <button
-                type="button"
-                onClick={prevStep}
-                className={styles.buttonSecondary}
-              >
-                Back
-              </button>
-            )}
-
-            {step < 4 ? (
-              <button
-                type="button"
-                onClick={nextStep}
-                className={styles.buttonPrimary}
-              >
-                Continue
-              </button>
-            ) : (
-              <button
-                type="submit"
-                className={styles.buttonPrimary}
-                disabled={!location.latitude && !location.longitude}
-              >
-                Complete Registration
-              </button>
-            )}
           </div>
-        </form>
+        );
+
+      case "vehicle":
+        return (
+          <div className={styles.tabContent}>
+            <div className={styles.formGrid}>
+              <div className={styles.inputGroup}>
+                <select
+                  name="vehicleType"
+                  value={formData.vehicleType}
+                  onChange={handleChange}
+                  className={errors.vehicleType ? styles.error : ""}
+                >
+                  <option value="">Select Vehicle Type</option>
+                  <option value="motorcycle">Motorcycle</option>
+                  <option value="car">Car</option>
+                  <option value="van">Van</option>
+                  <option value="truck">Truck</option>
+                </select>
+                {errors.vehicleType && (
+                  <span className={styles.errorText}>{errors.vehicleType}</span>
+                )}
+              </div>
+
+              <div className={styles.inputGroup}>
+                <input
+                  type="text"
+                  name="vehiclePlateNumber"
+                  value={formData.vehiclePlateNumber}
+                  onChange={handleChange}
+                  placeholder="Vehicle Plate Number"
+                  className={errors.vehiclePlateNumber ? styles.error : ""}
+                />
+                {errors.vehiclePlateNumber && (
+                  <span className={styles.errorText}>
+                    {errors.vehiclePlateNumber}
+                  </span>
+                )}
+              </div>
+
+              <div className={styles.inputGroup}>
+                <input
+                  type="file"
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  onChange={(e) =>
+                    handleDocumentUpload("vehicleRegistration", e)
+                  }
+                  className={styles.fileInput}
+                />
+                <label>Vehicle Registration Document</label>
+              </div>
+
+              <div className={styles.inputGroup}>
+                <input
+                  type="file"
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  onChange={(e) => handleDocumentUpload("driversLicense", e)}
+                  className={styles.fileInput}
+                />
+                <label>Driver's License</label>
+              </div>
+            </div>
+          </div>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className={styles.container}>
+      <div className={styles.card}>
+        <div className={styles.header}>
+          <h1>Worker Registration</h1>
+          <p>Join our delivery network</p>
+        </div>
+
+        <div className={styles.tabs}>
+          {tabs.map((tab) => (
+            <div
+              key={tab.id}
+              className={`${styles.tab} ${
+                activeTab === tab.id ? styles.active : ""
+              } 
+                ${completedTabs.includes(tab.id) ? styles.completed : ""}`}
+              onClick={() => setActiveTab(tab.id)}
+              style={{ "--tab-color": tab.color }}
+            >
+              <span className={styles.tabIcon}>{tab.icon}</span>
+              <span className={styles.tabLabel}>{tab.label}</span>
+            </div>
+          ))}
+        </div>
+
+        <div className={styles.content}>{renderTabContent()}</div>
+
+        <div className={styles.actions}>
+          <button
+            className={styles.secondaryButton}
+            onClick={() => handleTabChange("prev")}
+            disabled={tabs[0].id === activeTab}
+          >
+            Previous
+          </button>
+          <button
+            className={styles.primaryButton}
+            onClick={
+              activeTab === tabs[tabs.length - 1].id
+                ? handleSubmit
+                : () => handleTabChange("next")
+            }
+          >
+            {activeTab === tabs[tabs.length - 1].id
+              ? "Complete Registration"
+              : "Continue"}
+          </button>
+        </div>
       </div>
     </div>
   );
