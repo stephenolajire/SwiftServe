@@ -20,6 +20,8 @@ import DeliveryForm from "./user/DeliveryForm";
 import KYCVerification from "./pages/KYCVerification";
 import ProtectedRoute from "./constant/ProtectedRoute";
 import ClientRegistration from "./user/ClientRegistration";
+import AdminDashboard from "./Dashboard/AdminDashboard";
+import KYCPendingStatus from "./pages/KYCPendingStatus";
 
 const App = () => {
   return (
@@ -36,6 +38,7 @@ const App = () => {
             path="individual/dashboard"
             element={<IndividualDashboard />}
           />
+          <Route path="admin/dashboard" element={<AdminDashboard />} />
           <Route path="company/dashboard" element={<CompanyDashboard />} />
           <Route path="worker/dashboard" element={<WorkerDashboard />} />
           <Route path="client/dashboard" element={<ClientDashboard />} />
@@ -46,6 +49,7 @@ const App = () => {
         <Route path="/register" element={<RegistrationType />} />
         <Route path="/client" element={<ClientRegistration />} />
         <Route path="/worker" element={<WorkerRegistration />} />
+        <Route path="/kyc-status" element={<KYCPendingStatus />} />
         <Route path="/add-item" element={<DeliveryForm />} />
         <Route
           path="/kyc"

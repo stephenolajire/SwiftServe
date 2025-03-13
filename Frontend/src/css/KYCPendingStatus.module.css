@@ -1,0 +1,121 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f8f9fa;
+  padding: 2rem;
+}
+
+.statusCard {
+  background: white;
+  border-radius: 15px;
+  padding: 3rem 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 600px;
+  text-align: center;
+}
+
+.iconWrapper {
+  margin-bottom: 2rem;
+  font-size: 4rem;
+}
+
+.pendingIcon {
+  color: #f39c12;
+  animation: pulse 2s infinite;
+}
+
+.approvedIcon {
+  color: #2ecc71;
+}
+
+.rejectedIcon {
+  color: #e74c3c;
+}
+
+.statusContent h2 {
+  margin-bottom: 1rem;
+  color: #2c3e50;
+}
+
+.statusContent p {
+  color: #7f8c8d;
+  line-height: 1.6;
+  font-size: var(--font-body);
+}
+
+.timeline {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid #eee;
+  font-size: var(--font-body);
+}
+
+.timelineItem {
+  margin: 1rem 0;
+  /* font-size: var(--font-body); */
+}
+
+.timelineDate {
+  font-size: 1.3rem;
+  color: #95a5a6;
+}
+
+.rejectionReason {
+  margin: 2rem 0;
+  padding: 1rem;
+  background: #fff5f5;
+  border-radius: 8px;
+  text-align: left;
+}
+
+.rejectionReason h3 {
+  color: #e74c3c;
+  margin-bottom: 0.5rem;
+}
+
+.retryButton {
+  margin-top: 2rem;
+  padding: 0.75rem 2rem;
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.retryButton:hover {
+  background: #2980b9;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+  
+  .statusCard {
+    padding: 2rem 1rem;
+  }
+  
+  .iconWrapper {
+    font-size: 3rem;
+  }
+}

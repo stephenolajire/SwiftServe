@@ -277,7 +277,7 @@ const ClientRegistration = () => {
           text: "Registration completed successfully!",
           icon: "success",
         });
-        navigate("/login");
+        navigate("/kyc");
       }
     } catch (error) {
       console.error("Registration error:", error.response?.message);

@@ -1,0 +1,42 @@
+.statCard {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: transform 0.3s ease;
+}
+
+.statCard:hover {
+  transform: translateY(-5px);
+}
+
+.statInfo {
+  flex: 1;
+}
+
+.title {
+  color: #666;
+  font-size: var(--font-body);
+  margin: 0 0 0.5rem 0;
+}
+
+.value {
+  color: var(--stat-color);
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.iconWrapper {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--stat-color);
+  font-size: 1.5rem;
+}

@@ -1,0 +1,15 @@
+.chartWrapper {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin: 1rem 0;
+  grid-column: span 3;
+}
+
+
+@media (max-width: 768px) {
+  .chartWrapper {
+    grid-column: span 1;
+  }
+}
