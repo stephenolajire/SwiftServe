@@ -3,7 +3,7 @@ import React from "react";
 import Layout from "./layout/Layout";
 import Landing from "./pages/Home";
 import RegistrationForm from "./user/RegistrationForm";
-import Login from "./user/Registration";
+import Login from "./user/Login";
 import CourierListings from "./pages/ListingPage";
 import Contact from "./pages/ContactUs";
 import About from "./pages/About";
@@ -22,6 +22,11 @@ import ProtectedRoute from "./constant/ProtectedRoute";
 import ClientRegistration from "./user/ClientRegistration";
 import AdminDashboard from "./Dashboard/AdminDashboard";
 import KYCPendingStatus from "./pages/KYCPendingStatus";
+import NotFound from "./pages/NotFound";
+import UserDetails from "./pages/UserDetails";
+import ForgotPassword from "./user/ForgotPassword";
+import VerifyPasswordOTP from "./user/VerifyPasswordOTP";
+import ResetPassword from "./user/ResetPassword";
 
 const App = () => {
   return (
@@ -42,6 +47,7 @@ const App = () => {
           <Route path="company/dashboard" element={<CompanyDashboard />} />
           <Route path="worker/dashboard" element={<WorkerDashboard />} />
           <Route path="client/dashboard" element={<ClientDashboard />} />
+          <Route path="/admin/users/:id" element={<UserDetails />} />
         </Route>
         <Route path="/individual" element={<RegistrationForm />} />
         <Route path="/login" element={<Login />} />
@@ -51,6 +57,10 @@ const App = () => {
         <Route path="/worker" element={<WorkerRegistration />} />
         <Route path="/kyc-status" element={<KYCPendingStatus />} />
         <Route path="/add-item" element={<DeliveryForm />} />
+        <Route path="*" element={<NotFound />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/verify-reset-otp" element={<VerifyPasswordOTP />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route
           path="/kyc"
           element={

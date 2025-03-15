@@ -1,0 +1,140 @@
+.notFoundContainer {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: 2rem;
+}
+
+.content {
+  max-width: 600px;
+  text-align: center;
+  background: white;
+  padding: 3rem 2rem;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.notFoundImage {
+  width: 100%;
+  max-width: 30rem;
+  /* margin-bottom: 1rem; */
+  animation: float 8s ease-in-out infinite;
+  height: 30rem;
+}
+
+.title {
+  font-size: 2.5rem;
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.description {
+  color: var(--light-grey);
+  font-size: 1.6rem;
+  margin-bottom: 2rem;
+}
+
+.actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  /* padding: 0.75rem 1.5rem; */
+  height: 4rem;
+  width: 15rem;
+  border-radius: 8px;
+  font-size: 1.6rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  justify-content: center;
+}
+
+.primaryButton {
+  background: var(--accent-blue);
+  color: white;
+}
+
+.primaryButton:hover {
+  background: #2980b9;
+  transform: translateY(-2px);
+}
+
+.secondaryButton {
+  background: #ecf0f1;
+  color: #2c3e50;
+}
+
+.secondaryButton:hover {
+  background: #bdc3c7;
+  transform: translateY(-2px);
+}
+
+.searchSection {
+  border-top: 1px solid #eee;
+  padding-top: 2rem;
+}
+
+.searchSection p {
+  color: #7f8c8d;
+  margin-bottom: 1rem;
+}
+
+.searchLinks {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.searchLinks a {
+  color: #3498db;
+  text-decoration: none;
+  transition: color 0.3s ease;
+  font-size: 1.3rem;
+}
+
+.searchLinks a:hover {
+  color: #2980b9;
+  text-decoration: underline;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-30px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+@media (max-width: 768px) {
+  .content {
+    padding: 2rem 1rem;
+  }
+
+  .title {
+    font-size: 2rem;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .button {
+    width: 100%;
+    justify-content: center;
+  }
+}

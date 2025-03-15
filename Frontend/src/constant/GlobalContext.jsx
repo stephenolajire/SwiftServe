@@ -8,6 +8,7 @@ export const GlobalContext = createContext();
 
 export const GlobalProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const user_type = localStorage.getItem("user_type")
 
   const auth = async () => {
     const token = localStorage.getItem("access");
@@ -40,7 +41,8 @@ export const GlobalProvider = ({ children }) => {
     <GlobalContext.Provider
       value={{
        isAuthenticated,
-       auth
+       auth,
+       user_type,
       }}
     >
       {children}

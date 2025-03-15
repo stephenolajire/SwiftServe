@@ -1,5 +1,5 @@
-import React from 'react';
-import { Bar } from 'react-chartjs-2';
+import React from "react";
+import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -7,9 +7,8 @@ import {
   BarElement,
   Title,
   Tooltip,
-  Legend
-} from 'chart.js';
-import styles from '../css/Charts.module.css';
+  Legend,
+} from "chart.js";
 
 ChartJS.register(
   CategoryScale,
@@ -20,44 +19,82 @@ ChartJS.register(
   Legend
 );
 
-const UserActivityChart = ({ data }) => {
-  const chartData = {
-    labels: data?.map(item => item.date) || [],
+const UserActivityChart = ({ users, activeUsers }) => {
+  const data = {
+    labels: users.map((user) => user.month),
     datasets: [
       {
-        label: 'New Users',
-        data: data?.map(item => item.newUsers) || [],
-        backgroundColor: '#2196F3',
+        label: "New Users",
+        data: users.map((user) => user.count),
+        backgroundColor: "rgba(33, 150, 243, 0.8)",
+        borderRadius: 4,
       },
       {
-        label: 'Active Users',
-        data: data?.map(item => item.activeUsers) || [],
-        backgroundColor: '#4CAF50',
-      }
-    ]
+        label: "Active Users",
+        data: activeUsers.map((user) => user.count),
+        backgroundColor: "rgba(76, 175, 80, 0.8)",
+        borderRadius: 4,
+      },
+    ],
   };
 
   const options = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
-        position: 'top',
+        position: "top",
       },
       title: {
         display: true,
-        text: 'User Activity'
-      }
+        text: "Monthly User Activity",
+        padding: 8,
+        font: {
+          size: 16,
+          weight: "bold",
+        },
+      },
     },
     scales: {
+      x: {
+        grid: {
+          display: false,
+        },
+        ticks: {
+          maxRotation: 45,
+          minRotation: 45,
+        },
+      },
       y: {
         beginAtZero: true,
-      }
-    }
+        ticks: {
+          precision: 0,
+        },
+      },
+    },
+    barPercentage: 0.6, // Increased from 0.5 to 0.8
+    categoryPercentage: 0.6, // Increased from 0.5 to 0.9
+    layout: {
+      padding: {
+        left: 10,
+        right: 10,
+      },
+    },
   };
 
   return (
-    <div className={styles.chartWrapper}>
-      <Bar data={chartData} options={options} />
+    <div
+      className="chart-container"
+      style={{
+        background: "white",
+        padding: "1rem",
+        borderRadius: "8px",
+        width: "100%",
+        height: "400px",
+        marginBottom: "1rem",
+      }}
+    >
+      <Bar data={data} options={options} />
     </div>
   );
 };

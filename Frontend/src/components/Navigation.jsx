@@ -8,7 +8,7 @@ import { GlobalContext } from "../constant/GlobalContext";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { isAuthenticated } = useContext(GlobalContext);
+  const { isAuthenticated, user_type } = useContext(GlobalContext);
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -71,15 +71,19 @@ const Navigation = () => {
             </NavLink>
           </li>
           <li>
-            <NavLink
-              to="listing"
-              className={({ isActive }) =>
-                isActive ? styles.activeLink : styles.link
-              }
-              onClick={closeMenu}
-            >
-              Items
-            </NavLink>
+            {
+              (isAuthenticated &&
+                !["CLIENT", "COMPANY"].includes(user_type)) && (
+              <NavLink
+                to="listing"
+                className={({ isActive }) =>
+                  isActive ? styles.activeLink : styles.link
+                }
+                onClick={closeMenu}
+              >
+                Items
+              </NavLink>
+            )}
           </li>
 
           {/* Mobile auth links */}

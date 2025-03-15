@@ -14,7 +14,7 @@ const Login = () => {
     password: "",
   });
 
-  const {auth} = useContext(GlobalContext)
+  const { auth } = useContext(GlobalContext);
   const [errors, setErrors] = useState({});
   const [location, setLocation] = useState({ latitude: null, longitude: null });
   const [isRequestingLocation, setIsRequestingLocation] = useState(false);
@@ -39,15 +39,15 @@ const Login = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
     // Clear error when user types
     if (errors[name]) {
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        [name]: ""
+        [name]: "",
       }));
     }
   };
@@ -90,7 +90,7 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -112,6 +112,7 @@ const Login = () => {
       });
 
       if (response.status === 200) {
+        console.log(response.data)
         Swal.fire({
           title: "Logged In",
           icon: "success",
@@ -120,26 +121,67 @@ const Login = () => {
         });
         localStorage.setItem("access", response.data.access);
         localStorage.setItem("refresh", response.data.refresh);
-        navigate("/kyc");
+        localStorage.setItem("user_type", response.data.user_type)
         auth();
       }
 
-      // Save tokens to localStorage
 
-      // Update location if available
-      // if (location.latitude && location.longitude) {
-      //   await axios.post("/api/update-location/", {
-      //     latitude: location.latitude,
-      //     longitude: location.longitude,
-      //   });
-      // }
+      // Navigation logic based on user type and KYC status
+      if (response.data.is_superuser) {
+        navigate("/admin/dashboard");
+      } else {
+        switch (response.data.user_type) {
+          case "INDIVIDUAL":
+            if (!response.data.kyc_status === "NONE") {
+              navigate("/kyc");
+            } else if (response.data.kyc_status === "PENDING"){
+              navigate("/kyc-status")
+            } else if (response.data.kyc_status === "REJECTED"){
+              navigate("/kyc-rejected")
+            }
+            else {
+              navigate("/individual/dashboard");
+            }
+            break;
+          case "COMPANY":
+            if (response.data.kyc_status) {
+              navigate("/company/dashboard");
+            } 
+            break;
+          case "WORKER":
+            if (!response.data.kyc_status === "NONE") {
+              navigate("/kyc");
+            } else if (response.data.kyc_status === "PENDING") {
+              navigate("/kyc-status");
+            } else if (response.data.kyc_status === "REJECTED") {
+              navigate("/kyc-rejected");
+            } else {
+              navigate("/worker/dashboard");
+            }
+            break;
+          case "CLIENT":
+            if (!response.data.kyc_status === "NONE") {
+              navigate("/kyc");
+            } else if (response.data.kyc_status === "PENDING") {
+              navigate("/kyc-status");
+            } else if (response.data.kyc_status === "REJECTED") {
+              navigate("/kyc-rejected");
+            } else {
+              navigate("/client/dashboard");
+            }
+            break;
+          default:
+            navigate("/dashboard");
+        }
+      }
 
-      // await Swal.fire({
-      //   title: "Success!",
-      //   text: "Login successful!",
-      //   icon: "success",
-      //   timer: 1500,
-      // });
+      Swal.fire({
+        title: "Success!",
+        text: "Login successful",
+        icon: "success",
+        timer: 1500,
+        showConfirmButton: false,
+      });
     } catch (error) {
       console.error("Login error:", error);
       Swal.fire({
