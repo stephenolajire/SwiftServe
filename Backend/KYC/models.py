@@ -16,7 +16,7 @@ class KYCVerification(models.Model):
         ('PENDING', 'Pending Review'),
         ('APPROVED', 'Approved'),
         ('REJECTED', 'Rejected'),
-        ('INCOMPLETE', 'Incomplete Documentation')
+        ('NONE', 'No Documentation')
     ]
 
     # User Reference

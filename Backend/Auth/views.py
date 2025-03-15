@@ -8,6 +8,11 @@ from django.core.cache import cache
 from .utils import generate_otp, send_otp_email
 from django.utils import timezone
 from .utils import send_registration_email
+from rest_framework_simplejwt.views import TokenObtainPairView
+from .serializers import CustomTokenObtainPairSerializer
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
 
 class CompanyRegistrationView(APIView):
     def post(self, request):
@@ -194,17 +199,61 @@ class ForgotPasswordView(APIView):
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-class ResetPasswordView(APIView):
-    """Reset password with OTP verification"""
+class VerifyResetOTPView(APIView):
+    """Verify OTP for password reset"""
 
     def post(self, request):
         user_id = request.data.get('user_id')
         otp = request.data.get('otp')
+
+        if not all([user_id, otp]):
+            return Response({
+                'error': 'User ID and OTP are required'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = CustomUser.objects.get(id=user_id)
+            
+            # Verify OTP
+            cache_key = f'password_reset_otp_{user.id}'
+            stored_otp = cache.get(cache_key)
+
+            if not stored_otp:
+                return Response({
+                    'error': 'OTP has expired. Please request a new one'
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            if otp != stored_otp:
+                return Response({
+                    'error': 'Invalid OTP'
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            # Store verification token for password reset
+            reset_token = generate_otp()  # Generate a new token
+            reset_token_key = f'password_reset_token_{user.id}'
+            cache.set(reset_token_key, reset_token, timeout=300)  # 5 minutes
+
+            return Response({
+                'message': 'OTP verified successfully',
+                'reset_token': reset_token
+            })
+
+        except CustomUser.DoesNotExist:
+            return Response({
+                'error': 'Invalid user'
+            }, status=status.HTTP_404_NOT_FOUND)
+
+
+class ResetPasswordView(APIView):
+    """Set new password after OTP verification"""
+
+    def put(self, request):
+        user_id = request.data.get('user_id')
+        reset_token = request.data.get('reset_token')
         new_password = request.data.get('new_password')
         confirm_password = request.data.get('confirm_password')
 
-        # Validate input
-        if not all([user_id, otp, new_password, confirm_password]):
+        if not all([user_id, reset_token, new_password, confirm_password]):
             return Response({
                 'error': 'All fields are required'
             }, status=status.HTTP_400_BAD_REQUEST)
@@ -216,35 +265,32 @@ class ResetPasswordView(APIView):
 
         try:
             user = CustomUser.objects.get(id=user_id)
+            
+            # Verify reset token
+            reset_token_key = f'password_reset_token_{user.id}'
+            stored_token = cache.get(reset_token_key)
+
+            if not stored_token or stored_token != reset_token:
+                return Response({
+                    'error': 'Invalid or expired reset token'
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            # Update password
+            user.set_password(new_password)
+            user.save()
+            
+            # Clear all reset-related cache
+            cache.delete(reset_token_key)
+            cache.delete(f'password_reset_otp_{user.id}')
+
+            return Response({
+                'message': 'Password reset successful'
+            })
+
         except CustomUser.DoesNotExist:
             return Response({
                 'error': 'Invalid user'
             }, status=status.HTTP_404_NOT_FOUND)
-
-        # Verify OTP
-        cache_key = f'password_reset_otp_{user.id}'
-        stored_otp = cache.get(cache_key)
-
-        if not stored_otp:
-            return Response({
-                'error': 'OTP has expired. Please request a new one'
-            }, status=status.HTTP_400_BAD_REQUEST)
-
-        if otp != stored_otp:
-            return Response({
-                'error': 'Invalid OTP'
-            }, status=status.HTTP_400_BAD_REQUEST)
-
-        # Update password
-        user.set_password(new_password)
-        user.save()
-        
-        # Clear the OTP from cache
-        cache.delete(cache_key)
-
-        return Response({
-            'message': 'Password reset successful'
-        }, status=status.HTTP_200_OK)
 
 
 class RequestAccountDeletionView(APIView):

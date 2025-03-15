@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .container { padding: 20px; font-family: Arial, sans-serif; }
+        .header { color: #f44336; }
+        .content { margin: 20px 0; }
+        .footer { color: #666; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="header">KYC Verification Rejected</h2>
+        <div class="content">
+            <p>Unfortunately, your KYC verification was not approved.</p>
+            {% if reason %}
+            <p><strong>Reason:</strong> {{ reason }}</p>
+            {% endif %}
+            <p>Please review the requirements and submit again.</p>
+        </div>
+        <div class="footer">
+            <p>Best regards,<br>SwiftServe Team</p>
+        </div>
+    </div>
+</body>
+</html>

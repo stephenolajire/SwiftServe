@@ -38,9 +38,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     lastName = models.CharField(max_length=200)
     dob = models.DateField(null=True, blank=True)
     profileImage = models.ImageField(upload_to='profile_images/', null=True, blank=True)
-    localGovernment = models.CharField(max_length=200, default="")
-    vehicleType = models.CharField(max_length=200, default="")
-    vehiclePlateNumber = models.CharField(max_length=200, default="")
+    localGovernment = models.CharField(max_length=200, default="", null=True, blank=True)
+    vehicleType = models.CharField(max_length=200, default="", null=True, blank=True)
+    vehiclePlateNumber = models.CharField(max_length=200, default="", null=True, blank=True)
 
     # Company Information Fields
     companyName = models.CharField(max_length=200, null=True, blank=True)
@@ -69,11 +69,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     insuranceCert = models.ImageField(upload_to='insurance_certificates/', null=True, blank=True)
     cacCertificate = models.ImageField(upload_to='cac_certificates/', null=True, blank=True)
     taxClearance = models.ImageField(upload_to='tax_clearance/', null=True, blank=True)
-    vehicleRegistration = models.ImageField(upload_to="vehicleReg", default="")
-    driversLicense = models.ImageField(upload_to="License", default="")
+    vehicleRegistration = models.ImageField(upload_to="vehicleReg", default="", null=True, blank=True)
+    driversLicense = models.ImageField(upload_to="License", default="", null=True, blank=True)
 
     # Verification Fields
-    kyc_status = models.BooleanField(default=False)
+    kyc_status = models.CharField(max_length=200, default="NONE")
     is_user_verified = models.BooleanField(default=False)
 
     # Location Fields (for future use)

@@ -126,3 +126,5 @@ class KYCVerificationSerializer(serializers.ModelSerializer):
             data['lastUpdated'] = instance.lastUpdated.strftime('%Y-%m-%d %H:%M:%S')
 
         return data
+    
+

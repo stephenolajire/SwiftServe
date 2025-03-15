@@ -16,6 +16,8 @@ class KYCSubmissionView(APIView):
     
     def post(self, request):
         """Handle KYC submission"""
+
+        user = request.user
         try:
             # Log incoming request data
             logger.info(f"Received KYC submission from user: {request.user.email}")
@@ -37,7 +39,11 @@ class KYCSubmissionView(APIView):
 
             if serializer.is_valid():
                 # Save KYC verification
+                user.kyc_status = "PENDING"
+                user.save()  # Add this line to save user status
                 kyc = serializer.save()
+                kyc.status = "PENDING"
+                kyc.save()  # Add this line to save kyc status
                 logger.info(f"KYC verification created for user: {request.user.email}")
 
                 return Response({

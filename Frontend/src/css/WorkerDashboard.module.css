@@ -27,11 +27,11 @@
 }
 
 .statIcon {
-  font-size: 3rem;
-  color: var(--accent-blue);
+  font-size: 2.4rem;
+  color: var(--accent-yellow);
   margin-right: 2rem;
   padding: 1.5rem;
-  background: rgba(0, 123, 255, 0.1);
+  background: #ffc1071f;
   border-radius: 50%;
 }
 
@@ -113,7 +113,7 @@
 }
 
 .activeTab {
-  background: var(--accent-blue) !important;
+  background: var(--primary-black) !important;
   color: var(--white) !important;
 }
 

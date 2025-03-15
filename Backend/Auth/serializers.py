@@ -2,6 +2,35 @@ from rest_framework import serializers
 from .models import CustomUser
 import re
 from datetime import datetime
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework import serializers
+from .models import CustomUser
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        # Add custom claims
+        token['user_type'] = user.user_type
+        token['kyc_status'] = user.kyc_status
+        token['is_superuser'] = user.is_superuser
+        token['is_staff'] = user.is_staff
+        
+        return token
+
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        
+        # Add extra responses
+        data['user_type'] = self.user.user_type
+        data['kyc_status'] = self.user.kyc_status
+        data['is_superuser'] = self.user.is_superuser
+        data['is_staff'] = self.user.is_staff
+        data['email'] = self.user.email
+        data['username'] = self.user.username
+        
+        return data
 
 class CompanyUserSerializer(serializers.ModelSerializer):
     """Serializer for company registration"""

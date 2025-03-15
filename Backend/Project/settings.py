@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     # 'cloudinary_storage',
     'KYC',
     # 'django_crontab',
+    'Dashboard',
 ]
 
 MIDDLEWARE = [
@@ -159,7 +160,7 @@ REST_FRAMEWORK = {
 AUTH_USER_MODEL = "Auth.CustomUser"
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
 }
 
@@ -171,14 +172,19 @@ CLOUDINARY_STORAGE = {
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
-
+# Email Configuration
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = config ("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = config ("EMAIL_HOST_PASSWORD") 
-DEFAULT_FROM_EMAIL = config ("DEFAULT_FROM_EMAIL")
+EMAIL_USE_TLS = True
+EMAIL_TIMEOUT = 30  # Add timeout setting
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL')
+
+# For development, you can use console backend
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # CRONJOBS = [
 #     ('0 0 * * *', 'Auth.management.commands.delete_expired_accounts.Command.handle')
