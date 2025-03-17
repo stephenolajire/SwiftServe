@@ -132,7 +132,7 @@ const Login = () => {
       } else {
         switch (response.data.user_type) {
           case "INDIVIDUAL":
-            if (!response.data.kyc_status === "NONE") {
+            if (response.data.kyc_status === "NONE") {
               navigate("/kyc");
             } else if (response.data.kyc_status === "PENDING"){
               navigate("/kyc-status")
@@ -144,12 +144,18 @@ const Login = () => {
             }
             break;
           case "COMPANY":
-            if (response.data.kyc_status) {
+            if (response.data.kyc_status === "NONE") {
+              navigate("/kyc");
+            } else if (response.data.kyc_status === "PENDING") {
+              navigate("/kyc-status");
+            } else if (response.data.kyc_status === "REJECTED") {
+              navigate("/kyc-rejected");
+            } else {
               navigate("/company/dashboard");
             } 
             break;
           case "WORKER":
-            if (!response.data.kyc_status === "NONE") {
+            if (response.data.kyc_status === "NONE") {
               navigate("/kyc");
             } else if (response.data.kyc_status === "PENDING") {
               navigate("/kyc-status");

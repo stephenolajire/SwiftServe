@@ -16,15 +16,50 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 
 class CompanyRegistrationView(APIView):
     def post(self, request):
-        serializer = CompanyUserSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(user_type='COMPANY')
-             # Send registration email
-            send_registration_email('COMPANY', serializer.validated_data)
+        try:
+            serializer = CompanyUserSerializer(data=request.data)
+            if serializer.is_valid():
+                # Check if company with same registration number exists
+                reg_number = serializer.validated_data.get('registrationNumber')
+                if CustomUser.objects.filter(registrationNumber=reg_number).exists():
+                    return Response({
+                        'error': 'A company with this registration number already exists'
+                    }, status=status.HTTP_400_BAD_REQUEST)
+
+                # Save company with pending KYC status
+                company = serializer.save(
+                    user_type='COMPANY',
+                    kyc_status='PENDING',
+                    is_user_verified=False
+                )
+
+                try:
+                    # Send registration email
+                    send_registration_email('COMPANY', serializer.validated_data)
+                except Exception:
+                    pass  # Continue even if email fails
+
+                return Response({
+                    'message': 'Company registered successfully',
+                    'company_id': company.id,
+                    'email': company.email,
+                    'next_steps': [
+                        'Complete email verification',
+                        'Submit KYC documents',
+                        'Wait for KYC approval'
+                    ]
+                }, status=status.HTTP_201_CREATED)
+
             return Response({
-                'message': 'Company registered successfully'
-            }, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                'error': 'Validation failed',
+                'details': serializer.errors
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        except Exception:
+            return Response({
+                'error': 'Registration failed',
+                'message': 'An unexpected error occurred during registration'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
 class IndividualRegistrationView(APIView):
     def post(self, request):
@@ -55,43 +90,109 @@ class WorkerRegistrationView(APIView):
                 'error': 'Only companies can register workers'
             }, status=status.HTTP_403_FORBIDDEN)
 
-        # Add the company to the worker data
-        worker_data = request.data.copy()
-        worker_data['company'] = request.user.id
-        worker_data['user_type'] = 'WORKER'
+        try:
+            # Create a new dict with the data
+            worker_data = {
+                'email': request.data.get('email'),
+                'username':request.data.get('username'),
+                'password': request.data.get('password'),
+                'firstName': request.data.get('firstName'),
+                'lastName': request.data.get('lastName'),
+                'phoneNumber': request.data.get('phoneNumber'),
+                'dob': request.data.get('dob'),
+                'address': request.data.get('address'),
+                'city': request.data.get('city'),
+                'state': request.data.get('state'),
+                'country': request.data.get('country'),
+                'localGovernment': request.data.get('localGovernment'),
+                'vehicleType': request.data.get('vehicleType'),
+                'vehiclePlateNumber': request.data.get('vehiclePlateNumber'),
+                'company': request.user.id,
+                'user_type': 'WORKER'
+            }
 
-        serializer = IndividualSerializer(data=worker_data)
-        if serializer.is_valid():
-            worker = serializer.save()
-            # Send registration email
-            send_registration_email('WORKER', serializer.validated_data)
+            # Handle file uploads
+            file_fields = [
+                'profileImage', 
+                'driversLicense', 
+                'vehicleRegistration'
+            ]
+            
+            for field in file_fields:
+                if field in request.FILES:
+                    worker_data[field] = request.FILES[field]
+
+            serializer = WorkersSerializer(data=worker_data)
+            if serializer.is_valid():
+                worker = serializer.save()
+                
+                try:
+                    # Send registration email
+                    send_registration_email('WORKER', serializer.validated_data)
+                except Exception as e:
+                    print(f"Failed to send email: {str(e)}")
+
+                return Response({
+                    'status': 'success',
+                    'message': 'Worker registered successfully',
+                    'data': {
+                        'worker_id': worker.id,
+                        'email': worker.email,
+                        'firstName': worker.firstName,
+                        'lastName': worker.lastName,
+                        'company': request.user.companyName,
+                        'next_steps': [
+                            'Complete email verification',
+                            'Wait for account activation'
+                        ]
+                    }
+                }, status=status.HTTP_201_CREATED)
+
             return Response({
-                'message': 'Worker registered successfully',
-                'worker_id': worker.id,
-                'company': request.user.company_name
-            }, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                'status': 'error',
+                'message': 'Validation failed',
+                'errors': serializer.errors
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        except Exception as e:
+            return Response({
+                'status': 'error',
+                'message': 'Registration failed',
+                'error': str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class CompanyWorkersView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        # Check if the authenticated user is a company
         if request.user.user_type != 'COMPANY':
             return Response({
                 'error': 'Only companies can view their workers'
             }, status=status.HTTP_403_FORBIDDEN)
 
-        # Get all workers for this company
-        workers = request.user.workers.all()
-        serializer = WorkersSerializer(workers, many=True)
-        
-        return Response({
-            'company': request.user.company_name,
-            'workers': serializer.data
-        })
+        try:
+            workers = CustomUser.objects.filter(
+                company=request.user,
+                user_type='WORKER'
+            ).order_by('-date_joined')
 
+            serializer = WorkersSerializer(workers, many=True)
 
+            return Response({
+                'status': 'success',
+                'data': {
+                    'company': request.user.companyName,
+                    'total_workers': workers.count(),
+                    'workers': serializer.data
+                }
+            })
+
+        except Exception as e:
+            return Response({
+                'status': 'error',
+                'message': 'Failed to fetch workers',
+                'error': str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class RequestVerificationView(APIView):
     permission_classes = [IsAuthenticated]

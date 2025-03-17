@@ -257,7 +257,7 @@ class IndividualSerializer(serializers.ModelSerializer):
     
 
 class WorkersSerializer(serializers.ModelSerializer):
-    """Serializer for individual and worker registration"""
+    """Serializer for worker registration"""
     password = serializers.CharField(write_only=True)
     
     class Meta:
@@ -282,42 +282,94 @@ class WorkersSerializer(serializers.ModelSerializer):
             'vehiclePlateNumber',
             'vehicleRegistration',
             'driversLicense',
+            'company'  # Add company field
         ]
 
-    def validate(self, data):
+    def validate_email(self, value):
+        if not re.match(r'^[^\s@]+@[^\s@]+\.[^\s@]+$', value):
+            raise serializers.ValidationError("Invalid email format")
+        if CustomUser.objects.filter(email=value).exists():
+            raise serializers.ValidationError("Email already registered")
+        return value
 
-        # Validate required personal information
-        required_fields = [ 'email',
-            'username',
-            'password',
-            'firstName',
-            'lastName',
-            'phoneNumber',
-            'dob',
-            'address',
-            'city',
-            'state',
-            'country',
-            'postalCode',
-            'profileImage',
-            'user_type',
-            'localGovernment',
-            'vehicleType',
-            'vehiclePlateNumber',
-            'vehicleRegistration',
-            'driversLicense',]
-        for field in required_fields:
+    def validate_phoneNumber(self, value):
+        if not re.match(r'^\+?[0-9]{8,15}$', value.replace(' ', '')):
+            raise serializers.ValidationError("Invalid phone number format")
+        return value
+
+    def validate_vehiclePlateNumber(self, value):
+        if not value or len(value) < 6:
+            raise serializers.ValidationError("Invalid vehicle plate number")
+        return value
+
+    def validate_dob(self, value):
+        try:
+            age = (datetime.now().date() - value).days // 365
+            if age < 18:
+                raise serializers.ValidationError("Worker must be at least 18 years old")
+        except Exception:
+            raise serializers.ValidationError("Invalid date format")
+        return value
+
+    def validate(self, data):
+        errors = {}
+        
+        # Required fields validation
+        required_fields = {
+            'email': 'Email',
+            'username': 'Username',
+            'password': 'Password',
+            'firstName': 'First name',
+            'lastName': 'Last name',
+            'phoneNumber': 'Phone number',
+            'dob': 'Date of birth',
+            'address': 'Address',
+            'city': 'City',
+            'state': 'State',
+            'country': 'Country',
+            'localGovernment': 'Local Government',
+            'vehicleType': 'Vehicle type',
+            'vehiclePlateNumber': 'Vehicle plate number'
+        }
+
+        for field, label in required_fields.items():
             if not data.get(field):
-                raise serializers.ValidationError({
-                    field: f"{field.replace('_', ' ').title()} is required"
-                })
+                errors[field] = f"{label} is required"
+
+        # Document validation
+        required_documents = {
+            'vehicleRegistration': 'Vehicle registration',
+            'driversLicense': 'Driver\'s license'
+        }
+
+        for field, label in required_documents.items():
+            if field not in data or not data[field]:
+                errors[field] = f"{label} document is required"
+            elif hasattr(data[field], 'size'):
+                if data[field].size > 5 * 1024 * 1024:  # 5MB limit
+                    errors[field] = f"{label} file size must be less than 5MB"
+
+        if errors:
+            raise serializers.ValidationError(errors)
+
+        return data
 
     def create(self, validated_data):
-        # Remove confirm_password from validated data
-        validated_data.pop('confirm_password', None)
         password = validated_data.pop('password')
         
-        # Create user instance
+        # Generate username if not provided
+        if 'username' not in validated_data:
+            base_username = f"{validated_data['firstName'].lower()}{validated_data['lastName'].lower()}"
+            username = base_username
+            counter = 1
+            while CustomUser.objects.filter(username=username).exists():
+                username = f"{base_username}{counter}"
+                counter += 1
+            validated_data['username'] = username
+
+        # Ensure user type is WORKER
+        validated_data['user_type'] = 'WORKER'
+        
         user = CustomUser.objects.create(**validated_data)
         user.set_password(password)
         user.save()

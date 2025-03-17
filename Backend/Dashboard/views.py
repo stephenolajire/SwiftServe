@@ -12,6 +12,7 @@ from django.db.models import Count
 from django.db.models.functions import TruncDate, TruncMonth
 from datetime import timedelta
 from django.utils import timezone
+from rest_framework import status
 
 @api_view(['GET'])
 @permission_classes([IsAdminUser])
@@ -20,8 +21,13 @@ def get_stats(request):
         'totalUsers': CustomUser.objects.count(),
         'totalWorkers': CustomUser.objects.filter(user_type='WORKER').count(),
         'totalCompanies': CustomUser.objects.filter(user_type='COMPANY').count(),
+        'totalIndividual': CustomUser.objects.filter(user_type='INDIVIDUAL').count(),
         'totalClients': CustomUser.objects.filter(user_type='CLIENT').count(),
         'pendingKYC': KYCVerification.objects.filter(status='PENDING').count(),
+        'pendingCompanyKYC': KYCVerification.objects.filter(
+            user__user_type='COMPANY',
+            status='PENDING'
+        ).count(),
         'totalRevenue': RevenueData.objects.aggregate(total=Sum('amount'))['total'] or 0,
         'revenueData': RevenueDataSerializer(RevenueData.objects.all(), many=True).data,
         'userActivity': UserActivitySerializer(UserActivity.objects.all(), many=True).data
@@ -143,3 +149,54 @@ def get_user_activity(request):
     }
 
     return Response(formatted_data)
+
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def get_company_kyc(request):
+    companies = CustomUser.objects.filter(
+        user_type='COMPANY',
+        kyc_status='PENDING'
+    )
+    serializer = CompanyKYCSerializer(companies, many=True)
+    return Response(serializer.data)
+
+@api_view(['POST'])
+@permission_classes([IsAdminUser])
+def handle_company_kyc(request, company_id, action):
+    try:
+        company = CustomUser.objects.get(
+            id=company_id,
+            user_type='COMPANY'
+        )
+        
+        if action == 'approve':
+            company.kyc_status = 'APPROVED'
+            company.is_user_verified = True
+        elif action == 'reject':
+            company.kyc_status = 'REJECTED'
+            company.is_user_verified = False
+        else:
+            return Response({
+                'error': 'Invalid action'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        company.save()
+        
+        # Send email notification
+        try:
+            send_kyc_notification_email(
+                company.email, 
+                company.kyc_status, 
+                request.data.get('reason', '')
+            )
+        except Exception:
+            pass  # Continue even if email fails
+
+        return Response({
+            'message': f'Company verification {action}d successfully'
+        })
+        
+    except CustomUser.DoesNotExist:
+        return Response({
+            'error': 'Company not found'
+        }, status=status.HTTP_404_NOT_FOUND)

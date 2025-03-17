@@ -9,9 +9,11 @@ urlpatterns = [
     path('admin/users/', views.get_users, name='admin-users'),
     path('admin/users/<str:user_id>/', views.get_user_details, name='user-details'),
     path('admin/users/<int:user_id>/<str:action>/', views.handle_user_action, name='user-action'),
-     path('admin/user-activity/', views.get_user_activity, name='user-activity'),
+    path('admin/user-activity/', views.get_user_activity, name='user-activity'),
     
     # KYC Management
     path('admin/kyc-requests/', views.get_kyc_requests, name='kyc-requests'),
     path('admin/kyc/<int:user_id>/<str:action>', views.handle_kyc_action, name='kyc-action'),
+    path('admin/company-kyc/', views.get_company_kyc, name='company-kyc'),
+    path('admin/company-kyc/<int:company_id>/<str:action>', views.handle_company_kyc, name='company-kyc-action'),
 ]

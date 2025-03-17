@@ -239,7 +239,7 @@ const CompanyRegistration = () => {
           taxClearance: null,
           cacCertificate: null,
         });
-        navigate('/company/dashboard')
+        navigate('/kyc')
       }
     } catch (error) {
       console.error("Registration error:", error);

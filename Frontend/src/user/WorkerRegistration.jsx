@@ -267,6 +267,17 @@ const WorkerRegistration = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Validate all fields before submission
+    const isValid = tabs.every((tab) => validateCurrentTab(tab.id));
+    if (!isValid) {
+      Swal.fire({
+        title: "Validation Error",
+        text: "Please fill in all required fields correctly",
+        icon: "error",
+      });
+      return;
+    }
+
     try {
       if (!location.latitude || !location.longitude) {
         Swal.fire({
@@ -287,60 +298,60 @@ const WorkerRegistration = () => {
 
       const formDataToSubmit = new FormData();
 
-      // Add form fields except confirmPassword
-      Object.keys(formData).forEach((key) => {
+      // Generate username if not provided
+      const username =
+        formData.username ||
+        `${formData.firstName}${formData.lastName}`.toLowerCase();
+
+      // Add all form fields
+      const fieldsToSubmit = {
+        ...formData,
+        username,
+        user_type: "WORKER",
+        latitude: location.latitude.toString(),
+        longitude: location.longitude.toString(),
+      };
+
+      // Remove confirmPassword from submission
+      delete fieldsToSubmit.confirmPassword;
+
+      // Append all fields to FormData
+      Object.keys(fieldsToSubmit).forEach((key) => {
         if (
-          key !== "confirmPassword" &&
           key !== "vehicleRegistration" &&
-          key !== "driversLicense"
+          key !== "driversLicense" &&
+          key !== "profileImage"
         ) {
-          // Convert date format for DOB
           if (key === "dob") {
             formDataToSubmit.append(
               key,
-              new Date(formData[key]).toISOString().split("T")[0]
+              new Date(fieldsToSubmit[key]).toISOString().split("T")[0]
             );
           } else {
-            formDataToSubmit.append(key, formData[key]);
+            formDataToSubmit.append(key, fieldsToSubmit[key]);
           }
         }
       });
 
-      // Add location data
-      formDataToSubmit.append("latitude", location.latitude.toString());
-      formDataToSubmit.append("longitude", location.longitude.toString());
-      formDataToSubmit.append("user_type", "WORKER");
-
-      // Add profile image if exists
+      // Add files if they exist
       if (profileImage) {
         formDataToSubmit.append("profileImage", profileImage);
       }
-
-      // Add vehicle documents if they exist
       if (formData.vehicleRegistration) {
         formDataToSubmit.append(
           "vehicleRegistration",
           formData.vehicleRegistration
         );
       }
-
       if (formData.driversLicense) {
         formDataToSubmit.append("driversLicense", formData.driversLicense);
       }
 
-      // Debug: Log form data
-      console.log("Form Data being sent:");
-      for (let pair of formDataToSubmit.entries()) {
-        console.log(pair[0], pair[1]);
-      }
-
-      console.log("Submitting form data...");
       const response = await api.post("register/worker/", formDataToSubmit, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log("Response received:", response);
 
       if (response.status === 201 || response.status === 200) {
         await Swal.fire({
@@ -352,17 +363,18 @@ const WorkerRegistration = () => {
       }
     } catch (error) {
       console.error("Registration error:", error);
-      console.error("Response data:", error.response?.data);
-      console.error("Response status:", error.response?.status);
+
+      // Better error handling
+      const errorMessage = error.response?.data?.errors
+        ? Object.entries(error.response.data.errors)
+            .map(([key, value]) => `${key}: ${value.join(", ")}`)
+            .join("\n")
+        : error.response?.data?.message ||
+          "Registration failed. Please try again.";
 
       Swal.fire({
         title: "Registration Failed",
-        text:
-          error.response?.data?.message ||
-          Object.values(error.response?.data || {})
-            .flat()
-            .join("\n") ||
-          "Something went wrong. See console for details.",
+        text: errorMessage,
         icon: "error",
       });
     }

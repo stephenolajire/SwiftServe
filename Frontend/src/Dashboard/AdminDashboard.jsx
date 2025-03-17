@@ -9,6 +9,7 @@ import {
   FaEnvelope,
   FaIdCard,
   FaChartBar,
+  FaEye,
 } from "react-icons/fa";
 import api from "../constant/api";
 import styles from "../css/AdminDashboard.module.css";
@@ -30,6 +31,7 @@ const AdminDashboard = () => {
     totalRevenue: 0,
     totalDeliveries: 0,
     unreadMessages: 0,
+    totalIndividual: 0,
   });
 
   const [users, setUsers] = useState([]);
@@ -41,6 +43,7 @@ const AdminDashboard = () => {
     newUsers: [],
     activeUsers: [],
   });
+  const [companyKYC, setCompanyKYC] = useState([]);
   const navigate = useNavigate();
 
   const sidebarItems = [
@@ -49,6 +52,7 @@ const AdminDashboard = () => {
     { id: "kyc", label: "KYC Verifications", icon: <FaIdCard /> },
     { id: "revenue", label: "Revenue & Analytics", icon: <FaMoneyBillWave /> },
     { id: "messages", label: "Messages", icon: <FaEnvelope /> },
+    { id: "company", label: "Company KYC", icon: <FaBuilding /> },
   ];
 
   useEffect(() => {
@@ -57,17 +61,21 @@ const AdminDashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
-      const [statsRes, usersRes, kycRes, activityRes] = await Promise.all([
-        api.get("admin/stats"),
-        api.get("admin/users"),
-        api.get("admin/kyc-requests"),
-        api.get("admin/user-activity"), // New endpoint
-      ]);
+      const [statsRes, usersRes, kycRes, activityRes, companyKycRes] =
+        await Promise.all([
+          api.get("admin/stats"),
+          api.get("admin/users"),
+          api.get("admin/kyc-requests"),
+          api.get("admin/user-activity"),
+          api.get("admin/company-kyc"),
+        ]);
 
       setStats(statsRes.data);
       setUsers(usersRes.data);
       setKycRequests(kycRes.data);
       setUserActivity(activityRes.data);
+      setCompanyKYC(companyKycRes.data);
+      console.log(statsRes.data);
     } catch (error) {
       Swal.fire("Error", "Failed to fetch dashboard data", "error");
     }
@@ -88,6 +96,28 @@ const AdminDashboard = () => {
       Swal.fire(
         "Error",
         `Failed to ${action} KYC: ${
+          error.response?.data?.message || "Unknown error"
+        }`,
+        "error"
+      );
+    }
+  };
+
+  const handleCompanyKYCAction = async (userId, action) => {
+    if (!userId) {
+      Swal.fire("Error", "Invalid company ID", "error");
+      return;
+    }
+
+    try {
+      await api.post(`/admin/company-kyc/${userId}/${action}`);
+      await fetchDashboardData();
+      Swal.fire("Success", `Company KYC ${action}d successfully`, "success");
+    } catch (error) {
+      console.error("Company KYC action error:", error);
+      Swal.fire(
+        "Error",
+        `Failed to ${action} company KYC: ${
           error.response?.data?.message || "Unknown error"
         }`,
         "error"
@@ -138,6 +168,18 @@ const AdminDashboard = () => {
               value={stats.totalCompanies}
               icon={<FaBuilding />}
               color="#9C27B0"
+            />
+            <StatCard
+              title="Total Clients"
+              value={stats.totalClients}
+              icon={<FaUsers />}
+              color="#4CAF50"
+            />
+            <StatCard
+              title="Total Individual"
+              value={stats.totalIndividual}
+              icon={<FaUsers />}
+              color="#4CAF50"
             />
             <StatCard
               title="Pending KYC"
@@ -308,7 +350,158 @@ const AdminDashboard = () => {
           </div>
         );
 
-      // Add other tab contents...
+      case "company":
+        return (
+          <div className={styles.kycSection}>
+            <h2>Company KYC Verifications</h2>
+            {companyKYC.length === 0 ? (
+              <div className={styles.emptyState}>
+                <FaBuilding size={48} />
+                <p>No pending company KYC verifications</p>
+              </div>
+            ) : (
+              <div className={styles.kycGrid}>
+                {companyKYC.map((kyc) => (
+                  <div key={kyc.id} className={styles.kycCard}>
+                    <div className={styles.kycHeader}>
+                      <h3>{kyc.companyName || "Unnamed Company"}</h3>
+                      <span
+                        className={`${styles.status} ${
+                          styles[
+                            kyc.kyc_status
+                              ? kyc.kyc_status.toLowerCase()
+                              : "pending"
+                          ]
+                        }`}
+                      >
+                        {kyc.kyc_status || "PENDING"}
+                      </span>
+                    </div>
+                    <div className={styles.kycDetails}>
+                      <div className={styles.detailRow}>
+                        <label>Email:</label>
+                        <span>{kyc.email}</span>
+                      </div>
+                      <div className={styles.detailRow}>
+                        <label>Registration Number:</label>
+                        <span>{kyc.registrationNumber || "N/A"}</span>
+                      </div>
+                      <div className={styles.detailRow}>
+                        <label>Tax ID:</label>
+                        <span>{kyc.taxId || "N/A"}</span>
+                      </div>
+                      <div className={styles.detailRow}>
+                        <label>CAC Number:</label>
+                        <span>{kyc.cacNumber || "N/A"}</span>
+                      </div>
+                      <div className={styles.detailRow}>
+                        <label>Submitted:</label>
+                        <span>
+                          {new Date(kyc.date_joined).toLocaleString()}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className={styles.documentsSection}>
+                      <h4>Company Documents</h4>
+                      <div className={styles.documentGrid}>
+                        {kyc.businessLicense && (
+                          <div className={styles.documentItem}>
+                            <label>Business License</label>
+                            <div className={styles.documentActions}>
+                              <a
+                                href={`${BASE_URL}${kyc.businessLicense}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={styles.viewButton}
+                              >
+                                View <FaEye />
+                              </a>
+                            </div>
+                          </div>
+                        )}
+                        {kyc.cacCertificate && (
+                          <div className={styles.documentItem}>
+                            <label>CAC Certificate</label>
+                            <div className={styles.documentActions}>
+                              <a
+                                href={`${BASE_URL}${kyc.cacCertificate}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={styles.viewButton}
+                              >
+                                View <FaEye />
+                              </a>
+                            </div>
+                          </div>
+                        )}
+                        {kyc.taxClearance && (
+                          <div className={styles.documentItem}>
+                            <label>Tax Clearance</label>
+                            <div className={styles.documentActions}>
+                              <a
+                                href={`${BASE_URL}${kyc.taxClearance}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={styles.viewButton}
+                              >
+                                View <FaEye />
+                              </a>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className={styles.kycActions}>
+                      <button
+                        className={styles.approveButton}
+                        onClick={() => {
+                          Swal.fire({
+                            title: "Approve Company KYC?",
+                            text: `Are you sure you want to approve ${kyc.companyName}'s KYC?`,
+                            icon: "question",
+                            showCancelButton: true,
+                            confirmButtonText: "Yes, Approve",
+                            cancelButtonText: "Cancel",
+                          }).then((result) => {
+                            if (result.isConfirmed) {
+                              handleCompanyKYCAction(kyc.id, "approve");
+                            }
+                          });
+                        }}
+                      >
+                        Approve
+                      </button>
+                      <button
+                        className={styles.rejectButton}
+                        onClick={() => {
+                          Swal.fire({
+                            title: "Reject Company KYC?",
+                            text: "Please provide a reason for rejection:",
+                            input: "text",
+                            showCancelButton: true,
+                            confirmButtonText: "Reject",
+                            showLoaderOnConfirm: true,
+                            preConfirm: (reason) => {
+                              return handleCompanyKYCAction(
+                                kyc.id,
+                                "reject",
+                                reason
+                              );
+                            },
+                          });
+                        }}
+                      >
+                        Reject
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        );
 
       default:
         return null;

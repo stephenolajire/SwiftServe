@@ -22,6 +22,24 @@ class KYCRequestSerializer(serializers.ModelSerializer):
         fields = ['id', 'user_id', 'user_email', 'firstName', 'lastName',
                  'idType', 'status', 'createdAt', 'idDocument', 'selfieImage']
 
+class CompanyKYCSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = [
+            'id', 'email', 'companyName', 'registrationNumber',
+            'taxId', 'cacNumber', 'kyc_status', 'date_joined',
+            'businessLicense', 'cacCertificate', 'taxClearance',
+            'phoneNumber', 'address', 'city', 'state',
+            'website', 'contactName', 'fleetSize', 'fleetType'
+        ]
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        # Format dates and add additional processing if needed
+        if data.get('date_joined'):
+            data['date_joined'] = instance.date_joined.strftime('%Y-%m-%d %H:%M:%S')
+        return data
+
 class RevenueDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = RevenueData
