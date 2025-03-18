@@ -6,9 +6,15 @@ import {
   FaPhone,
   FaInfoCircle,
   FaTimes,
+  FaCamera,
+  FaImage,
+  FaTimesCircle,
 } from "react-icons/fa";
 import styles from "../css/DeliveryForm.module.css";
 import Swal from "sweetalert2";
+import api from "../constant/api";
+import PropTypes from "prop-types";
+import { useNavigate } from "react-router-dom";
 
 const DeliveryForm = ({ onSubmit, onClose }) => {
   const initialState = {
@@ -21,6 +27,7 @@ const DeliveryForm = ({ onSubmit, onClose }) => {
     specialInstructions: "",
     pickupAddress: "",
     pickupCity: "",
+    pickupLg: " ",
     pickupState: "",
     pickupDate: "",
     pickupTime: "",
@@ -34,11 +41,13 @@ const DeliveryForm = ({ onSubmit, onClose }) => {
     recipientPhone: "",
     recipientEmail: "",
     deliveryInstructions: "",
+    itemImage: null,
   };
 
   const [formData, setFormData] = useState(initialState);
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
+  const navigate = useNavigate();
 
   const validateField = (name, value) => {
     let error = "";
@@ -117,6 +126,10 @@ const DeliveryForm = ({ onSubmit, onClose }) => {
         }
         break;
 
+      case "pickupLg":
+        if (!value.trim()) error = "Local Government is required";
+        break;
+
       default:
         break;
     }
@@ -184,18 +197,61 @@ const DeliveryForm = ({ onSubmit, onClose }) => {
 
     if (isValid) {
       try {
-        await onSubmit(formData);
         Swal.fire({
+          title: "Submitting...",
+          text: "Please wait while we process your request",
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        });
+
+        const formDataToSubmit = new FormData();
+
+        Object.keys(formData).forEach((key) => {
+          if (key === "dimensions") {
+            formDataToSubmit.append("length", formData.dimensions.length);
+            formDataToSubmit.append("width", formData.dimensions.width);
+            formDataToSubmit.append("height", formData.dimensions.height);
+          } else if (key === "itemImage" && formData[key]) {
+            formDataToSubmit.append("itemImage", formData[key]);
+          } else {
+            formDataToSubmit.append(key, formData[key]);
+          }
+        });
+
+        const response = await api.post("deliveries/", formDataToSubmit, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+
+        await Swal.fire({
           title: "Success!",
           text: "Delivery request submitted successfully",
           icon: "success",
           confirmButtonColor: "#007BFF",
         });
-        onClose();
+
+        navigate("/client/dashboard")
+
+        // Call onSubmit with response data if provided
+        if (typeof onSubmit === "function") {
+          onSubmit(response.data);
+        }
+
+        // Call onClose if provided
+        if (typeof onClose === "function") {
+          onClose();
+        }
       } catch (error) {
+        console.error("Submission error:", error);
         Swal.fire({
           title: "Error",
-          text: error.message || "Failed to submit delivery request",
+          text:
+            error.response?.data?.message ||
+            error.response?.data?.error ||
+            "Failed to submit delivery request",
           icon: "error",
           confirmButtonColor: "#007BFF",
         });
@@ -217,6 +273,25 @@ const DeliveryForm = ({ onSubmit, onClose }) => {
         confirmButtonColor: "#007BFF",
       });
     }
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        Swal.fire({
+          title: "File Too Large",
+          text: "Please select an image under 5MB",
+          icon: "error",
+        });
+        return;
+      }
+      setFormData((prev) => ({ ...prev, itemImage: file }));
+    }
+  };
+
+  const removeImage = () => {
+    setFormData((prev) => ({ ...prev, itemImage: null }));
   };
 
   return (
@@ -273,6 +348,15 @@ const DeliveryForm = ({ onSubmit, onClose }) => {
               )}
             </div>
 
+            <div className={styles.formGroup}>
+              <label>Item Image</label>
+              <ImageUploadSection
+                formData={formData}
+                handleImageChange={handleImageChange}
+                removeImage={removeImage}
+              />
+            </div>
+
             <div className={styles.formRow}>
               <div className={styles.formGroup}>
                 <label>Weight (kg) *</label>
@@ -318,16 +402,17 @@ const DeliveryForm = ({ onSubmit, onClose }) => {
               </div>
             </div>
 
-            <div className={styles.formGroup}>
-              <label className={styles.checkboxLabel}>
+            <div className={styles.fragileContainer}>
+              <div className={styles.fragile}>Fragile</div>
+              <div className={styles.check}>
                 <input
                   type="checkbox"
                   name="fragile"
                   checked={formData.fragile}
                   onChange={handleChange}
+                  className={styles.checkbox}
                 />
-                Fragile Item
-              </label>
+              </div>
             </div>
           </section>
 
@@ -374,6 +459,24 @@ const DeliveryForm = ({ onSubmit, onClose }) => {
                 />
                 {errors.pickupCity && touched.pickupCity && (
                   <span className={styles.error}>{errors.pickupCity}</span>
+                )}
+              </div>
+
+              <div className={styles.formGroup}>
+                <label>Local Government *</label>
+                <input
+                  type="text"
+                  name="pickupLg"
+                  value={formData.pickupLg}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  className={`${styles.input} ${
+                    errors.pickupLg && touched.pickupLg ? styles.inputError : ""
+                  }`}
+                  placeholder="Enter Local Government"
+                />
+                {errors.pickupLg && touched.pickupLg && (
+                  <span className={styles.error}>{errors.pickupLg}</span>
                 )}
               </div>
 
@@ -626,6 +729,99 @@ const DeliveryForm = ({ onSubmit, onClose }) => {
       </div>
     </div>
   );
+};
+
+const ImageUploadSection = ({ formData, handleImageChange, removeImage }) => {
+  const fileInputRef = React.useRef(null);
+
+  const openCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      const video = document.createElement("video");
+      video.srcObject = stream;
+      video.play();
+
+      Swal.fire({
+        title: "Take Photo",
+        html: video,
+        showCancelButton: true,
+        confirmButtonText: "Capture",
+        cancelButtonText: "Cancel",
+        willClose: () => {
+          stream.getTracks().forEach((track) => track.stop());
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          const canvas = document.createElement("canvas");
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+          canvas.getContext("2d").drawImage(video, 0, 0);
+          canvas.toBlob((blob) => {
+            handleImageChange({
+              target: {
+                files: [
+                  new File([blob], "camera-photo.jpg", { type: "image/jpeg" }),
+                ],
+              },
+            });
+          }, "image/jpeg");
+        }
+        stream.getTracks().forEach((track) => track.stop());
+      });
+    } catch (error) {
+      Swal.fire("Error", "Unable to access camera", "error");
+    }
+  };
+
+  return (
+    <div className={styles.imageUploadSection}>
+      {formData.itemImage ? (
+        <div className={styles.imagePreview}>
+          <img
+            src={URL.createObjectURL(formData.itemImage)}
+            alt="Item preview"
+          />
+          <button
+            type="button"
+            className={styles.removeImageBtn}
+            onClick={removeImage}
+          >
+            <FaTimesCircle />
+          </button>
+        </div>
+      ) : (
+        <div className={styles.uploadButtons}>
+          <button
+            type="button"
+            className={styles.uploadBtn}
+            onClick={openCamera}
+          >
+            <FaCamera /> Take Photo
+          </button>
+          <button
+            type="button"
+            className={styles.uploadBtn}
+            onClick={() => fileInputRef.current.click()}
+          >
+            <FaImage /> Choose File
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            style={{ display: "none" }}
+          />
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Add prop types validation
+DeliveryForm.propTypes = {
+  onSubmit: PropTypes.func,
+  onClose: PropTypes.func,
 };
 
 export default DeliveryForm;

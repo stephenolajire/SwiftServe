@@ -1,104 +1,136 @@
-.formOverlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
 .formContainer {
-  background: var(--white);
+  background-color: var(--white);
   border-radius: var(--border-radius);
-  padding: 3rem;
-  width: 90%;
-  max-width: 80rem;
-  max-height: 90vh;
-  overflow-y: auto;
+  padding: 2.5rem;
+  box-shadow: 0 0.2rem 1rem rgba(0, 0, 0, 0.1);
+  max-width: 100rem;
+  margin: 0 auto;
 }
 
-.formTitle {
-  font-size: var(--font-h3);
-  color: var(--primary-black);
-  margin-bottom: 2rem;
-  text-align: center;
-}
-
-.section {
-  margin-bottom: 3rem;
-  padding-bottom: 2rem;
-  border-bottom: 0.1rem solid var(--border-color);
-}
-
-.section h3 {
-  font-size: var(--font-h5);
-  color: var(--primary-black);
-  margin-bottom: 2rem;
+.formHeader {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 1rem;
+  margin-bottom: 5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 0.1rem solid var(--light-grey);
+  margin-top: 3rem;
 }
 
-.formGroup {
-  margin-bottom: 1.6rem;
+.formHeader h2 {
+  font-size: var(--font-h4);
+  color: var(--primary-black);
+  font-weight: var(--font-semi-bold);
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: var(--dark-grey);
+  cursor: pointer;
+  font-size: 2.4rem;
+  transition: color 0.3s ease;
+}
+
+.closeButton:hover {
+  color: var(--primary-black);
 }
 
 .formRow {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, 1fr);
   gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
 }
 
 .formGroup label {
-  display: block;
   font-size: var(--font-body);
   color: var(--dark-grey);
-  margin-bottom: 0.8rem;
+  font-weight: var(--font-medium);
 }
 
-.formGroup input,
-.formGroup select,
-.formGroup textarea {
-  width: 100%;
-  padding: 1.2rem;
-  border: 0.1rem solid var(--border-color);
+.input {
+  height: 4rem;
+  padding: 0 1.5rem;
+  border: 0.1rem solid var(--light-grey);
   border-radius: var(--border-radius);
   font-size: var(--font-body);
   color: var(--primary-black);
-  background: var(--white);
+  transition: border-color 0.3s ease;
 }
 
-.formGroup textarea {
-  min-height: 10rem;
+.input:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+}
+
+.inputError {
+  border-color: var(--error-color);
+}
+
+.error {
+  color: var(--error-color);
+  font-size: var(--font-small);
+  margin-top: 0.4rem;
+}
+
+.textarea {
+  height: 10rem;
+  padding: 1.5rem;
   resize: vertical;
 }
 
-.checkboxLabel {
+
+/* Replace or uncomment the existing checkbox styles */
+.check {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.checkbox {
+  width: 1.6rem;
+  height: 1.6rem;
+  accent-color: var(--accent-blue);
   cursor: pointer;
 }
 
-.checkboxLabel input[type="checkbox"] {
-  width: 1.8rem;
-  height: 1.8rem;
+.fragile {
+  display: flex;
+  align-items: center;
+  color: var(--primary-black);
+  font-size: var(--font-body);
+  font-weight: var(--font-medium);
+}
+
+/* Add a container for better alignment */
+.fragileContainer {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .formActions {
   display: flex;
   justify-content: flex-end;
-  gap: 1.6rem;
+  gap: 1.5rem;
   margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 0.1rem solid var(--light-grey);
 }
 
-.submitBtn,
-.cancelBtn {
-  padding: 1.2rem 2.4rem;
+.button {
+  height: 4rem;
+  padding: 0 2.5rem;
+  border: none;
   border-radius: var(--border-radius);
   font-size: var(--font-body);
   font-weight: var(--font-medium);
@@ -106,44 +138,147 @@
   transition: all 0.3s ease;
 }
 
-.submitBtn {
-  background: var(--primary-black);
+.submitBtn,
+.cancelBtn {
+  background-color: var(--accent-blue);
   color: var(--white);
+  width: 20rem;
+  height: 4rem;
   border: none;
+  text-align: center;
+  font-size: 1.6rem;
 }
 
 .submitBtn:hover {
-  background: #0056b3;
-  transform: translateY(-2px);
+  background-color: #0056b3;
 }
 
 .cancelBtn {
-  background: var(--white);
+  background-color: var(--background-color);
   color: var(--dark-grey);
-  border: 0.1rem solid var(--border-color);
 }
 
 .cancelBtn:hover {
-  background: var(--background-color);
+  background-color: var(--light-grey);
+  color: var(--white);
 }
 
+.sectionHeader {
+  font-size: var(--font-h5);
+  color: var(--primary-black);
+  margin: 2.5rem 0 1.5rem;
+  font-weight: var(--font-medium);
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
   .formContainer {
     padding: 2rem;
-    width: 95%;
   }
 
   .formRow {
     grid-template-columns: 1fr;
-    gap: 1.6rem;
+    gap: 1.5rem;
   }
 
   .formActions {
-    flex-direction: column-reverse;
+    flex-direction: column;
+  }
+
+  .button {
+    width: 100%;
+  }
+}
+
+/* Custom styling for date and time inputs */
+input[type="date"],
+input[type="time"] {
+  appearance: none;
+  padding-right: 1rem;
+}
+
+/* Three column layout for city, LG, state */
+.threeColumns {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+@media (max-width: 992px) {
+  .threeColumns {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 576px) {
+  .threeColumns {
+    grid-template-columns: 1fr;
   }
 
   .submitBtn,
   .cancelBtn {
     width: 100%;
   }
+}
+
+.imageUploadSection {
+  margin-top: -1rem;
+}
+
+.uploadButtons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.uploadBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 4rem;
+  width: 100%;
+  padding-left: 1rem;
+  background-color: #0056b3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.uploadBtn:hover {
+  background-color: #0056b3;
+}
+
+.imagePreview {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin-top: 1rem;
+}
+
+.imagePreview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.removeImageBtn {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: var(--dark-grey);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.removeImageBtn:hover {
+  background-color: var(--primary-black);
 }

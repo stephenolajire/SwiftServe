@@ -133,7 +133,7 @@ const KYCVerification = () => {
           icon: "success",
           timer: 1500,
         });
-        navigate("/");
+        navigate("/kyc-status");
       }
     } catch (error) {
       console.error("KYC submission error:", {

@@ -43,10 +43,38 @@ const App = () => {
             path="individual/dashboard"
             element={<IndividualDashboard />}
           />
-          <Route path="admin/dashboard" element={<AdminDashboard />} />
-          <Route path="company/dashboard" element={<CompanyDashboard />} />
-          <Route path="worker/dashboard" element={<WorkerDashboard />} />
-          <Route path="client/dashboard" element={<ClientDashboard />} />
+          <Route
+            path="admin/dashboard"
+            element={
+              <ProtectedRoute>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="company/dashboard"
+            element={
+              <ProtectedRoute>
+                <CompanyDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="worker/dashboard"
+            element={
+              <ProtectedRoute>
+                <WorkerDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="client/dashboard"
+            element={
+              <ProtectedRoute>
+                <ClientDashboard />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/admin/users/:id" element={<UserDetails />} />
         </Route>
         <Route path="/individual" element={<RegistrationForm />} />
