@@ -27,10 +27,12 @@ import UserDetails from "./pages/UserDetails";
 import ForgotPassword from "./user/ForgotPassword";
 import VerifyPasswordOTP from "./user/VerifyPasswordOTP";
 import ResetPassword from "./user/ResetPassword";
+import ScrollToTop from "./components/ScrollToTop";
 
 const App = () => {
   return (
     <Router>
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Landing />} />

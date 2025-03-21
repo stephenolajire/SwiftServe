@@ -19,7 +19,7 @@
 .title {
   text-align: center;
   color: var(--primary-color);
-  font-size: var(--font-h2);
+  /* font-size: var(--h4-desktop); */
   margin-bottom: 3rem;
 }
 
@@ -30,14 +30,14 @@
 .progressBar {
   width: 100%;
   height: 0.8rem;
-  background-color: var(--light-bg);
+  background-color: var(--bg-light);
   border-radius: 0.4rem;
   overflow: hidden;
 }
 
 .progressFill {
   height: 100%;
-  background-color: var(--accent-yellow);
+  background-color: var(--secondary-color);
   transition: width 0.3s ease;
 }
 
@@ -50,7 +50,7 @@
 
 .sectionTitle {
   color: var(--primary-color);
-  font-size: var(--font-h3);
+  /* font-size: var(--font-h3); */
   margin-bottom: 3rem;
 }
 
@@ -70,13 +70,15 @@
   margin-bottom: 0.8rem;
   color: var(--primary-color);
   font-size: var(--font-body);
-  font-weight: var(--font-medium);
+  /* font-weight: var(--font-medium); */
 }
 
 .input {
   width: 100%;
-  padding: 1.2rem;
-  border: 1px solid var(--border-color);
+  /* padding: 1.2rem; */
+  height: 4rem;
+  padding-left: 1rem;
+  border: 1px solid var(--primary-color);
   border-radius: 0.8rem;
   font-size: var(--font-body);
   transition: border-color 0.3s ease;
@@ -84,7 +86,7 @@
 
 .input:focus {
   outline: none;
-  border-color: var(--accent-yellow);
+  border-color: var(--secondary-color);
 }
 
 .inputError {
@@ -119,7 +121,7 @@
 
 .buttonPrimary {
   background-color: var(--primary-color);
-  color: var(--white);
+  color: var(--bg-light);
   border: none;
 }
 
@@ -140,7 +142,7 @@
 }
 
 .buttonSecondary:hover {
-  background-color: var(--light-bg);
+  background-color: var(--bg-light);
 }
 
 .locationInfo {
@@ -149,7 +151,7 @@
 }
 
 .locationWarning {
-  background-color: var(--light-bg);
+  background-color: var(--bg-light);
   padding: 2rem;
   border-radius: 0.8rem;
   margin-bottom: 3rem;
@@ -174,7 +176,7 @@
   width: 20rem;
   height: 20rem;
   border-radius: 50%;
-  background-color: var(--light-bg);
+  background-color: var(--bg-light);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -192,8 +194,8 @@
 }
 
 .uploadButton:hover {
-  background-color: var(--accent-yellow);
-  color: var(--primary-color);
+  background-color: var(--secondary-color);
+  color: var(--bg-light);
 }
 
 .fileInput {
@@ -214,7 +216,7 @@
 
 .subTitle {
   color: var(--primary-color);
-  font-size: var(--font-h5);
+  font-size: var(--h5-desktop);
   margin-bottom: 2rem;
 }
 
@@ -266,7 +268,7 @@
   text-align: center;
   color: var(--primary-color);
   margin-bottom: 2rem;
-  font-size: var(--font-h2);
+  /* font-size: var(--font-h2); */
 }
 
 .typeContainer {
@@ -288,17 +290,17 @@
   transform: translateY(-5px);
 }
 
-.typeCard h2 {
+.typeCard h5 {
   color: var(--primary-color);
   margin-bottom: 1rem;
-  font-size: var(--font-subheading);
+  /* font-size: var(--font-subheading); */
 }
 
 .typeCard p {
-  color: #666;
+  color: var(--text-dark);
   margin-bottom: 1.5rem;
   line-height: 1.6;
-  font-size: var(--font-body);
+  font-size: 1.6rem;
 }
 
 .typeButton {
@@ -312,7 +314,7 @@
   font-weight: 500;
   transition: background-color 0.3s ease;
   height: 4rem;
-  font-size: var(--font-body);
+  font-size: 1.6rem;
 }
 
 .typeButton:hover {

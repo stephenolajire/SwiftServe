@@ -13,14 +13,13 @@
   gap: 4rem;
 }
 
-.companyInfo h3 {
-  font-size: var(--font-h3);
+.companyInfo h4 {
   margin-bottom: 2rem;
-  color: var(--accent-yellow);
+  color: var(--secondary-color);
 }
 
 .companyInfo p {
-  font-size: var(--font-body);
+  font-size: 1.4rem;
   color: var(--secondary-color);
   margin-bottom: 2rem;
   line-height: 1.6;
@@ -37,14 +36,10 @@
   transition: color 0.3s ease;
 }
 
-.socialLinks a:hover {
-  color: var(--accent-yellow);
-}
 
 .linksSection h4,
 .contactInfo h4 {
-  font-size: var(--font-h5);
-  color: var(--white);
+  color: var(--secondary-color);
   margin-bottom: 2rem;
 }
 
@@ -62,7 +57,7 @@
   color: var(--secondary-color);
   text-decoration: none;
   transition: color 0.3s ease;
-  font-size: var(--font-body);
+  font-size: 1.4rem;
 }
 
 .linksSection ul li a:hover {
@@ -71,7 +66,7 @@
 
 .contactInfo ul li {
   color: var(--secondary-color);
-  font-size: var(--font-body);
+  font-size: 1.4rem;
 }
 
 .bottomBar {
@@ -87,7 +82,7 @@
 
 .bottomBar p {
   color: var(--secondary-color);
-  font-size: var(--font-small);
+  font-size: 1.3rem;
 }
 
 .legal {
@@ -98,7 +93,7 @@
 .legal a {
   color: var(--secondary-color);
   text-decoration: none;
-  font-size: var(--font-small);
+  font-size: 1.3rem;
   transition: color 0.3s ease;
 }
 

@@ -14,17 +14,17 @@
     border-radius: 0.8rem;
 }
 
-.howItWorks > div > h1 {
-    font-size: var(--font-h2);
-    color: var(--primary-black);
+.howItWorks > div > h4 {
+    color: var(--primary-color);
     margin-bottom: var(--spacing-medium);
     text-align: center;
     /* text-decoration: underline; */
+    margin-bottom: 1rem;
 }
 
 .howItWorks > div > p {
-    font-size: var(--font-body);
-    color: var(--light-grey);
+    font-size: 1.6rem;
+    color: var(--tertiary-color);
     line-height: 3rem;
 }
 

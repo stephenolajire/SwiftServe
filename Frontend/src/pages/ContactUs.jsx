@@ -52,12 +52,12 @@ const Contact = () => {
       <div className={styles.contentWrapper}>
         {/* Contact Information */}
         <div className={styles.contactInfo}>
-          <h2>Get In Touch</h2>
+          <h4>Get In Touch</h4>
           <div className={styles.infoItems}>
             <div className={styles.infoItem}>
               <FaPhone className={styles.icon} />
               <div>
-                <h3>Phone</h3>
+                <h5>Phone</h5>
                 <p>+1 (555) 123-4567</p>
                 <p>Mon-Fri 9am-6pm</p>
               </div>
@@ -66,7 +66,7 @@ const Contact = () => {
             <div className={styles.infoItem}>
               <FaEnvelope className={styles.icon} />
               <div>
-                <h3>Email</h3>
+                <h5>Email</h5>
                 <p>support@swiftserve.com</p>
                 <p>24/7 Online Support</p>
               </div>
@@ -75,7 +75,7 @@ const Contact = () => {
             <div className={styles.infoItem}>
               <FaMapMarkerAlt className={styles.icon} />
               <div>
-                <h3>Office</h3>
+                <h5>Office</h5>
                 <p>123 Business Avenue</p>
                 <p>New York, NY 10001</p>
               </div>
@@ -84,7 +84,7 @@ const Contact = () => {
             <div className={styles.infoItem}>
               <FaClock className={styles.icon} />
               <div>
-                <h3>Hours</h3>
+                <h5>Hours</h5>
                 <p>Monday - Friday</p>
                 <p>9:00 AM - 6:00 PM</p>
               </div>

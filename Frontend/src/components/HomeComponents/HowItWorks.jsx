@@ -14,7 +14,7 @@ const HowItWorks = () => {
   return (
     <div className={style.howItWorks}> 
       <div data-aos="zoom-in">
-        <h1>About Us</h1>
+        <h4>About Us</h4>
         <p>
           We are a platform that connects you with a courier (in your
           neighborhood) who can deliver your package to your desired location.
@@ -23,7 +23,7 @@ const HowItWorks = () => {
         </p>
       </div>
       <div data-aos="slide-up">
-        <h1>Our Platform</h1>
+        <h4>Our Platform</h4>
         <p>
           We offer a seamless and user-friendly experience, with real-time
           tracking of your package. We also offer competitive prices and
@@ -31,7 +31,7 @@ const HowItWorks = () => {
         </p>
       </div>
       <div data-aos="zoom-in">
-        <h1>The Benefits</h1>
+        <h4>The Benefits</h4>
         <p>
           From time-saving convenience to cost-effective solutions, our platform
           provides the ultimate in courier services. We offer a range of

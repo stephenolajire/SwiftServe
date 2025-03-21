@@ -9,7 +9,7 @@ const Footer = () => {
       <div className={styles.footerContent}>
         {/* Company Info */}
         <div className={styles.companyInfo}>
-          <h3>SwiftServe</h3>
+          <h4>SwiftServe</h4>
           <p>
             Your trusted delivery partner for quick and reliable courier
             services.

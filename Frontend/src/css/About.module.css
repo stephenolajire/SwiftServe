@@ -12,20 +12,22 @@
 }
 
 .hero h1 {
-  font-size: var(--font-h1);
+  font-size: var(--h1-desktop);
   margin-bottom: 2rem;
+  color: var(--bg-light);
+  margin-top: -2rem;
 }
 
 .hero p {
-  font-size: var(--font-subheading);
-  color: var(--secondary-color);
+  font-size: var(--h5-desktop);
+  color: var(--bg-light);
   max-width: 60rem;
   margin: 0 auto;
 }
 
 .mission {
   padding: 8rem 2rem;
-  background-color: var(--white);
+  background-color: var(--bg-light);
 }
 
 .missionContent {
@@ -34,15 +36,15 @@
   text-align: center;
 }
 
-.missionContent h2 {
-  font-size: var(--font-h2);
+.missionContent h4 {
+  /* font-size: var(--font-h2); */
   color: var(--primary-color);
   margin-bottom: 2rem;
 }
 
 .missionContent p {
-  font-size: var(--font-subheading);
-  color: var(--secondary-color);
+  font-size: var(--h5-desktop);
+  color: var(--text-dark);
   line-height: 1.6;
 }
 
@@ -51,9 +53,9 @@
   background-color: var(--light-bg);
 }
 
-.values h2 {
+.values h4 {
   text-align: center;
-  font-size: var(--font-h2);
+  /* font-size: var(--font-h2); */
   color: var(--primary-color);
   margin-bottom: 6rem;
 }
@@ -85,21 +87,22 @@
   margin-bottom: 2rem;
 }
 
-.valueCard h3 {
-  font-size: var(--font-h5);
+.valueCard h5 {
+  /* font-size: var(--font-h5); */
   color: var(--primary-color);
   margin-bottom: 1.5rem;
 }
 
 .valueCard p {
-  color: var(--secondary-color);
-  font-size: var(--font-body);
+  color: var(--text-dark);
+  font-size:1.6rem;
   line-height: 1.6;
 }
 
 .story {
   padding: 8rem 2rem;
-  background-color: var(--white);
+  background-color: var(--bg-light);
+  margin-bottom: 3rem;
 }
 
 .storyContent {
@@ -111,15 +114,15 @@
   align-items: center;
 }
 
-.storyText h2 {
-  font-size: var(--font-h2);
+.storyText h4 {
+  /* font-size: var(--font-h2); */
   color: var(--primary-color);
   margin-bottom: 3rem;
 }
 
 .storyText p {
-  font-size: var(--font-body);
-  color: var(--secondary-color);
+  font-size: 1.6rem;
+  color: var(--text-dark);
   line-height: 1.8;
   margin-bottom: 2rem;
 }
@@ -144,18 +147,19 @@
 
 .stat {
   text-align: center;
-  color: var(--white);
+  color: var(--bg-light);
+  /* margin-top: 3rem; */
 }
 
-.stat h3 {
-  font-size: var(--font-h2);
-  color: var(--accent-yellow);
+.stat h4 {
+  /* font-size: var(--font-h2); */
+  color: var(--bg-light);
   margin-bottom: 1rem;
 }
 
 .stat p {
-  font-size: var(--font-body);
-  color: var(--secondary-color);
+  font-size: 1.6rem;
+  color: var(--bg-ligh);
 }
 
 @media screen and (max-width: 768px) {
@@ -164,7 +168,7 @@
   }
 
   .hero h1 {
-    font-size: var(--font-h1-mobile);
+    font-size: var(--h1-mobile);
   }
 
   .storyContent {

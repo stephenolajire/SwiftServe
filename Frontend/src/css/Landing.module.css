@@ -19,16 +19,16 @@
   justify-content: center;
 }
 
-.heroContent h1 {
-  color: var(--white);
-  font-size: var(--font-h1);
-  line-height: 1.2;
+.h1 {
+  color: var(--bg-light);
   margin-bottom: 2rem;
+  font-size: var(--h1-desktop);
+  margin-top: -4.5rem;
 }
 
 .heroContent p {
-  color: var(--secondary-color);
-  font-size: var(--font-subheading);
+  color: var(--tertiary-color);
+  font-size: var(--h5-desktop);
   margin-bottom: 4rem;
   line-height: 1.6;
 }
@@ -36,15 +36,16 @@
 .heroCTA {
   display: flex;
   gap: 2rem;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
 }
 
 .primaryButton, .primaryButton2 {
-  background-color: var(--accent-yellow);
-  color: var(--primary-color);
-  /* padding: 1.5rem 3rem; */
+  background-color: var(--secondary-color);
+  color: var(--bg-light);
   border-radius: 0.8rem;
-  font-size: var(--nav-link);
-  font-weight: var(--font-medium);
+  font-size: 1.6rem;
   text-decoration: none;
   transition: all 0.3s ease;
   height: 4rem;
@@ -64,7 +65,8 @@
 }
 
 .primaryButton:hover {
-  background-color: var(--white);
+  background-color: var(--bg-light);
+  color: var(--secondary-color);
 }
 
 .secondaryButton {
@@ -91,13 +93,12 @@
 
 .features {
   padding: 10rem;
-  background-color: var(--light-bg);
+  background-color: var(--bg-light);
 }
 
-.features h2 {
+.features h4 {
   text-align: center;
   color: var(--primary-color);
-  font-size: var(--font-h2);
   margin-bottom: 6rem;
 }
 
@@ -110,7 +111,7 @@
 .featureCard {
   text-align: center;
   padding: 3rem;
-  background-color: var(--white);
+  background-color: var(--bg-light);
   border-radius: 1.5rem;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease;
@@ -122,30 +123,30 @@
 
 .featureIcon {
   font-size: 4rem;
-  color: var(--accent-yellow);
+  color: var(--secondary-color);
   margin-bottom: 2rem;
 }
 
-.featureCard h3 {
+.featureCard h5 {
   color: var(--primary-color);
-  font-size: var(--font-h5);
+  font-size: var(--h5-desktop);
   margin-bottom: 1.5rem;
 }
 
 .featureCard p {
-  color: var(--secondary-color);
-  font-size: var(--font-body);
+  color: var(--tertiary-color);
+  font-size: var(--h6-desktop);
 }
 
 .howItWorks {
   padding: 10rem;
-  background-color: var(--white);
+  background-color: var(--bg-white);
 }
 
-.howItWorks h2 {
+.howItWorks h4 {
   text-align: center;
   color: var(--primary-color);
-  font-size: var(--font-h2);
+  font-size: var(--h4-desktop);
   margin-bottom: 6rem;
 }
 
@@ -162,26 +163,25 @@
 .stepNumber {
   width: 6rem;
   height: 6rem;
-  background-color: var(--accent-yellow);
+  background-color: var(--secondary-color);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: var(--font-h3);
-  font-weight: var(--font-bold);
+  font-size: var(--h4-desktop);
   color: var(--primary-color);
   margin: 0 auto 2rem;
 }
 
-.step h3 {
+.step h5 {
   color: var(--primary-color);
-  font-size: var(--font-h5);
+  /* font-size: var(--h5-desktop); */
   margin-bottom: 1rem;
 }
 
 .step p {
-  color: var(--secondary-color);
-  font-size: var(--font-body);
+  color: var(--tertiary-color);
+  font-size: 1.6rem;
 }
 
 .cta {
@@ -190,15 +190,14 @@
   text-align: center;
 }
 
-.cta h2 {
-  color: var(--white);
-  font-size: var(--font-h2);
+.cta h4 {
+  color: var(--bg-white);
   margin-bottom: 2rem;
 }
 
 .cta p {
-  color: var(--secondary-color);
-  font-size: var(--font-subheading);
+  color: var(--bg-light);
+  font-size: var(--h5-desktop);
   margin-bottom: 4rem;
 }
 
@@ -218,10 +217,6 @@
     padding: 6rem 4rem;
   }
 
-  .heroContent h1 {
-    font-size: var(--font-h1-tablet);
-  }
-
   .features,
   .howItWorks,
   .cta {
@@ -238,6 +233,11 @@
     gap: 2rem;
   }
 
+  .h1 {
+    font-size: var(--h1-mobile);
+    margin-top: 0rem;
+  }
+
   .heroCTA {
     display: grid;
     grid-template-columns: 1fr;
@@ -247,10 +247,6 @@
   .primaryButton,
   .secondaryButton {
     width: 100%;
-  }
-
-  .heroContent h1 {
-    font-size: var(--font-h1-mobile);
   }
 
   .features,
@@ -266,6 +262,10 @@
   .heroImage {
     height: 45rem;
     width: 100%;
+  }
+
+  .heroContent p {
+    font-size: 1.6rem;
   }
 }
 

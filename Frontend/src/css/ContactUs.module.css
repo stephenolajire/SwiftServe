@@ -11,14 +11,14 @@
 }
 
 .header h1 {
-  font-size: var(--font-h1);
+  font-size: var(--h1-desktop);
   color: var(--primary-color);
   margin-bottom: 1.5rem;
 }
 
 .header p {
-  font-size: var(--font-subheading);
-  color: var(--secondary-color);
+  font-size: 1.8rem;
+  color: var(--text-dark);
 }
 
 .contentWrapper {
@@ -32,12 +32,13 @@
   background-color: var(--primary-color);
   padding: 4rem;
   border-radius: 2rem;
-  color: var(--white);
+  /* color: var(--bg-light); */
 }
 
-.contactInfo h2 {
-  font-size: var(--font-h3);
+.contactInfo h4 {
+  font-size: var(--h4-desktop);
   margin-bottom: 3rem;
+  color: var(--bg-light);
 }
 
 .infoItems {
@@ -53,18 +54,18 @@
 
 .icon {
   font-size: 2.4rem;
-  color: var(--accent-yellow);
+  color: var(--bg-light);
 }
 
-.infoItem h3 {
-  font-size: var(--font-h5);
+.infoItem h5 {
   margin-bottom: 0.8rem;
+  color: var(--bg-light);
 }
 
 .infoItem p {
-  color: var(--secondary-color);
-  font-size: var(--font-body);
-  line-height: 1.6;
+  color: var(--bg-light);
+  font-size: 1.3rem;
+  line-height: 2.5rem;
 }
 
 .formSection {
@@ -89,6 +90,7 @@
   font-size: var(--font-body);
   color: var(--primary-color);
   font-weight: var(--font-medium);
+  font-size: 1.6rem;
 }
 
 .formGroup input,
@@ -96,14 +98,14 @@
   padding: 1.2rem;
   border: 1px solid var(--border-color);
   border-radius: 0.8rem;
-  font-size: var(--font-body);
+  font-size: 1.6rem;
   transition: border-color 0.3s ease;
 }
 
 .formGroup input:focus,
 .formGroup textarea:focus {
   outline: none;
-  border-color: var(--accent-yellow);
+  border-color: var(--secondary-color);
 }
 
 .errorInput {
@@ -117,12 +119,12 @@
 
 .submitButton {
   background-color: var(--primary-color);
-  color: var(--white);
-  padding: 1.2rem;
+  color: var(--bg-light);
+  /* padding: 1.2rem; */
+  height: 4rem;
   border: none;
   border-radius: 0.8rem;
-  font-size: var(--font-body);
-  font-weight: var(--font-medium);
+  font-size: 1.6rem;
   cursor: pointer;
   transition: all 0.3s ease;
   margin-top: 1rem;
@@ -146,7 +148,8 @@
   }
 
   .header h1 {
-    font-size: var(--font-h1-mobile);
+    /* font-size: var(--font-h1-mobile); */
+    font-size: var(--h1-mobile);
   }
 
   .contactInfo,

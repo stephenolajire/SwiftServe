@@ -296,7 +296,7 @@ const RegistrationForm = () => {
   return (
     <div className={styles.cont}>
       <div className={styles.formContainer}>
-        <h1 className={styles.title}>Create Your Account</h1>
+        <h4 className={styles.title}>Create Your Account</h4>
 
         {/* Progress Bar */}
         <div className={styles.progressContainer}>
@@ -313,7 +313,7 @@ const RegistrationForm = () => {
           {/* Step 1: Account Details */}
           {step === 1 && (
             <div>
-              <h2 className={styles.sectionTitle}>Account Details</h2>
+              <h5 className={styles.sectionTitle}>Account Details</h5>
               <div className={styles.formGroup}>
                 <label className={styles.label}>Email *</label>
                 <input

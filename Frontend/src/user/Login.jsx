@@ -202,7 +202,7 @@ const Login = () => {
   return (
     <div className={styles.container}>
       <div className={styles.formContainer}>
-        <h1 className={styles.title}>Welcome Back</h1>
+        <h4 className={styles.title}>Welcome Back</h4>
         <form onSubmit={handleSubmit}>
           <div className={styles.formGroup}>
             <label className={styles.label}>Email</label>

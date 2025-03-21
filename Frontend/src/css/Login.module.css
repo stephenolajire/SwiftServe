@@ -18,10 +18,10 @@
 
 .title {
   color: var(--primary-color);
-  font-size: var(--font-h2);
+  /* font-size: var(--font-h2); */
   margin-bottom: 3rem;
   text-align: center;
-  font-weight: var(--font-bold);
+  /* font-weight: var(--font-bold); */
 }
 
 .formGroup {
@@ -30,25 +30,27 @@
 
 .label {
   display: block;
-  font-size: var(--nav-link);
+  font-size: var(--font-body);
   color: var(--primary-color);
-  margin-bottom: 0.8rem;
-  font-weight: var(--font-medium);
+  margin-bottom: 0.5rem;
+  /* font-weight: var(--font-medium); */
 }
 
 .input {
   width: 100%;
-  padding: 1.2rem;
+  /* padding: 1.2rem; */
+  height: 4rem;
   font-size: var(--font-body);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--primary-color);
   border-radius: 0.8rem;
-  background-color: var(--white);
+  background-color: var(--bg-light);
+  padding-left: 1rem;
   transition: border-color 0.3s ease;
 }
 
 .input:focus {
   outline: none;
-  border-color: var(--primary-color);
+  border-color: var(--secondary-color);
 }
 
 .inputError {
@@ -63,13 +65,15 @@
 
 .submitButton {
   width: 100%;
-  padding: 1.2rem;
+  /* padding: 1.2rem; */
+  height: 4rem;
+  padding-left:1rem ;
   background-color: var(--primary-color);
-  color: var(--white);
+  color: var(--bg-light);
   border: none;
   border-radius: 0.8rem;
-  font-size: var(--nav-link);
-  font-weight: var(--font-medium);
+  font-size: var(--font-body);
+  /* font-weight: var(--font-medium); */
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
@@ -79,7 +83,7 @@
 }
 
 .submitButton:disabled {
-  background-color: var(--border-color);
+  background-color: var(--text-light);
   cursor: not-allowed;
 }
 
@@ -87,11 +91,11 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.8rem;
+  margin-bottom: 0.4rem;
 }
 
 .forgotPassword {
-  font-size: var(--font-small);
+  font-size: var(--font-body);
   color: blue;
   text-decoration: none;
   transition: color 0.3s ease;
@@ -104,8 +108,9 @@
 .signupText {
   margin-top: 2rem;
   text-align: center;
-  font-size: var(--font-small);
-  color: var(--secondary-color);
+  font-size: var(--font-body);
+  color: var(--primary-color);
+  /* color: var(--secondary-color); */
 }
 
 .signupLink {

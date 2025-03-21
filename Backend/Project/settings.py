@@ -51,6 +51,8 @@ INSTALLED_APPS = [
     'KYC',
     # 'django_crontab',
     'Dashboard',
+    'Client',
+    'Company',
 ]
 
 MIDDLEWARE = [

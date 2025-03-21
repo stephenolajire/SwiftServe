@@ -17,7 +17,7 @@ const BecomeCourier = () => {
         <div className={styles.optionCard}>
           <div className={styles.optionHeader}>
             <FaUserTie className={styles.optionIcon} />
-            <h2>Individual Courier</h2>
+            <h5>Individual Courier</h5>
           </div>
           <p>Work independently, choose your schedule, and earn money delivering packages</p>
           <ul className={styles.benefits}>
@@ -27,7 +27,7 @@ const BecomeCourier = () => {
             <li><FaShieldAlt /> Insurance Coverage</li>
           </ul>
           <div className={styles.requirements}>
-            <h3>Requirements:</h3>
+            <h5>Requirements:</h5>
             <ul>
               <li>Valid ID/Driver's License</li>
               <li>18+ Years Old</li>
@@ -43,7 +43,7 @@ const BecomeCourier = () => {
         <div className={styles.optionCard}>
           <div className={styles.optionHeader}>
             <FaBuilding className={styles.optionIcon} />
-            <h2>Company Partnership</h2>
+            <h5>Company Partnership</h5>
           </div>
           <p>Register your delivery company and expand your business reach</p>
           <ul className={styles.benefits}>
@@ -53,7 +53,7 @@ const BecomeCourier = () => {
             <li><FaShieldAlt /> Business Insurance</li>
           </ul>
           <div className={styles.requirements}>
-            <h3>Requirements:</h3>
+            <h5>Requirements:</h5>
             <ul>
               <li>Business Registration</li>
               <li>Fleet Information</li>
@@ -69,26 +69,26 @@ const BecomeCourier = () => {
 
       {/* How It Works Section */}
       <section className={styles.howItWorks}>
-        <h2>How It Works</h2>
+        <h4>How It Works</h4>
         <div className={styles.steps}>
           <div className={styles.step}>
             <div className={styles.stepNumber}>1</div>
-            <h3>Register</h3>
+            <h5>Register</h5>
             <p>Choose your registration type and complete the application</p>
           </div>
           <div className={styles.step}>
             <div className={styles.stepNumber}>2</div>
-            <h3>Verify</h3>
+            <h5>Verify</h5>
             <p>Submit required documents for verification</p>
           </div>
           <div className={styles.step}>
             <div className={styles.stepNumber}>3</div>
-            <h3>Training</h3>
+            <h5>Training</h5>
             <p>Complete our online training program</p>
           </div>
           <div className={styles.step}>
             <div className={styles.stepNumber}>4</div>
-            <h3>Start Earning</h3>
+            <h5>Start Earning</h5>
             <p>Begin accepting delivery requests and earn money</p>
           </div>
         </div>
@@ -96,22 +96,22 @@ const BecomeCourier = () => {
 
       {/* FAQ Section */}
       <section className={styles.faq}>
-        <h2>Frequently Asked Questions</h2>
+        <h4>Frequently Asked Questions</h4>
         <div className={styles.faqGrid}>
           <div className={styles.faqItem}>
-            <h3>How much can I earn?</h3>
-            <p>Earnings vary based on deliveries completed, distance, and time. Individual couriers typically earn $15-25 per hour.</p>
+            <h5>How much do I make ?</h5>
+            <p>Earnings vary based on deliveries completed, distance, and time.</p>
           </div>
           <div className={styles.faqItem}>
-            <h3>When do I get paid?</h3>
+            <h6>When do I get paid ?</h6>
             <p>We process payments weekly, with direct deposits to your registered bank account.</p>
           </div>
           <div className={styles.faqItem}>
-            <h3>What areas can I work in?</h3>
+            <h6>What areas can I work ?</h6>
             <p>You can choose your preferred delivery zones within our service areas.</p>
           </div>
           <div className={styles.faqItem}>
-            <h3>Do I need insurance?</h3>
+            <h6>Do I need insurance ?</h6>
             <p>Yes, we provide basic courier insurance, but additional coverage is recommended.</p>
           </div>
         </div>
@@ -119,7 +119,7 @@ const BecomeCourier = () => {
 
       {/* CTA Section */}
       <section className={styles.cta}>
-        <h2>Ready to Start?</h2>
+        <h4>Ready to Start?</h4>
         <p>Join thousands of successful couriers on SwiftServe</p>
         <div className={styles.ctaButtons}>
           <Link to="/register" className={styles.primaryButton}>

@@ -3,11 +3,10 @@ import { FaUpload, FaTrash } from "react-icons/fa";
 import styles from "../css/CompanyRegistration.module.css";
 import Swal from "sweetalert2";
 import api from "../constant/api";
-import {useNavigate} from 'react-router-dom'
+import { useNavigate } from "react-router-dom";
 
 const CompanyRegistration = () => {
-
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     companyName: "",
     registrationNumber: "",
@@ -231,7 +230,7 @@ const CompanyRegistration = () => {
           fleetSize: "",
           fleetType: "",
           password: "",
-          confirm_password: ""
+          confirm_password: "",
         });
         setDocuments({
           businessLicense: null,
@@ -239,7 +238,7 @@ const CompanyRegistration = () => {
           taxClearance: null,
           cacCertificate: null,
         });
-        navigate('/kyc')
+        navigate("/kyc");
       }
     } catch (error) {
       console.error("Registration error:", error);
@@ -254,7 +253,7 @@ const CompanyRegistration = () => {
   return (
     <div className={styles.container}>
       <div className={styles.formWrapper}>
-        <h1 className={styles.title}>Company Registration</h1>
+        <h4 className={styles.title}>Company Registration</h4>
         <p className={styles.description}>
           Register your courier company to expand your delivery services through
           our platform.

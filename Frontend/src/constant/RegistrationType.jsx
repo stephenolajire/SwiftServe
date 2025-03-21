@@ -32,12 +32,12 @@ const RegistrationType = () => {
   return (
     <div>
       <div className={styles.registrationTypes}>
-        <h1 className={styles.mainTitle}>Choose Registration Type</h1>
+        <h4 className={styles.mainTitle}>Choose Registration Type</h4>
         <div className={styles.typeContainer}>
           {Object.entries(registrationTypes).map(
             ([key, { title, description, path }]) => (
               <div key={key} className={styles.typeCard}>
-                <h2>{title}</h2>
+                <h5>{title}</h5>
                 <p>{description}</p>
                 <button
                   onClick={() => handleRegistrationTypeSelect(path)}

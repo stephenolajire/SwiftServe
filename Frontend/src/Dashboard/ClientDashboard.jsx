@@ -120,7 +120,7 @@ const ClientDashboard = () => {
   return (
     <div className={styles.dashboard}>
       <div className={styles.header}>
-        <h1>Welcome Back, John</h1>
+        <h1>Welcome Back, {userName}</h1>
         <Link to="/add-item">
           <button className={styles.newDeliveryBtn}>
             <FaPlus /> New Delivery Request
