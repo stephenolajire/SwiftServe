@@ -12,9 +12,9 @@
   margin-bottom: 3rem;
 }
 
-.header h1 {
-  font-size: var(--font-h2);
-  color: var(--primary-black);
+.header h4 {
+  /* font-size: var(--font-h2); */
+  color: var(--text-dark);
 }
 
 .newDeliveryBtn {
@@ -23,17 +23,18 @@
   gap: 1rem;
   padding: 1.2rem 2.4rem;
   background: var(--primary-color);
-  color: var(--white);
+  color: var(--bg-light);
   border: none;
-  border-radius: var(--border-radius);
+  /* border-radius: var(--border-radius); */
   font-size: var(--font-body);
-  font-weight: var(--font-medium);
+  /* font-weight: var(--font-medium); */
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .newDeliveryBtn:hover {
-  background: var(--accent-yellow);
+  background: var(--secondary-color);
+  color: var(--bg-light);
   transform: translateY(-2px);
 }
 
@@ -63,20 +64,20 @@
   color: var(--accent-yellow);
   margin-right: 2rem;
   padding: 1.5rem;
-  background: #ffc1071f;
+  background: var(--bg-light);
   border-radius: 50%;
 }
 
-.statInfo h3 {
-  font-size: var(--font-h6);
-  color: var(--light-grey);
+.statInfo h5 {
+  /* font-size: var(--font-h6); */
+  color: var(--text-dark);
   margin-bottom: 0.5rem;
 }
 
 .statInfo p {
-  font-size: var(--font-h4);
-  color: var(--primary-black);
-  font-weight: var(--font-bold);
+  font-size: var(--font-body);
+  color: var(--text-dark);
+  font-weight: 500;
 }
 
 .contentGrid {
@@ -87,45 +88,87 @@
 
 .deliverySection,
 .trackingSection {
-  background: var(--white);
-  border-radius: var(--border-radius);
+  background: var(--bg-light);
+  /* border-radius: var(--border-radius); */
   padding: 2rem;
   box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.1);
 }
 
+.trackingSection {
+  background: var(--white);
+  border-radius: var(--border-radius);
+  padding: 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
 .sectionHeader {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  gap: 0.5rem;
+  color: var(--text-dark);
+}
+
+.sectionHeader svg {
+  color: var(--primary-color);
 }
 
 .filterSelect {
   padding: 1rem 2rem;
-  border: 0.1rem solid var(--border-color);
-  border-radius: var(--border-radius);
+  border: 0.1rem solid var(--bg-light);
+  /* border-radius: var(--border-radius); */
   font-size: var(--font-body);
-  color: var(--dark-grey);
-  background: var(--white);
+  color: var(--text-dark);
+  background: var(--bg-light);
   cursor: pointer;
 }
 
 .trackingMap {
-  height: 30rem;
-  background: var(--light-bg);
+  height: 400px;
   border-radius: var(--border-radius);
-  margin-bottom: 2rem;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  margin: 1rem 0;
+}
+
+.activeDeliveryInfo {
+  background: var(--bg-light);
+  padding: 1rem;
+  border-radius: var(--border-radius);
+}
+
+.deliveryMeta {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.noTracking {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  color: var(--text-muted);
+  text-align: center;
+  gap: 1rem;
+  background: var(--bg-light);
+  border-radius: var(--border-radius);
+  margin: 1rem 0;
 }
 
 .deliveryUpdates {
   padding: 1.5rem;
-  background: var(--light-bg);
+  background: var(--bg-light);
   border-radius: var(--border-radius);
 }
 
-.deliveryUpdates h3 {
-  font-size: var(--font-subheading);
-  color: var(--primary-black);
+.deliveryUpdates h5 {
+  /* font-size: var(--font-subheading); */
+  color: var(--text-dark);
   margin-bottom: 1.5rem;
 }
 
@@ -155,6 +198,12 @@
   border-radius: 20px;
   font-size: 0.875rem;
   font-weight: 500;
+}
+
+.detail {
+  color: var(--text-dark);
+  font-size: var(--font-small);
+  font-weight: 450;
 }
 
 .pending {
@@ -236,21 +285,89 @@
 }
 
 .updateTime {
-  color: var(--dark-grey);
-  font-size: 1rem;
+  color: var(--text-dark);
+  font-size: var(--font-small);
   min-width: 80px;
 }
 
 .updateContent h4 {
   margin: 0;
   font-size: 1.6rem;
-  color: var(--primary-black);
+  color: var(--primary-color);
 }
 
 .updateContent p {
   margin: 0.25rem 0 0;
   font-size: 1.6rem;
-  color: var(--dark-grey);
+  color: var(--text-dark);
+}
+
+.cardActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-sm);
+  border-top: 1px solid var(--border-color);
+}
+
+.chatButton {
+  background: var(--primary-color);
+  color: var(--text-light);
+  border: none;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.chatButton:hover {
+  background: var(--bg-dark);
+}
+
+.chatButton {
+  position: relative;
+  padding: 8px 16px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.chatButton.hasUnread {
+  background-color: var(--primary-color);
+  animation: pulse 2s infinite;
+}
+
+.chatButtonContent {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.messageIndicator {
+  position: absolute;
+  /* top: -8px; */
+  right: -8px;
+  z-index: 1;
 }
 
 @keyframes spin {
@@ -260,6 +377,36 @@
   100% {
     transform: rotate(360deg);
   }
+}
+
+.trackingDeliveryCard {
+  background: var(--bg-light);
+  padding: 1.5rem;
+  border-radius: var(--border-radius);
+  margin: 1rem 0;
+}
+
+.trackingDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  font-size: var(--font-body);
+}
+
+.statusBadge {
+  display: inline-block;
+  height: 3rem;
+  background: var(--primary-color);
+  color: white;
+  border-radius: 1rem;
+  font-size: var(--font-small);
+  margin-top: 0.5rem;
+  /* text-align: center; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
 }
 
 @media (max-width: 768px) {

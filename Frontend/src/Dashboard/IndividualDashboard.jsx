@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styles from '../css/Individual.module.css';
 import { FaBox, FaTruck, FaHistory, FaStar, FaWallet } from 'react-icons/fa';
+import { MEDIA_BASE_URL } from '../constant/api';
 
 const IndividualDashboard = () => {
   const [activeDeliveries, setActiveDeliveries] = useState([]);
@@ -19,7 +20,7 @@ const IndividualDashboard = () => {
             <FaBox />
           </div>
           <div className={styles.statInfo}>
-            <h3>Active Deliveries</h3>
+            <h5>Active Deliveries</h5>
             <p>{activeDeliveries.length}</p>
           </div>
         </div>
@@ -29,7 +30,7 @@ const IndividualDashboard = () => {
             <FaHistory />
           </div>
           <div className={styles.statInfo}>
-            <h3>Completed Deliveries</h3>
+            <h5>Completed Deliveries</h5>
             <p>{deliveryHistory.length}</p>
           </div>
         </div>
@@ -39,7 +40,7 @@ const IndividualDashboard = () => {
             <FaStar />
           </div>
           <div className={styles.statInfo}>
-            <h3>Rating</h3>
+            <h5>Rating</h5>
             <p>4.8/5.0</p>
           </div>
         </div>
@@ -49,7 +50,7 @@ const IndividualDashboard = () => {
             <FaWallet />
           </div>
           <div className={styles.statInfo}>
-            <h3>Today's Earnings</h3>
+            <h5>Today's Earnings</h5>
             <p>₦{earnings.today.toLocaleString()}</p>
           </div>
         </div>
@@ -57,12 +58,12 @@ const IndividualDashboard = () => {
 
       <div className={styles.contentGrid}>
         <div className={styles.activeDeliveries}>
-          <h2>Active Deliveries</h2>
+          <h5>Active Deliveries</h5>
           {/* Active deliveries list */}
         </div>
 
         <div className={styles.earnings}>
-          <h2>Earnings Overview</h2>
+          <h5>Earnings Overview</h5>
           {/* Earnings chart */}
         </div>
       </div>

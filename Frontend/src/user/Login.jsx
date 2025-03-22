@@ -140,7 +140,7 @@ const Login = () => {
               navigate("/kyc-rejected")
             }
             else {
-              navigate("/individual/dashboard");
+              navigate("/worker/dashboard");
             }
             break;
           case "COMPANY":

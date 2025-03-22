@@ -26,6 +26,7 @@ import { Link } from "react-router-dom";
 import api from "../constant/api";
 import Swal from "sweetalert2";
 import styles from "../css/CompanyDashboard.module.css";
+import { MEDIA_BASE_URL } from "../constant/api";
 
 const CompanyDashboard = () => {
   const [activeTab, setActiveTab] = useState("dashboard");

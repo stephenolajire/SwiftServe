@@ -1,7 +1,8 @@
 from django.db import models
 from Auth.models import CustomUser
-from django.core.validators import MinValueValidator
-from django.core.validators import MinValueValidator, FileExtensionValidator
+from django.core.validators import MinValueValidator, MaxValueValidator, FileExtensionValidator
+import json
+from django.utils import timezone
 
 class Delivery(models.Model):
     STATUS_CHOICES = [
@@ -109,6 +110,41 @@ class Delivery(models.Model):
         null=True,
         blank=True
     )
+    completed_at = models.DateTimeField(null=True, blank=True)
+    worker_earnings = models.DecimalField(
+        max_digits=10, 
+        decimal_places=2, 
+        null=True, 
+        blank=True
+    )
+    rating = models.DecimalField(
+        max_digits=3, 
+        decimal_places=1, 
+        null=True, 
+        blank=True,
+        validators=[MinValueValidator(0), MaxValueValidator(5)]
+    )
+
+    # Add this field to store last read timestamps for each user
+    _last_read = models.TextField(default='{}', db_column='last_read')
+
+    current_latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    current_longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    location_updated_at = models.DateTimeField(null=True, blank=True)
+
+    transit_start_time = models.DateTimeField(null=True, blank=True)
+    delivery_completed_at = models.DateTimeField(null=True, blank=True)
+
+    @property
+    def last_read(self):
+        try:
+            return json.loads(self._last_read)
+        except:
+            return {}
+
+    @last_read.setter
+    def last_read(self, value):
+        self._last_read = json.dumps(value)
 
     class Meta:
         ordering = ['-created_at']
@@ -116,3 +152,28 @@ class Delivery(models.Model):
 
     def __str__(self):
         return f"Delivery {self.id} - {self.itemName}"
+
+    # Add a method to validate status transitions
+    def can_transition_to(self, new_status):
+        valid_transitions = {
+            'ACCEPTED': ['IN_TRANSIT'],
+            'IN_TRANSIT': ['DELIVERED'],
+        }
+        return new_status in valid_transitions.get(self.status, [])
+
+class ChatMessage(models.Model):
+    MESSAGE_TYPES = [
+        ('VERIFICATION', 'Verification'),
+        ('GENERAL', 'General'),
+    ]
+
+    delivery = models.ForeignKey('Delivery', on_delete=models.CASCADE, related_name='messages')
+    sender = models.ForeignKey('Auth.CustomUser', on_delete=models.CASCADE)
+    sender_type = models.CharField(max_length=10)  # WORKER or CLIENT
+    message = models.TextField(null=True, blank=True)
+    image = models.ImageField(upload_to='chat_images/', null=True, blank=True)
+    type = models.CharField(max_length=20, choices=MESSAGE_TYPES, default='GENERAL')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['created_at']

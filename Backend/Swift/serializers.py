@@ -1,6 +1,6 @@
 from decimal import Decimal
 from rest_framework import serializers
-from .models import Delivery
+from .models import Delivery, ChatMessage
 from django.utils import timezone
 from django.core.validators import FileExtensionValidator
 from django.core.files.images import get_image_dimensions
@@ -192,3 +192,17 @@ class DeliverySerializer(serializers.ModelSerializer):
         #         return round(final_price, 2)
         #     except (TypeError, ValueError) as e:
         #         raise serializers.ValidationError(f"Error calculating final price: {str(e)}")
+
+class ChatMessageSerializer(serializers.ModelSerializer):
+    sender_name = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = ChatMessage
+        fields = [
+            'id', 'delivery', 'sender_type', 'sender_name',
+            'message', 'image', 'type', 'created_at'
+        ]
+        read_only_fields = ['sender_type', 'sender_name']
+
+    def get_sender_name(self, obj):
+        return f"{obj.sender.firstName} {obj.sender.lastName}"

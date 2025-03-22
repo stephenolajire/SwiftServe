@@ -1,104 +1,78 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaCheck, FaStar, FaSearch, FaTimes } from "react-icons/fa";
 import styles from "../css/Listing.module.css";
+import api from "../constant/api";
+import Swal from "sweetalert2";
+import { MEDIA_BASE_URL } from "../constant/api";
 
 const CourierListings = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [savedItems, setSavedItems] = useState([]);
+  const [deliveries, setDeliveries] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Mock data - replace with your API data
-  const items = [
-    {
-      id: 1,
-      name: "Electronics Package",
-      image: "https://images.unsplash.com/photo-1589492477829-5e65395b66cc",
-      weight: "2.5 kg",
-      address: "123 Tech Street, Digital District",
-      location: "Shop 15, Digital Mall",
-      status: "Available",
-    },
-    {
-      id: 2,
-      name: "Fresh Food Delivery",
-      image: "https://images.unsplash.com/photo-1498837167922-ddd27525d352",
-      weight: "1.8 kg",
-      address: "45 Foodie Lane, Culinary Corner",
-      location: "Restaurant Zone, Block B",
-      status: "Urgent",
-    },
-    {
-      id: 3,
-      name: "Fashion Package",
-      image: "https://images.unsplash.com/photo-1556905055-8f358a7a47b2",
-      weight: "0.8 kg",
-      address: "789 Style Avenue",
-      location: "Fashion Hub, Level 2",
-      status: "Available",
-    },
-    {
-      id: 4,
-      name: "Medical Supplies",
-      image: "https://images.unsplash.com/photo-1583947215259-38e31be8751f",
-      weight: "3.2 kg",
-      address: "456 Health Street",
-      location: "Medical Center, Wing A",
-      status: "Priority",
-    },
-    {
-      id: 5,
-      name: "Book Collection",
-      image: "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f",
-      weight: "4.5 kg",
-      address: "321 Reader's Lane",
-      location: "Library Complex, Room 101",
-      status: "Available",
-    },
-    {
-      id: 6,
-      name: "Sports Equipment",
-      image: "https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5",
-      weight: "5.0 kg",
-      address: "159 Athletics Road",
-      location: "Sports Center, Locker 24",
-      status: "Express",
-    },
-    {
-      id: 7,
-      name: "Art Supplies",
-      image: "https://images.unsplash.com/photo-1513364776144-60967b0f800f",
-      weight: "1.2 kg",
-      address: "753 Creative Street",
-      location: "Art Studio, Unit 7",
-      status: "Available",
-    },
-    {
-      id: 8,
-      name: "Home Decor Items",
-      image: "https://images.unsplash.com/photo-1513519245088-0e12902e5a38",
-      weight: "3.7 kg",
-      address: "852 Interior Avenue",
-      location: "Decor Mall, Shop 32",
-      status: "Fragile",
-    },
-    {
-      id: 9,
-      name: "Office Supplies",
-      image: "https://images.unsplash.com/photo-1497032205916-ac775f0649ae",
-      weight: "2.9 kg",
-      address: "951 Business Boulevard",
-      location: "Office Tower, Floor 15",
-      status: "Available",
-    },
-    {
-      id: 10,
-      name: "Gift Package",
-      image: "https://images.unsplash.com/photo-1549465220-1a8b9238cd48",
-      weight: "1.5 kg",
-      address: "357 Celebration Road",
-      location: "Gift Center, Kiosk 5",
-      status: "Express",
-    },
-  ];
+  useEffect(() => {
+    fetchDeliveries();
+  }, []);
+
+  const fetchDeliveries = async () => {
+    try {
+      setLoading(true);
+      const response = await api.get("deliveries/");
+
+      // Transform the API response to match our data structure
+      const formattedDeliveries = response.data.data.map((delivery) => ({
+        id: delivery.id,
+        name: delivery.itemName,
+        image: delivery.itemImage || "https://via.placeholder.com/300",
+        weight: `${delivery.weight} kg`,
+        address: delivery.pickupAddress,
+        location: `${delivery.pickupCity}, ${delivery.pickupState}`,
+        status: delivery.status,
+        price: delivery.estimated_price,
+        category: delivery.category,
+        description: delivery.itemDescription,
+        fragile: delivery.fragile,
+        recipientName: delivery.recipientName,
+        recipientPhone: delivery.recipientPhone,
+      }));
+
+      setDeliveries(formattedDeliveries);
+    } catch (error) {
+      console.error("Error fetching deliveries:", error);
+      Swal.fire({
+        title: "Error",
+        text: "Failed to fetch available deliveries",
+        icon: "error",
+        confirmButtonColor: "#007BFF",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleApply = async (item) => {
+    try {
+      const response = await api.post(`deliveries/${item.id}/accept/`);
+
+      if (response.data.status === "success") {
+        Swal.fire({
+          title: "Success",
+          text: "Delivery request accepted successfully",
+          icon: "success",
+          confirmButtonColor: "#007BFF",
+        });
+        fetchDeliveries(); // Refresh the list
+      }
+    } catch (error) {
+      Swal.fire({
+        title: "Error",
+        text: error.response?.data?.message || "Failed to accept delivery",
+        icon: "error",
+        confirmButtonColor: "#007BFF",
+      });
+    }
+  };
 
   const toggleSave = (itemId) => {
     setSavedItems((prev) =>
@@ -108,56 +82,81 @@ const CourierListings = () => {
     );
   };
 
-  const handleApply = (item) => {
-    // Implement apply logic
-  };
-
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>Available Deliveries</h1>
 
-      <div className={styles.grid}>
-        {items.map((item) => (
-          <div key={item.id} className={styles.card}>
-            <div className={styles.imageContainer}>
-              <img src={item.image} alt={item.name} className={styles.image} />
-              <div className={styles.status}>{item.status}</div>
-            </div>
-
-            <div className={styles.content}>
-              <h2 className={styles.itemName}>{item.name}</h2>
-
-              <div className={styles.actions}>
-                <button
-                  onClick={() => handleApply(item)}
-                  className={`${styles.actionButton} ${styles.applyButton}`}
-                >
-                  <FaCheck />
-                  <span>Apply</span>
-                </button>
-
-                <button
-                  onClick={() => toggleSave(item.id)}
-                  className={`${styles.actionButton} ${styles.saveButton} ${
-                    savedItems.includes(item.id) ? styles.saved : ""
+      {loading ? (
+        <div className={styles.loading}>
+          <div className={styles.spinner}></div>
+          <p>Loading deliveries...</p>
+        </div>
+      ) : deliveries.length > 0 ? (
+        <div className={styles.grid}>
+          {deliveries.map((item) => (
+            <div key={item.id} className={styles.card}>
+              <div className={styles.imageContainer}>
+                <img
+                  src={
+                    item.image?.startsWith("http")
+                      ? item.image
+                      : `${MEDIA_BASE_URL}${item.image}`
+                  }
+                  alt={item.name}
+                  className={styles.image}
+                  onError={(e) => {
+                    e.target.src = "https://via.placeholder.com/300";
+                  }}
+                />
+                <div
+                  className={`${styles.status} ${
+                    styles[item.status.toLowerCase()]
                   }`}
                 >
-                  <FaStar />
-                  <span>Save</span>
-                </button>
+                  {item.status}
+                </div>
+              </div>
 
-                <button
-                  onClick={() => setSelectedItem(item)}
-                  className={`${styles.actionButton} ${styles.detailsButton}`}
-                >
-                  <FaSearch />
-                  <span>Details</span>
-                </button>
+              <div className={styles.content}>
+                <h5 className={styles.itemName}>{item.name}</h5>
+                <p className={styles.price}>₦{item.price?.toLocaleString()}</p>
+
+                <div className={styles.actions}>
+                  <button
+                    onClick={() => handleApply(item)}
+                    className={`${styles.actionButton} ${styles.applyButton}`}
+                  >
+                    <FaCheck />
+                    <span>Accept</span>
+                  </button>
+
+                  <button
+                    onClick={() => setSelectedItem(item)}
+                    className={`${styles.actionButton} ${styles.detailsButton}`}
+                  >
+                    <FaSearch />
+                    <span>Details</span>
+                  </button>
+
+                  <button
+                    onClick={() => toggleSave(item.id)}
+                    className={`${styles.saveButton} ${styles.actionButton} ${
+                      savedItems.includes(item.id) ? styles.saved : ""
+                    }`}
+                  >
+                    <FaStar />
+                    {savedItems.includes(item.id) ? "Saved" : "Save"}
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <div className={styles.noDeliveries}>
+          <p>No deliveries available at the moment</p>
+        </div>
+      )}
 
       {/* Details Modal */}
       {selectedItem && (
@@ -181,22 +180,38 @@ const CourierListings = () => {
               />
 
               <div className={styles.modalDetails}>
-                <h2>{selectedItem.name}</h2>
-                <p>
-                  <strong>Weight:</strong> {selectedItem.weight}
-                </p>
-                <p>
-                  <strong>Pickup Address:</strong> {selectedItem.address}
-                </p>
-                <p>
-                  <strong>Location:</strong> {selectedItem.location}
-                </p>
+                <h5>{selectedItem.name}</h5>
+                <div className={styles.detailsGrid}>
+                  <p>
+                    <strong>Weight:</strong> {selectedItem.weight}
+                  </p>
+                  <p>
+                    <strong>Price:</strong> ₦
+                    {selectedItem.price?.toLocaleString()}
+                  </p>
+                  <p>
+                    <strong>Category:</strong> {selectedItem.category}
+                  </p>
+                  <p>
+                    <strong>Fragile:</strong>{" "}
+                    {selectedItem.fragile ? "Yes" : "No"}
+                  </p>
+                  <p>
+                    <strong>Pickup Address:</strong> {selectedItem.address}
+                  </p>
+                  <p>
+                    <strong>Location:</strong> {selectedItem.location}
+                  </p>
+                  <p>
+                    <strong>Description:</strong> {selectedItem.description}
+                  </p>
+                </div>
 
                 <button
                   onClick={() => handleApply(selectedItem)}
                   className={styles.modalApplyButton}
                 >
-                  Request Pickup
+                  Accept Delivery
                 </button>
               </div>
             </div>

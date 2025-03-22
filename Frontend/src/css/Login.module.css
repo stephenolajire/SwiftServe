@@ -129,9 +129,9 @@
     padding: 2rem;
   }
 
-  .title {
+  /* .title {
     font-size: var(--font-h3);
-  }
+  } */
 
   .input {
     padding: 1rem;

@@ -1,38 +1,39 @@
 .container {
-  background-color: var(--primary-color);
-  min-height: 100vh;
-  padding: 4rem;
-  margin-top: 10rem;
+  width: 100%;
+  /* margin: 0 auto; */
+  /* padding: var(--spacing-lg); */
+  margin-top: 13rem;
+  padding: 0rem 5rem;
 }
 
 .title {
-  color: var(--white);
-  font-size: var(--font-h2);
-  margin-bottom: 4rem;
+  margin-bottom: var(--spacing-xl);
+  color: var(--primary-color);
   text-align: center;
 }
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 3rem;
+  grid-template-columns: repeat(auto-fill, minmax(30rem, 1fr));
+  gap: 4rem;
 }
 
 .card {
-  background-color: var(--white);
-  border-radius: 1.5rem;
+  background: var(--bg-white);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow);
   overflow: hidden;
-  transition: transform 0.3s ease;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  transition: var(--transition);
 }
 
 .card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-0.4rem);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
 .imageContainer {
   position: relative;
-  height: 180px;
+  height: 20rem;
 }
 
 .image {
@@ -43,72 +44,67 @@
 
 .status {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background-color: var(--accent-yellow);
+  top: var(--spacing-sm);
+  right: var(--spacing-sm);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: var(--secondary-color);
   color: var(--primary-color);
-  padding: 0.5rem 1rem;
-  border-radius: 2rem;
+  border-radius: var(--radius-sm);
   font-size: var(--font-small);
-  font-weight: var(--font-medium);
+  font-weight: 600;
 }
 
 .content {
-  padding: 2rem;
+  padding: var(--spacing-md);
 }
 
 .itemName {
+  margin-bottom: var(--spacing-md);
   color: var(--primary-color);
-  font-size: var(--font-h5);
-  margin-bottom: 2rem;
 }
 
 .actions {
   display: flex;
-  justify-content: space-between;
-  gap: 1rem;
+  gap: var(--spacing-sm);
 }
 
 .actionButton {
+  flex: 1;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.8rem 1.5rem;
+  justify-content: center;
+  gap: 0.8rem;
+  padding: var(--spacing-sm);
   border: none;
-  border-radius: 0.8rem;
+  border-radius: var(--radius-sm);
   font-size: var(--font-small);
-  font-weight: var(--font-medium);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: var(--transition);
 }
 
 .applyButton {
-  background-color: var(--accent-yellow);
-  color: var(--primary-color);
+  background: var(--primary-color);
+  color: var(--text-light);
 }
 
 .applyButton:hover {
-  background-color: var(--primary-color);
-  color: var(--accent-yellow);
+  background: var(--bg-dark);
 }
 
 .saveButton {
-  background-color: var(--light-bg);
+  background: var(--bg-light);
   color: var(--primary-color);
+  border: 1px solid var(--primary-color);
 }
 
 .saved {
-  background-color: var(--accent-yellow);
+  background: var(--secondary-color);
   color: var(--primary-color);
 }
 
 .detailsButton {
-  background-color: var(--primary-color);
-  color: var(--white);
-}
-
-.detailsButton:hover {
-  background-color: var(--secondary-color);
+  background: var(--tertiary-color);
+  color: var(--text-light);
 }
 
 /* Modal Styles */
@@ -118,100 +114,97 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.7);
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  padding: var(--spacing-md);
   z-index: 1000;
 }
 
 .modal {
-  background-color: var(--white);
-  border-radius: 2rem;
-  width: 90%;
-  max-width: 800px;
+  background: var(--bg-white);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 60rem;
   position: relative;
-  animation: modalFade 0.3s ease;
 }
 
 .closeButton {
   position: absolute;
-  top: 2rem;
-  right: 2rem;
+  top: var(--spacing-md);
+  right: var(--spacing-md);
   background: none;
   border: none;
-  color: var(--primary-color);
   font-size: 2.4rem;
+  color: var(--primary-color);
   cursor: pointer;
   z-index: 1;
 }
 
 .modalContent {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 3rem;
-  padding: 3rem;
+  display: flex;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-lg);
 }
 
 .modalImage {
-  width: 100%;
-  height: 300px;
+  width: 50%;
+  height: 30rem;
   object-fit: cover;
-  border-radius: 1rem;
+  border-radius: var(--radius-md);
 }
 
 .modalDetails {
-  color: var(--primary-color);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
 }
 
-.modalDetails h2 {
-  font-size: var(--font-h3);
-  margin-bottom: 2rem;
+.modalDetails h5 {
+  color: var(--primary-color);
+  margin-bottom: var(--spacing-sm);
 }
 
 .modalDetails p {
   font-size: var(--font-body);
-  margin-bottom: 1.5rem;
+  color: var(--text-dark);
 }
 
 .modalApplyButton {
-  background-color: var(--accent-yellow);
-  color: var(--primary-color);
+  margin-top: auto;
+  padding: var(--spacing-md);
+  background: var(--primary-color);
+  color: var(--text-light);
   border: none;
-  padding: 1.2rem 2.4rem;
-  border-radius: 0.8rem;
-  font-size: var(--nav-link);
-  font-weight: var(--font-medium);
+  border-radius: var(--radius-md);
+  font-size: var(--font-body);
   cursor: pointer;
-  transition: all 0.3s ease;
-  margin-top: 2rem;
+  transition: var(--transition);
 }
 
 .modalApplyButton:hover {
-  background-color: var(--primary-color);
-  color: var(--accent-yellow);
-}
-
-@keyframes modalFade {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  background: var(--bg-dark);
 }
 
 /* Responsive Styles */
-@media screen and (max-width: 768px) {
+@media (max-width: 768px) {
   .container {
-    padding: 2rem;
+    padding: var(--spacing-md);
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
   }
 
   .modalContent {
-    grid-template-columns: 1fr;
-    gap: 2rem;
+    flex-direction: column;
+  }
+
+  .modalImage {
+    width: 100%;
+    height: 20rem;
   }
 
   .actions {
@@ -220,6 +213,27 @@
 
   .actionButton {
     width: 100%;
-    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: var(--h3-mobile);
+  }
+
+  .itemName {
+    font-size: var(--h5-mobile);
+  }
+
+  .status {
+    font-size: 1rem;
+  }
+
+  .modalDetails h5 {
+    font-size: var(--h5-mobile);
+  }
+
+  .modalDetails p {
+    font-size: var(--font-small);
   }
 }

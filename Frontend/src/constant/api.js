@@ -3,6 +3,7 @@ import {jwtDecode} from 'jwt-decode';
 
 const link = "http://127.0.0.1:8000/api/"
 const render = "https://llcentric-backend.onrender.com/"
+export const MEDIA_BASE_URL = "http://localhost:8000";
 
 const api = axios.create({
   baseURL: link,
