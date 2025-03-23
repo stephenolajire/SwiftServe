@@ -29,7 +29,7 @@ const RegistrationForm = () => {
     state: "",
     postalCode: "",
     country: "",
-    localGovernment:"",
+    localGovernment: "",
   });
 
   // Validation functions
@@ -99,37 +99,137 @@ const RegistrationForm = () => {
   const requestLocation = () => {
     if (isRequestingLocation) return;
 
-    if (navigator.geolocation) {
-      setIsRequestingLocation(true);
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
+    if (!navigator.geolocation) {
+      Swal.fire({
+        title: "Browser Error",
+        text: "Geolocation is not supported by your browser",
+        icon: "error",
+      });
+      return;
+    }
+
+    setIsRequestingLocation(true);
+    console.log("Requesting location..."); // Debug log
+
+    const options = {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 0,
+    };
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        console.log("Location received:", position); // Debug log
+        setLocation({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        });
+        setIsRequestingLocation(false);
+      },
+      (error) => {
+        console.error("Geolocation error:", error.code, error.message);
+        setIsRequestingLocation(false);
+
+        let errorMessage = "Unable to get your location. ";
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            errorMessage += "Location permission was denied.";
+            break;
+          case error.POSITION_UNAVAILABLE:
+            errorMessage += "Location information is unavailable.";
+            break;
+          case error.TIMEOUT:
+            errorMessage += "Location request timed out.";
+            break;
+          default:
+            errorMessage += "An unknown error occurred.";
+        }
+
+        Swal.fire({
+          title: "Location Error",
+          text: errorMessage,
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+      },
+      options
+    );
+  };
+
+  useEffect(() => {
+    let mounted = true;
+
+    const getLocation = async () => {
+      try {
+        if (!navigator.geolocation) {
+          throw new Error("Geolocation is not supported");
+        }
+
+        setIsRequestingLocation(true);
+
+        const position = await new Promise((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0,
+          });
+        });
+
+        if (mounted) {
+          console.log("Initial location set:", position.coords);
           setLocation({
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
           });
-          setIsRequestingLocation(false);
-        },
-        (error) => {
-          console.error("Error getting location:", error);
-          setIsRequestingLocation(false);
-          Swal.fire({
-            title: "Location Error",
-            text: "Unable to get your location. Please turn on your device location.",
-            icon: "error",
-            confirmButtonText: "OK",
-          });
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 10000,
-          maximumAge: 0,
         }
-      );
+      } catch (error) {
+        console.error("Initial location error:", error);
+      } finally {
+        if (mounted) {
+          setIsRequestingLocation(false);
+        }
+      }
+    };
+
+    getLocation();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const checkLocationPermission = async () => {
+    try {
+      // Check if the browser supports permissions API
+      if (navigator.permissions && navigator.permissions.query) {
+        const result = await navigator.permissions.query({
+          name: "geolocation",
+        });
+        console.log("Geolocation permission status:", result.state);
+
+        if (result.state === "denied") {
+          Swal.fire({
+            title: "Location Access Denied",
+            text: "Please enable location access in your browser settings to continue",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Open Settings",
+            cancelButtonText: "Cancel",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              // This will open browser settings on most browsers
+              window.location.href = "chrome://settings/content/location";
+            }
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Error checking location permission:", error);
     }
   };
 
   useEffect(() => {
-    requestLocation();
+    checkLocationPermission();
   }, []);
 
   // Handle image upload
@@ -170,7 +270,7 @@ const RegistrationForm = () => {
           "state",
           "postalCode",
           "country",
-          "localGovernment"
+          "localGovernment",
         ];
         break;
       default:
@@ -529,7 +629,9 @@ const RegistrationForm = () => {
                     placeholder="Local Government"
                   />
                   {errors.state && (
-                    <p className={styles.errorMessage}>{errors.localGovernment}</p>
+                    <p className={styles.errorMessage}>
+                      {errors.localGovernment}
+                    </p>
                   )}
                 </div>
               </div>
@@ -572,22 +674,28 @@ const RegistrationForm = () => {
               <div className={styles.formGroup}>
                 <p className={styles.locationInfo}>
                   Your location:{" "}
-                  {location.latitude
-                    ? `${location.latitude.toFixed(
-                        6
-                      )}, ${location.longitude.toFixed(6)}`
-                    : "Waiting for location permission..."}
-                  {!location.latitude && !isRequestingLocation && (
-                    <button
-                      type="button"
-                      onClick={requestLocation}
-                      className={styles.buttonSecondary}
-                      style={{ marginLeft: "10px", padding: "2px 8px" }}
-                      disabled={isRequestingLocation}
-                    >
-                      {isRequestingLocation ? "Requesting..." : "Grant Access"}
-                    </button>
+                  {location.latitude && location.longitude ? (
+                    `${location.latitude.toFixed(
+                      6
+                    )}, ${location.longitude.toFixed(6)}`
+                  ) : (
+                    <span style={{ color: "#ff4444" }}>
+                      {isRequestingLocation
+                        ? "Detecting location..."
+                        : "Location not detected"}
+                    </span>
                   )}
+                  {(!location.latitude || !location.longitude) &&
+                    !isRequestingLocation && (
+                      <button
+                        type="button"
+                        onClick={requestLocation}
+                        className={styles.buttonSecondary}
+                        style={{ marginLeft: "10px", padding: "2px 8px" }}
+                      >
+                        Retry Location Detection
+                      </button>
+                    )}
                 </p>
               </div>
             </div>
@@ -666,7 +774,8 @@ const RegistrationForm = () => {
                 </p>
                 <p className={styles.reviewItem}>
                   <strong>Address:</strong> {formData.address}, {formData.city},{" "}
-                  {formData.state} {formData.postalCode}, {formData.country}, {formData.localGovernment}
+                  {formData.state} {formData.postalCode}, {formData.country},{" "}
+                  {formData.localGovernment}
                 </p>
                 <p className={styles.reviewItem}>
                   <strong>Location:</strong>{" "}
