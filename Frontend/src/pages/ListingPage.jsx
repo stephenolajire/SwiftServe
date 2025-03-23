@@ -10,9 +10,13 @@ const CourierListings = () => {
   const [savedItems, setSavedItems] = useState([]);
   const [deliveries, setDeliveries] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [imageLoadingMap, setImageLoadingMap] = useState({});
 
   useEffect(() => {
     fetchDeliveries();
+    return () => {
+      setImageLoadingMap({}); // Clean up loading states
+    };
   }, []);
 
   const fetchDeliveries = async () => {
@@ -20,22 +24,33 @@ const CourierListings = () => {
       setLoading(true);
       const response = await api.get("deliveries/");
 
-      // Transform the API response to match our data structure
-      const formattedDeliveries = response.data.data.map((delivery) => ({
-        id: delivery.id,
-        name: delivery.itemName,
-        image: delivery.itemImage || "https://via.placeholder.com/300",
-        weight: `${delivery.weight} kg`,
-        address: delivery.pickupAddress,
-        location: `${delivery.pickupCity}, ${delivery.pickupState}`,
-        status: delivery.status,
-        price: delivery.estimated_price,
-        category: delivery.category,
-        description: delivery.itemDescription,
-        fragile: delivery.fragile,
-        recipientName: delivery.recipientName,
-        recipientPhone: delivery.recipientPhone,
-      }));
+      const formattedDeliveries = response.data.data.map((delivery) => {
+        // Initialize loading state for each image
+        setImageLoadingMap((prev) => ({
+          ...prev,
+          [delivery.id]: true,
+        }));
+
+        return {
+          id: delivery.id,
+          name: delivery.itemName,
+          image: delivery.itemImage
+            ? delivery.itemImage.startsWith("http")
+              ? delivery.itemImage
+              : `${MEDIA_BASE_URL}${delivery.itemImage}`
+            : "https://via.placeholder.com/300",
+          weight: `${delivery.weight} kg`,
+          address: delivery.pickupAddress,
+          location: `${delivery.pickupCity}, ${delivery.pickupState}`,
+          status: delivery.status,
+          price: delivery.estimated_price,
+          category: delivery.category,
+          description: delivery.itemDescription,
+          fragile: delivery.fragile,
+          recipientName: delivery.recipientName,
+          recipientPhone: delivery.recipientPhone,
+        };
+      });
 
       setDeliveries(formattedDeliveries);
     } catch (error) {
@@ -109,14 +124,30 @@ const CourierListings = () => {
           {deliveries.map((item) => (
             <div key={item.id} className={styles.card}>
               <div className={styles.imageContainer}>
-                <img
-                  src={`${MEDIA_BASE_URL}${item.image}`}
-                  alt={item.name}
-                  className={styles.image}
-                  onError={(e) => {
-                    e.target.src = "https://via.placeholder.com/300";
-                  }}
-                />
+                <div className={styles.imageWrapper}>
+                  {imageLoadingMap[item.id] && (
+                    <div className={styles.imageLoader}>Loading...</div>
+                  )}
+                  <img
+                    src={item.image} // Now using the pre-formatted URL
+                    alt={item.name}
+                    className={styles.image}
+                    onLoad={() =>
+                      setImageLoadingMap((prev) => ({
+                        ...prev,
+                        [item.id]: false,
+                      }))
+                    }
+                    onError={(e) => {
+                      setImageLoadingMap((prev) => ({
+                        ...prev,
+                        [item.id]: false,
+                      }));
+                      console.log("Image load error:", item.image);
+                      e.target.src = "https://via.placeholder.com/300";
+                    }}
+                  />
+                </div>
                 <div
                   className={`${styles.status} ${
                     styles[item.status.toLowerCase()]
@@ -182,14 +213,30 @@ const CourierListings = () => {
             </button>
 
             <div className={styles.modalContent}>
-              <img
-                src={`${MEDIA_BASE_URL}${selectedItem.image}`}
-                alt={selectedItem.name}
-                className={styles.modalImage}
-                onError={(e) => {
-                  e.target.src = "https://via.placeholder.com/300";
-                }}
-              />
+              <div className={styles.imageWrapper}>
+                {imageLoadingMap[`modal-${selectedItem.id}`] && (
+                  <div className={styles.imageLoader}>Loading...</div>
+                )}
+                <img
+                  src={selectedItem.image}
+                  alt={selectedItem.name}
+                  className={styles.modalImage}
+                  onLoad={() =>
+                    setImageLoadingMap((prev) => ({
+                      ...prev,
+                      [`modal-${selectedItem.id}`]: false,
+                    }))
+                  }
+                  onError={(e) => {
+                    setImageLoadingMap((prev) => ({
+                      ...prev,
+                      [`modal-${selectedItem.id}`]: false,
+                    }));
+                    console.log("Modal image load error:", selectedItem.image);
+                    e.target.src = "https://via.placeholder.com/300";
+                  }}
+                />
+              </div>
 
               <div className={styles.modalDetails}>
                 <h5>{selectedItem.name}</h5>

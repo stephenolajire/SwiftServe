@@ -33,57 +33,66 @@ const WorkerDashboard = () => {
   const [unreadMessages, setUnreadMessages] = useState({});
 
   useEffect(() => {
+    // Initial data fetch
     fetchWorkerData();
-    checkNewMessages();
 
-    // Only set up polling if there are non-RECEIVED deliveries
-    const activeDeliveries = [
-      ...deliveries.active,
-      ...deliveries.pending,
-    ].filter((d) => d.status !== "RECEIVED");
+    // Message checking interval
+    const messageCheckInterval = setInterval(checkNewMessages, 5000);
 
-    let messageInterval;
-    if (activeDeliveries.length > 0) {
-      messageInterval = setInterval(checkNewMessages, 5000);
+    // Cleanup function
+    return () => {
+      clearInterval(messageCheckInterval);
+    };
+  }, []); // Empty dependency array for initial mount only
+
+  // Separate useEffect for message checking
+  useEffect(() => {
+    if (deliveries.active.length === 0 && deliveries.pending.length === 0) {
+      return; // Don't check messages if no active/pending deliveries
     }
 
-    return () => {
-      if (messageInterval) {
-        clearInterval(messageInterval);
-      }
-    };
+    checkNewMessages();
   }, [deliveries.active, deliveries.pending]);
 
-  const fetchWorkerData = async () => {
+  const fetchWorkerData = React.useCallback(async () => {
     try {
       setLoading(true);
       const response = await api.get("deliveries/worker/");
-      console.log("API Response:", response.data);
 
-      // Extract worker data
-      setWorker(response.data.data.worker);
+      setWorker((prev) => {
+        const newWorker = response.data.data.worker;
+        return JSON.stringify(prev) === JSON.stringify(newWorker)
+          ? prev
+          : newWorker;
+      });
 
-      // Check if deliveries exist and is an array
       const deliveriesData = response.data.data.deliveries || [];
 
-      // Organize deliveries by status
-      const organized = {
-        pending: deliveriesData.filter((d) => d.status === "PENDING"),
-        active: deliveriesData.filter((d) =>
-          ["ACCEPTED", "PICKED_UP", "IN_TRANSIT", "DELIVERED"].includes(
-            d.status
-          )
-        ),
-        completed: deliveriesData.filter((d) => d.status === "RECEIVED"),
-      };
+      setDeliveries((prev) => {
+        const organized = {
+          pending: deliveriesData.filter((d) => d.status === "PENDING"),
+          active: deliveriesData.filter((d) =>
+            ["ACCEPTED", "PICKED_UP", "IN_TRANSIT", "DELIVERED"].includes(
+              d.status
+            )
+          ),
+          completed: deliveriesData.filter((d) => d.status === "RECEIVED"),
+        };
 
-      setDeliveries(organized);
+        return JSON.stringify(prev) === JSON.stringify(organized)
+          ? prev
+          : organized;
+      });
 
-      // Set earnings from API response
-      setEarnings({
-        today: response.data.data.earnings.today || 0,
-        week: response.data.data.earnings.week || 0,
-        month: response.data.data.earnings.month || 0,
+      setEarnings((prev) => {
+        const newEarnings = {
+          today: response.data.data.earnings.today || 0,
+          week: response.data.data.earnings.week || 0,
+          month: response.data.data.earnings.month || 0,
+        };
+        return JSON.stringify(prev) === JSON.stringify(newEarnings)
+          ? prev
+          : newEarnings;
       });
     } catch (error) {
       console.error("Error fetching deliveries:", error);
@@ -95,43 +104,42 @@ const WorkerDashboard = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   // Modify the checkNewMessages function
-  const checkNewMessages = async () => {
+  const checkNewMessages = React.useCallback(async () => {
     try {
-      // Get all non-RECEIVED deliveries
       const activeDeliveries = [
         ...deliveries.active,
         ...deliveries.pending,
       ].filter((d) => d.status !== "RECEIVED");
 
-      if (activeDeliveries.length > 0) {
-        const response = await api.get("deliveries/messages/unread/");
-
-        if (response.data.status === "success") {
-          // Filter out messages for RECEIVED deliveries
-          const filteredUnreadMessages = Object.entries(
-            response.data.data
-          ).reduce((acc, [deliveryId, count]) => {
-            const delivery = activeDeliveries.find(
-              (d) => d.id.toString() === deliveryId
-            );
-            if (delivery) {
-              acc[deliveryId] = count;
-            }
-            return acc;
-          }, {});
-          setUnreadMessages(filteredUnreadMessages);
-        }
-      } else {
-        // Clear unread messages if no active deliveries
+      if (activeDeliveries.length === 0) {
         setUnreadMessages({});
+        return;
+      }
+
+      const response = await api.get("deliveries/messages/unread/");
+
+      if (response.data.status === "success") {
+        setUnreadMessages((prev) => {
+          const newMessages = { ...prev };
+          let hasChanged = false;
+
+          Object.entries(response.data.data).forEach(([deliveryId, count]) => {
+            if (newMessages[deliveryId] !== count) {
+              newMessages[deliveryId] = count;
+              hasChanged = true;
+            }
+          });
+
+          return hasChanged ? newMessages : prev;
+        });
       }
     } catch (error) {
       console.error("Error checking messages:", error);
     }
-  };
+  }, [deliveries.active, deliveries.pending]);
 
   const renderDeliveryList = () => {
     const currentDeliveries = deliveries[activeTab] || [];
