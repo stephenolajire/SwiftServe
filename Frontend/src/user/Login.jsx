@@ -127,7 +127,7 @@ const Login = () => {
 
 
       // Navigation logic based on user type and KYC status
-      if (response.data.is_superuser) {
+      if (response.data.is_staff) {
         navigate("/admin/dashboard");
       } else {
         switch (response.data.user_type) {
