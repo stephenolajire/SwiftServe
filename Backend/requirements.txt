@@ -22,9 +22,11 @@ idna==3.10
 packaging==24.2
 pillow==11.1.0
 psycopg2==2.9.10
+psycopg2-binary==2.9.10
 pycparser==2.22
 PyJWT==2.9.0
 python-decouple==3.8
+python-dotenv==1.0.1
 redis==5.2.1
 requests==2.32.3
 six==1.17.0
@@ -33,3 +35,4 @@ typing_extensions==4.12.2
 tzdata==2025.1
 tzlocal==5.3
 urllib3==2.3.0
+whitenoise==6.9.0
