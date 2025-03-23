@@ -19,6 +19,32 @@ const CourierListings = () => {
     };
   }, []);
 
+  // Helper function to properly format image URLs
+  const formatImageUrl = (imageUrl) => {
+    if (!imageUrl) return "https://placehold.co/300x300";
+
+    // Check if it's already a complete URL (starts with http:// or https:// or contains cloudinary)
+    if (
+      imageUrl.startsWith("http://") ||
+      imageUrl.startsWith("https://") ||
+      imageUrl.includes("res.cloudinary.com")
+    ) {
+      return imageUrl;
+    }
+
+    // Handle paths that might already start with '/'
+    const cleanImagePath = imageUrl.startsWith("/")
+      ? imageUrl.substring(1)
+      : imageUrl;
+
+    // Make sure MEDIA_BASE_URL ends with a slash
+    const baseUrl = MEDIA_BASE_URL.endsWith("/")
+      ? MEDIA_BASE_URL
+      : `${MEDIA_BASE_URL}/`;
+
+    return `${baseUrl}${cleanImagePath}`;
+  };
+
   const fetchDeliveries = async () => {
     try {
       setLoading(true);
@@ -31,22 +57,10 @@ const CourierListings = () => {
           [delivery.id]: true,
         }));
 
-        // Handle image URL properly
-        let imageUrl;
-        if (delivery.itemImage) {
-          // Check if it's already a Cloudinary URL
-          imageUrl = delivery.itemImage.includes("res.cloudinary.com")
-            ? delivery.itemImage
-            : `${MEDIA_BASE_URL}${delivery.itemImage}`;
-        } else {
-          // Use a working fallback image
-          imageUrl = "https://placehold.co/300x300";
-        }
-
         return {
           id: delivery.id,
           name: delivery.itemName,
-          image: imageUrl,
+          image: formatImageUrl(delivery.itemImage),
           weight: `${delivery.weight} kg`,
           address: delivery.pickupAddress,
           location: `${delivery.pickupCity}, ${delivery.pickupState}`,
@@ -137,7 +151,7 @@ const CourierListings = () => {
                     <div className={styles.imageLoader}>Loading...</div>
                   )}
                   <img
-                    src={item.image} // Now using the pre-formatted URL
+                    src={item.image} // Now using properly formatted URL
                     alt={item.name}
                     className={styles.image}
                     onLoad={() =>
