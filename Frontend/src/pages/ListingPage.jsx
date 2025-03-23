@@ -110,11 +110,7 @@ const CourierListings = () => {
             <div key={item.id} className={styles.card}>
               <div className={styles.imageContainer}>
                 <img
-                  src={
-                    item.image?.startsWith("http")
-                      ? item.image
-                      : `${MEDIA_BASE_URL}${item.image}`
-                  }
+                  src={`${MEDIA_BASE_URL}${item.image}`}
                   alt={item.name}
                   className={styles.image}
                   onError={(e) => {
@@ -187,11 +183,7 @@ const CourierListings = () => {
 
             <div className={styles.modalContent}>
               <img
-                src={
-                  selectedItem.image?.startsWith("http")
-                    ? selectedItem.image
-                    : `${MEDIA_BASE_URL}${selectedItem.image}`
-                }
+                src={`${MEDIA_BASE_URL}${selectedItem.image}`}
                 alt={selectedItem.name}
                 className={styles.modalImage}
                 onError={(e) => {
