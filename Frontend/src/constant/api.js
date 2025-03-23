@@ -1,12 +1,18 @@
-import axios from 'axios';
-import {jwtDecode} from 'jwt-decode';
+import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
-const link = "http://127.0.0.1:8000/api/"
-const render = "https://swiftserve-server.onrender.com/api/";
-export const MEDIA_BASE_URL = "http://localhost:8000";
+const isDevelopment = import.meta.env.DEV;
+
+const API_URL = isDevelopment
+  ? import.meta.env.VITE_API_URL_DEV
+  : import.meta.env.VITE_API_URL_PROD;
+
+export const MEDIA_BASE_URL = isDevelopment
+  ? import.meta.env.VITE_MEDIA_URL_DEV
+  : import.meta.env.VITE_MEDIA_URL_PROD;
 
 const api = axios.create({
-  baseURL: render,
+  baseURL: API_URL,
 });
 
 api.interceptors.request.use(
@@ -20,12 +26,26 @@ api.interceptors.request.use(
       if (expiry_date > current_time) {
         config.headers.Authorization = `Bearer ${token}`;
       } else {
-        console.log("Token expired");
+        // Handle token expiration
+        localStorage.removeItem("access");
+        window.location.href = "/login";
       }
     }
     return config;
   },
   (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Add response interceptor for handling errors
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem("access");
+      window.location.href = "/login";
+    }
     return Promise.reject(error);
   }
 );

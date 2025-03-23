@@ -28,9 +28,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-2rjo-syb9v5e3_+h^^ynp5_mjp%0@y*6fk5*tfc8y-s76f=zx-'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'Company',
     'cloudinary_storage',
     'cloudinary',
+    'whitenoise',
 ]
 
 MIDDLEWARE = [
@@ -251,3 +252,7 @@ LOGGING = {
 PAYSTACK_SECRET_KEY = config('PAYSTACK_SECRET_KEY')
 PAYSTACK_PUBLIC_KEY = 'your_paystack_public_key'
 FRONTEND_URL = config('FRONTEND_URL')
+
+
+if not DEBUG:
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
