@@ -3,6 +3,7 @@ from Auth.models import CustomUser
 from django.core.validators import MinValueValidator, MaxValueValidator, FileExtensionValidator
 import json
 from django.utils import timezone
+from cloudinary.models import CloudinaryField
 
 class Delivery(models.Model):
     STATUS_CHOICES = [
@@ -211,7 +212,7 @@ class ChatMessage(models.Model):
     sender = models.ForeignKey('Auth.CustomUser', on_delete=models.CASCADE)
     sender_type = models.CharField(max_length=10)  # WORKER or CLIENT
     message = models.TextField(null=True, blank=True)
-    image = models.ImageField(upload_to='chat_images/', null=True, blank=True)
+    image = CloudinaryField('chat_image', blank=True, null=True)
     type = models.CharField(max_length=20, choices=MESSAGE_TYPES, default='GENERAL')
     created_at = models.DateTimeField(auto_now_add=True)
 

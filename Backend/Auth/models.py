@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 from datetime import timedelta
+from cloudinary.models import CloudinaryField
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, username, password=None, **extra_fields):
@@ -37,7 +38,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     firstName = models.CharField(max_length=200)
     lastName = models.CharField(max_length=200)
     dob = models.DateField(null=True, blank=True)
-    profileImage = models.ImageField(upload_to='profile_images/', null=True, blank=True)
+    profileImage = CloudinaryField('image', blank=True, null=True)
     localGovernment = models.CharField(max_length=200, default="", null=True, blank=True)
     vehicleType = models.CharField(max_length=200, default="", null=True, blank=True)
     vehiclePlateNumber = models.CharField(max_length=200, default="", null=True, blank=True)
@@ -65,12 +66,12 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     fleetType = models.CharField(max_length=200, null=True, blank=True)
 
     # Document Fields
-    businessLicense = models.ImageField(upload_to='business_licenses/', null=True, blank=True)
-    insuranceCert = models.ImageField(upload_to='insurance_certificates/', null=True, blank=True)
-    cacCertificate = models.ImageField(upload_to='cac_certificates/', null=True, blank=True)
-    taxClearance = models.ImageField(upload_to='tax_clearance/', null=True, blank=True)
-    vehicleRegistration = models.ImageField(upload_to="vehicleReg", default="", null=True, blank=True)
-    driversLicense = models.ImageField(upload_to="License", default="", null=True, blank=True)
+    businessLicense = CloudinaryField('license', blank=True, null=True)
+    insuranceCert = CloudinaryField('insurance', blank=True, null=True)
+    cacCertificate = CloudinaryField('certificate', blank=True, null=True)
+    taxClearance = CloudinaryField('tax', blank=True, null=True)
+    vehicleRegistration = CloudinaryField('registration', blank=True, null=True)
+    driversLicense = CloudinaryField('driver/licence', blank=True, null=True)
 
     # Verification Fields
     kyc_status = models.CharField(max_length=200, default="NONE")

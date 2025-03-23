@@ -3,6 +3,7 @@ from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
 from datetime import date, datetime
 import os
+from cloudinary.models import CloudinaryField
 
 
 class IDType(models.TextChoices):
@@ -38,14 +39,8 @@ class KYCVerification(models.Model):
         default=IDType.PASSPORT
     )
     idNumber = models.CharField(max_length=50)
-    idDocument = models.ImageField(
-        upload_to='ID',
-        help_text='Upload a clear image of your ID document'
-    )
-    selfieImage = models.ImageField(
-        upload_to='selfie',
-        help_text='Take a clear selfie in good lighting'
-    )
+    idDocument = CloudinaryField('id_type', blank=True, null=True)
+    selfieImage = CloudinaryField('selfie', blank=True, null=True)
 
     # Verification Status
     status = models.CharField(

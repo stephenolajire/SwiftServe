@@ -46,13 +46,13 @@ INSTALLED_APPS = [
     'rest_framework',
     'Auth',
     'Swift',
-    'cloudinary',
-    # 'cloudinary_storage',
     'KYC',
     # 'django_crontab',
     'Dashboard',
     'Client',
     'Company',
+    'cloudinary_storage',
+    'cloudinary',
 ]
 
 MIDDLEWARE = [
