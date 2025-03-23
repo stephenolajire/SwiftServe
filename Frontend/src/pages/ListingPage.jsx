@@ -26,20 +26,27 @@ const CourierListings = () => {
       console.log("Deliveries:", response.data.data);
 
       const formattedDeliveries = response.data.data.map((delivery) => {
-        // Initialize loading state for each image
         setImageLoadingMap((prev) => ({
           ...prev,
           [delivery.id]: true,
         }));
 
+        // Handle image URL properly
+        let imageUrl;
+        if (delivery.itemImage) {
+          // Check if it's already a Cloudinary URL
+          imageUrl = delivery.itemImage.includes("res.cloudinary.com")
+            ? delivery.itemImage
+            : `${MEDIA_BASE_URL}${delivery.itemImage}`;
+        } else {
+          // Use a working fallback image
+          imageUrl = "https://placehold.co/300x300";
+        }
+
         return {
           id: delivery.id,
           name: delivery.itemName,
-          image: delivery.itemImage
-            ? delivery.itemImage.startsWith("http")
-              ? delivery.itemImage
-              : `${MEDIA_BASE_URL}${delivery.itemImage}`
-            : "https://via.placeholder.com/300",
+          image: imageUrl,
           weight: `${delivery.weight} kg`,
           address: delivery.pickupAddress,
           location: `${delivery.pickupCity}, ${delivery.pickupState}`,
@@ -145,7 +152,7 @@ const CourierListings = () => {
                         [item.id]: false,
                       }));
                       console.log("Image load error:", item.image);
-                      e.target.src = "https://via.placeholder.com/300";
+                      e.target.src = "https://placehold.co/300x300";
                     }}
                   />
                 </div>
@@ -234,7 +241,7 @@ const CourierListings = () => {
                       [`modal-${selectedItem.id}`]: false,
                     }));
                     console.log("Modal image load error:", selectedItem.image);
-                    e.target.src = "https://via.placeholder.com/300";
+                    e.target.src = "https://placehold.co/300x300";
                   }}
                 />
               </div>
