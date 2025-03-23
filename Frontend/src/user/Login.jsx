@@ -166,14 +166,14 @@ const Login = () => {
             }
             break;
           case "CLIENT":
-            if (!response.data.kyc_status === "NONE") {
+            if (response.data.kyc_status === "NONE") {
               navigate("/kyc");
             } else if (response.data.kyc_status === "PENDING") {
               navigate("/kyc-status");
             } else if (response.data.kyc_status === "REJECTED") {
               navigate("/kyc-rejected");
             } else {
-              navigate("/client/dashboard");
+              navigate("/worker/dashboard");
             }
             break;
           default:
