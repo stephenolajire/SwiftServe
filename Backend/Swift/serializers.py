@@ -155,43 +155,9 @@ class DeliverySerializer(serializers.ModelSerializer):
 
         validated_data['client'] = user
         validated_data['status'] = 'PENDING'
-        
-        # Calculate estimated price
-        # def calculate_estimated_price(self, data):
-        #     try:
-        #         # Base calculations
-        #         base_price = Decimal('1000')  # Base service fee
-        #         weight_factor = Decimal(str(data.get('weight', 0))) * Decimal('10')  # ₦10 per kg
-        #         fragile_charge = Decimal('500') if data.get('fragile', False) else Decimal('0')
+        delivery = Delivery.objects.create(**validated_data)
+        return delivery
 
-        #         # Initial estimated price without distance
-        #         initial_price = base_price + weight_factor + fragile_charge
-
-        #         # Set estimated_price field to initial calculation
-        #         # Final price will be updated when delivery is in transit
-        #         return round(initial_price, 2)
-        #     except (TypeError, ValueError) as e:
-        #         raise serializers.ValidationError(f"Error calculating price: {str(e)}")
-
-        # def update_final_price(self, distance_km):
-        #     """
-        #     Updates the final price when delivery is in transit
-        #     distance_km: float - distance in kilometers
-        #     """
-        #     try:
-        #         # Convert distance to Decimal and calculate
-        #         distance = Decimal(str(distance_km))
-        #         distance_factor = distance * Decimal('100')  # ₦100 per km
-                
-        #         # Get existing price components
-        #         base_price = self.estimated_price or Decimal('0')
-                
-        #         # Calculate final price
-        #         final_price = base_price + distance_factor
-                
-        #         return round(final_price, 2)
-        #     except (TypeError, ValueError) as e:
-        #         raise serializers.ValidationError(f"Error calculating final price: {str(e)}")
 
 class ChatMessageSerializer(serializers.ModelSerializer):
     sender_name = serializers.SerializerMethodField()

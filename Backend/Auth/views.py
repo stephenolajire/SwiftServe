@@ -10,6 +10,7 @@ from django.utils import timezone
 from .utils import send_registration_email
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import CustomTokenObtainPairSerializer
+from rest_framework.permissions import AllowAny
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
@@ -455,3 +456,10 @@ class AccountDeletionStatusView(APIView):
             'scheduled_deletion_date': user.scheduled_deletion_date,
             'days_remaining': days_remaining
         })
+    
+
+class ListUserView(APIView):
+    def get(self, request):
+        individuals = CustomUser.objects.filter(user_type='INDIVIDUAL')
+        serializer = IndividualSerializer(individuals, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

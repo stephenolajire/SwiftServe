@@ -15,6 +15,7 @@ import ChatModal from "../components/ChatModal";
 import NotificationBadge from "../components/NotificationBadge";
 import LocationTracker from "../components/LocationTracker";
 import PaymentModal from "../components/PaymentModal";
+import { MEDIA_BASE_URL } from "../constant/api";
 
 // Update DeliveryCard props to include payment handling
 const DeliveryCard = ({
