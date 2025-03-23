@@ -35,6 +35,10 @@ export const GlobalProvider = ({ children }) => {
     }
   };
 
+  useEffect(() => {
+    auth()
+  }, [])
+
 
   return (
     <GlobalContext.Provider

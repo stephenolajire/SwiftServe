@@ -20,17 +20,26 @@ const ChatVerification = ({ delivery, onClose, onVerificationComplete }) => {
       }
     };
 
-    fetchMessages();
-    markMessagesAsRead();
-    const interval = setInterval(fetchMessages, 5000); // Poll every 5 seconds
-    return () => clearInterval(interval);
-  }, [delivery.id]);
+    // Only set up polling if delivery is not in RECEIVED status
+    if (delivery.status !== "RECEIVED") {
+      fetchMessages();
+      markMessagesAsRead();
+      const interval = setInterval(fetchMessages, 5000); // Poll every 5 seconds
+      return () => clearInterval(interval);
+    } else {
+      // For RECEIVED deliveries, fetch messages once without polling
+      fetchMessages();
+    }
+  }, [delivery.id, delivery.status]);
 
+  // Also update markMessagesAsRead to only run when not RECEIVED
   const markMessagesAsRead = async () => {
-    try {
-      await api.post(`deliveries/${delivery.id}/mark-read/`);
-    } catch (error) {
-      console.error("Error marking messages as read:", error);
+    if (delivery.status !== "RECEIVED") {
+      try {
+        await api.post(`deliveries/${delivery.id}/mark-read/`);
+      } catch (error) {
+        console.error("Error marking messages as read:", error);
+      }
     }
   };
 

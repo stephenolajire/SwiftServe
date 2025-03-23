@@ -28,6 +28,7 @@ import ForgotPassword from "./user/ForgotPassword";
 import VerifyPasswordOTP from "./user/VerifyPasswordOTP";
 import ResetPassword from "./user/ResetPassword";
 import ScrollToTop from "./components/ScrollToTop";
+import PaymentCallback from "./components/PaymentCallBack";
 
 const App = () => {
   return (
@@ -91,6 +92,7 @@ const App = () => {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/verify-reset-otp" element={<VerifyPasswordOTP />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/payment/callback" element={<PaymentCallback />} />
         <Route
           path="/kyc"
           element={

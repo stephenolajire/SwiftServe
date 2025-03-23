@@ -15,6 +15,7 @@ from datetime import datetime, timedelta
 from .models import ChatMessage
 from .serializers import ChatMessageSerializer
 from django.utils import timezone
+import requests
 
 class DeliveryListCreateView(APIView):
     permission_classes = [IsAuthenticated]
@@ -126,7 +127,6 @@ class AcceptDeliveryView(APIView):
 
     def post(self, request, delivery_id):
         try:
-            # Get the user and delivery
             user = request.user
             delivery = get_object_or_404(Delivery, id=delivery_id)
 
@@ -136,6 +136,18 @@ class AcceptDeliveryView(APIView):
                     'status': 'error',
                     'message': 'Only workers can accept deliveries'
                 }, status=status.HTTP_403_FORBIDDEN)
+
+            # Check if worker has any active deliveries
+            active_deliveries = Delivery.objects.filter(
+                worker=user,
+                status__in=['PENDING', 'ACCEPTED', 'PICKED_UP', 'IN_TRANSIT']
+            ).exists()
+
+            if active_deliveries:
+                return Response({
+                    'status': 'error',
+                    'message': 'You cannot accept new deliveries while you have active deliveries'
+                }, status=status.HTTP_400_BAD_REQUEST)
 
             # Check if delivery is still pending
             if delivery.status != 'PENDING':
@@ -213,7 +225,7 @@ class WorkerDeliveryView(APIView):
             
             # Calculate today's earnings
             today_earnings = deliveries.filter(
-                status='DELIVERED',
+                status='RECEIVED',
                 completed_at__date=today
             ).aggregate(
                 total=Sum('worker_earnings')
@@ -222,7 +234,7 @@ class WorkerDeliveryView(APIView):
             # Calculate weekly earnings
             week_start = today - timedelta(days=today.weekday())
             weekly_earnings = deliveries.filter(
-                status='DELIVERED',
+                status='RECEIVED',
                 completed_at__date__gte=week_start
             ).aggregate(
                 total=Sum('worker_earnings')
@@ -231,18 +243,18 @@ class WorkerDeliveryView(APIView):
             # Calculate monthly earnings
             month_start = today.replace(day=1)
             monthly_earnings = deliveries.filter(
-                status='DELIVERED',
+                status='RECEIVED',
                 completed_at__date__gte=month_start
             ).aggregate(
                 total=Sum('worker_earnings')
             )['total'] or 0
 
-            # Calculate rating
-            completed_deliveries = deliveries.filter(status='DELIVERED')
-            total_rating = completed_deliveries.aggregate(
+            # Calculate rating from RECEIVED deliveries
+            received_deliveries = deliveries.filter(status='RECEIVED')
+            total_rating = received_deliveries.aggregate(
                 total=Sum('rating')
             )['total'] or 0
-            rating = round(total_rating / completed_deliveries.count(), 1) if completed_deliveries.count() > 0 else 0
+            rating = round(total_rating / received_deliveries.count(), 1) if received_deliveries.count() > 0 else 0
 
             # Serialize the deliveries
             serializer = DeliverySerializer(deliveries, many=True)
@@ -265,9 +277,9 @@ class WorkerDeliveryView(APIView):
                     'stats': {
                         'pending': deliveries.filter(status='PENDING').count(),
                         'active': deliveries.filter(
-                            status__in=['ACCEPTED', 'PICKED_UP', 'IN_TRANSIT']
+                            status__in=['ACCEPTED', 'PICKED_UP', 'IN_TRANSIT', 'DELIVERED']
                         ).count(),
-                        'completed': deliveries.filter(status='DELIVERED').count()
+                        'completed': deliveries.filter(status='RECEIVED').count()
                     }
                 }
             }, status=status.HTTP_200_OK)
@@ -533,6 +545,269 @@ class DeliveryLocationView(APIView):
                     'longitude': float(delivery.current_longitude) if delivery.current_longitude else None,
                     'updated_at': delivery.location_updated_at
                 }
+            })
+
+        except Exception as e:
+            return Response({
+                'status': 'error',
+                'message': str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class UpdateDeliveryDistanceView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, delivery_id):
+        try:
+            delivery = get_object_or_404(Delivery, id=delivery_id)
+            
+            # Verify the worker is assigned to this delivery
+            if request.user != delivery.worker:
+                return Response({
+                    'status': 'error',
+                    'message': 'Unauthorized'
+                }, status=status.HTTP_403_FORBIDDEN)
+
+            # Update distance and location
+            delivery.distance_covered = request.data.get('distance', 0)
+            delivery.current_latitude = request.data.get('current_latitude')
+            delivery.current_longitude = request.data.get('current_longitude')
+            delivery.location_updated_at = timezone.now()
+
+            # Calculate new price
+            new_price = delivery.calculate_final_price()
+            delivery.estimated_price = new_price
+            
+            delivery.save()
+
+            return Response({
+                'status': 'success',
+                'data': {
+                    'distance': delivery.distance_covered,
+                    'current_price': delivery.estimated_price
+                }
+            })
+
+        except Exception as e:
+            return Response({
+                'status': 'error',
+                'message': str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class ConfirmDeliveryView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, delivery_id):
+        try:
+            delivery = get_object_or_404(Delivery, id=delivery_id)
+            
+            # Verify the client owns this delivery
+            if request.user != delivery.client:
+                return Response({
+                    'status': 'error',
+                    'message': 'Unauthorized to confirm this delivery'
+                }, status=status.HTTP_403_FORBIDDEN)
+
+            # Verify delivery is in correct status
+            if delivery.status != 'DELIVERED':
+                return Response({
+                    'status': 'error',
+                    'message': f'Cannot confirm delivery in {delivery.status} status'
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            # Update delivery status
+            delivery.status = 'RECEIVED'
+            delivery.completed_at = timezone.now()
+            delivery.save()
+
+           
+
+            return Response(
+                {'status': 'success', 'message': 'Delivery confirmed'},
+                status=status.HTTP_200_OK
+            )
+
+        except Exception as e:
+            return Response({
+                'status': 'error',
+                'message': str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class VerifyPaymentView(APIView):
+    def post(self, request):
+        try:
+            reference = request.data.get('reference')
+            if not reference:
+                return Response({
+                    'status': 'error',
+                    'message': 'Payment reference is required'
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            # Verify payment with Paystack
+            headers = {
+                'Authorization': f'Bearer {settings.PAYSTACK_SECRET_KEY}'
+            }
+            
+            response = requests.get(
+                f'https://api.paystack.co/transaction/verify/{reference}',
+                headers=headers
+            )
+
+            if response.status_code == 200:
+                payment_data = response.json()
+                
+                if payment_data['data']['status'] == 'success':
+                    # Update delivery payment status
+                    delivery_id = payment_data['data']['metadata']['delivery_id']
+                    delivery = get_object_or_404(Delivery, id=delivery_id)
+                    
+                    delivery.payment_status = 'COMPLETED'
+                    delivery.paid_at = timezone.now()
+                    
+                    # Calculate worker earnings (e.g., 80% of delivery price)
+                    worker_earnings = float(delivery.estimated_price) * 0.8
+                    delivery.worker_earnings = worker_earnings
+                    
+                    delivery.save()
+
+                    return Response({
+                        'status': 'success',
+                        'message': 'Payment verified successfully',
+                        'delivery_id': delivery_id  # Include delivery ID in response
+                    })
+                else:
+                    return Response({
+                        'status': 'error',
+                        'message': 'Payment verification failed'
+                    }, status=status.HTTP_400_BAD_REQUEST)
+
+        except Exception as e:
+            return Response({
+                'status': 'error',
+                'message': str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+# Paystack webhook handler
+class PaystackWebhookView(APIView):
+    def post(self, request):
+        # Verify webhook signature
+        paystack_signature = request.headers.get('x-paystack-signature')
+        if not paystack_signature:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        # Process the webhook event
+        event = request.data
+        if event.get('event') == 'charge.success':
+            reference = event['data']['reference']
+            try:
+                delivery = Delivery.objects.get(payment_reference=reference)
+                delivery.payment_status = 'COMPLETED'
+                delivery.paid_at = timezone.now()
+                delivery.save()
+            except Delivery.DoesNotExist:
+                pass
+
+        return Response(status=status.HTTP_200_OK)
+
+class InitiatePaymentView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, delivery_id):
+        try:
+            delivery = get_object_or_404(Delivery, id=delivery_id)
+            
+            # Verify the client owns this delivery
+            if request.user != delivery.client:
+                return Response({
+                    'status': 'error',
+                    'message': 'Unauthorized'
+                }, status=status.HTTP_403_FORBIDDEN)
+
+            # Verify delivery status
+            if delivery.status != 'RECEIVED':
+                return Response({
+                    'status': 'error',
+                    'message': 'Invalid delivery status for payment'
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            # Initialize Paystack payment
+            amount = int(float(delivery.estimated_price) * 100)  # Convert to kobo
+            payment_reference = f'DEL_{delivery.id}_{int(timezone.now().timestamp())}'
+
+            headers = {
+                'Authorization': f'Bearer {settings.PAYSTACK_SECRET_KEY}',
+                'Content-Type': 'application/json'
+            }
+            
+            payload = {
+                'amount': amount,
+                'email': request.user.email,
+                'reference': payment_reference,
+                'callback_url': f"{settings.FRONTEND_URL}/payment/callback",
+                'metadata': {
+                    'delivery_id': delivery.id,
+                    'client_id': delivery.client.id,
+                    'worker_id': delivery.worker.id if delivery.worker else None
+                }
+            }
+
+            response = requests.post(
+                'https://api.paystack.co/transaction/initialize',
+                headers=headers,
+                json=payload
+            )
+
+            if response.status_code == 200:
+                payment_data = response.json()
+                
+                # Update delivery with payment reference
+                delivery.payment_reference = payment_reference
+                delivery.save()
+
+                return Response({
+                    'status': 'success',
+                    'data': {
+                        'payment_url': payment_data['data']['authorization_url'],
+                        'reference': payment_reference
+                    }
+                })
+            else:
+                raise Exception('Failed to initialize payment')
+
+        except Exception as e:
+            return Response({
+                'status': 'error',
+                'message': str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class RateDeliveryView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, delivery_id):
+        try:
+            delivery = get_object_or_404(Delivery, id=delivery_id)
+            
+            # Verify the client owns this delivery
+            if request.user != delivery.client:
+                return Response({
+                    'status': 'error',
+                    'message': 'Unauthorized to rate this delivery'
+                }, status=status.HTTP_403_FORBIDDEN)
+
+            # Validate rating
+            rating = request.data.get('rating')
+            if not rating or not isinstance(rating, int) or rating < 1 or rating > 5:
+                return Response({
+                    'status': 'error',
+                    'message': 'Invalid rating. Please provide a number between 1 and 5'
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            # Update delivery rating
+            delivery.rating = rating
+            delivery.save()
+
+            return Response({
+                'status': 'success',
+                'message': 'Rating submitted successfully'
             })
 
         except Exception as e:

@@ -222,3 +222,7 @@ LOGGING = {
         },
     },
 }
+
+PAYSTACK_SECRET_KEY = config('PAYSTACK_SECRET_KEY')
+PAYSTACK_PUBLIC_KEY = 'your_paystack_public_key'
+FRONTEND_URL = config('FRONTEND_URL')

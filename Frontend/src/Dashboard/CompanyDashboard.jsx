@@ -7,30 +7,28 @@ import {
   FaUserPlus,
   FaFilter,
   FaMoneyBillWave,
-  FaCheckCircle,
-  FaClock,
-  FaTimes,
   FaHome,
   FaClipboardList,
   FaWallet,
   FaCog,
   FaSignOutAlt,
   FaBars,
-  FaUserCog,
   FaTachometerAlt,
-  FaFileInvoiceDollar,
   FaCarAlt,
   FaWarehouse,
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import api from "../constant/api";
-import Swal from "sweetalert2";
 import styles from "../css/CompanyDashboard.module.css";
-import { MEDIA_BASE_URL } from "../constant/api";
+import Swal from "sweetalert2";
+import api from "../constant/api";
 
 const CompanyDashboard = () => {
+  // State management
   const [activeTab, setActiveTab] = useState("dashboard");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  // Data states
   const [workers, setWorkers] = useState([]);
   const [filteredWorkers, setFilteredWorkers] = useState([]);
   const [kycFilter, setKycFilter] = useState("all");
@@ -45,8 +43,8 @@ const CompanyDashboard = () => {
     weekly: 0,
     monthly: 0,
     pendingPayout: 0,
+    total_revenue: 0,
   });
-  const [loading, setLoading] = useState(true);
   const [fleetStats, setFleetStats] = useState({
     bike: { count: 0, deliveries: 0, revenue: 0 },
     car: { count: 0, deliveries: 0, revenue: 0 },
@@ -66,93 +64,76 @@ const CompanyDashboard = () => {
     taxId: "TAX123456789",
   });
 
+  // Load data based on active tab
   useEffect(() => {
-    if (
-      activeTab === "dashboard" ||
-      activeTab === "workers" ||
-      activeTab === "fleet"
-    ) {
-      fetchCompanyData();
-    }
-    if (activeTab === "deliveries") {
-      fetchRecentDeliveries();
-    }
-    if (activeTab === "settings") {
-      fetchCompanySettings();
-    }
+    loadDataForActiveTab();
   }, [activeTab]);
 
+  // Apply KYC filter to workers
   useEffect(() => {
     filterWorkers();
   }, [kycFilter, workers]);
 
-  const fetchCompanyData = async () => {
+  // Data loading function based on active tab
+  const loadDataForActiveTab = () => {
+    setLoading(true);
+
+    // Simulate API loading delay
+    setTimeout(() => {
+      switch (activeTab) {
+        case "dashboard":
+          loadDashboardData();
+          break;
+        case "workers":
+          loadWorkersData();
+          break;
+        case "deliveries":
+          loadDeliveriesData();
+          break;
+        case "fleet":
+          loadFleetData();
+          break;
+        case "finance":
+          loadFinanceData();
+          break;
+        case "settings":
+          loadSettingsData();
+          break;
+        default:
+          loadDashboardData();
+      }
+      setLoading(false);
+    }, 500);
+  };
+
+  // Tab-specific data loading functions
+  const loadDashboardData = async () => {
     try {
       setLoading(true);
-      const response = await api.get("company/workers/");
-      const { workers, company_stats } = response.data.data;
+      const response = await api.get("dashboard/overview/");
+      console.log(response.data.data);
 
-      const processedWorkers = workers.map((worker) => ({
-        id: worker.id,
-        name: `${worker.firstName} ${worker.lastName}`,
-        avatar: worker.avatar || "/default-avatar.png",
-        status: worker.status || "Available",
-        kyc_status: worker.kyc_status || "none",
-        deliveries: {
-          pending: worker.deliveries?.pending || 0,
-          in_transit: worker.deliveries?.in_transit || 0,
-          completed: worker.deliveries?.completed || 0,
-        },
-        rating: worker.rating || 4.5,
-        phone: worker.phone,
-        fleetType: worker.fleetType,
-        city: worker.city,
-        documents: worker.documents || [],
-        earnings: worker.earnings || 0,
-      }));
+      if (response.data.status === "success") {
+        const { data } = response.data.data;
 
-      setWorkers(processedWorkers);
+        setWorkers(response.data.data);
+        setDeliveries({
+          active: data.delivery_stats.active,
+          completed: data.delivery_stats.completed,
+          pending: data.delivery_stats.pending,
+        });
 
-      setDeliveries({
-        active: company_stats.total_deliveries.in_transit || 0,
-        completed: company_stats.total_deliveries.completed || 0,
-        pending: company_stats.total_deliveries.pending || 0,
-      });
-
-      // Calculate fleet statistics
-      const fleets = {
-        bike: { count: 0, deliveries: 0, revenue: 0 },
-        car: { count: 0, deliveries: 0, revenue: 0 },
-        van: { count: 0, deliveries: 0, revenue: 0 },
-        truck: { count: 0, deliveries: 0, revenue: 0 },
-      };
-
-      processedWorkers.forEach((worker) => {
-        const fleetType = worker.fleetType.toLowerCase();
-        if (fleets[fleetType]) {
-          fleets[fleetType].count++;
-          fleets[fleetType].deliveries +=
-            worker.deliveries.completed +
-            worker.deliveries.in_transit +
-            worker.deliveries.pending;
-          fleets[fleetType].revenue += worker.earnings;
-        }
-      });
-
-      setFleetStats(fleets);
-
-      const revenueResponse = await api.get("company/revenue/");
-      setRevenue({
-        daily: revenueResponse.data.daily || 0,
-        weekly: revenueResponse.data.weekly || 0,
-        monthly: revenueResponse.data.monthly || 0,
-        pendingPayout: revenueResponse.data.pendingPayout || 0,
-      });
+        // Update total revenue in revenue state
+        setRevenue((prev) => ({
+          ...prev,
+          total_revenue: data.total_revenue,
+        }));
+      }
     } catch (error) {
-      console.error("Error fetching company data:", error);
+      console.error("Error loading dashboard data:", error);
       Swal.fire({
         title: "Error",
-        text: error.response?.data?.message || "Failed to fetch company data",
+        text: error.response?.data?.message || "Failed to load dashboard data",
         icon: "error",
         confirmButtonColor: "#007BFF",
       });
@@ -161,37 +142,27 @@ const CompanyDashboard = () => {
     }
   };
 
-  const fetchRecentDeliveries = async () => {
-    try {
-      setLoading(true);
-      const response = await api.get("company/deliveries/recent");
-      setRecentDeliveries(response.data.deliveries || []);
-    } catch (error) {
-      console.error("Error fetching recent deliveries:", error);
-      Swal.fire({
-        title: "Error",
-        text: "Failed to fetch recent deliveries",
-        icon: "error",
-        confirmButtonColor: "#007BFF",
-      });
-    } finally {
-      setLoading(false);
-    }
+  const loadWorkersData = () => {
+    setWorkers(mockWorkers);
   };
 
-  const fetchCompanySettings = async () => {
-    try {
-      setLoading(true);
-      const response = await api.get("company/settings");
-      setCompanySettings(response.data.settings || companySettings);
-    } catch (error) {
-      console.error("Error fetching company settings:", error);
-      // Keep using the default settings
-    } finally {
-      setLoading(false);
-    }
+  const loadDeliveriesData = () => {
+    setRecentDeliveries(mockDeliveries);
   };
 
+  const loadFleetData = () => {
+    setFleetStats(mockFleetStats);
+  };
+
+  const loadFinanceData = () => {
+    setRevenue(mockRevenue);
+  };
+
+  const loadSettingsData = () => {
+    setCompanySettings(mockCompanySettings);
+  };
+
+  // Filter workers based on KYC status
   const filterWorkers = () => {
     if (kycFilter === "all") {
       setFilteredWorkers(workers);
@@ -202,66 +173,37 @@ const CompanyDashboard = () => {
     }
   };
 
-  const handlePayoutRequest = async () => {
-    try {
-      const result = await Swal.fire({
-        title: "Request Payout",
-        text: `Request payout of ₦${revenue.pendingPayout.toLocaleString()}?`,
-        icon: "question",
-        showCancelButton: true,
-        confirmButtonColor: "#FFC107",
-        confirmButtonText: "Request Payout",
-      });
+  // Handle payout request
+  const handlePayoutRequest = () => {
+    if (revenue.pendingPayout <= 0) return;
 
-      if (result.isConfirmed) {
-        const response = await api.post("company/payout-request/");
+    // Show confirmation dialog here (would use Swal in real implementation)
+    const isConfirmed = window.confirm(
+      `Request payout of ₦${revenue.pendingPayout.toLocaleString()}?`
+    );
 
-        if (response.data.status === "success") {
-          Swal.fire({
-            title: "Success",
-            text: "Payout request submitted successfully",
-            icon: "success",
-            confirmButtonColor: "#FFC107",
-          });
-          fetchCompanyData(); // Refresh data
-        }
-      }
-    } catch (error) {
-      Swal.fire({
-        title: "Error",
-        text: error.response?.data?.message || "Failed to request payout",
-        icon: "error",
-        confirmButtonColor: "#FFC107",
-      });
+    if (isConfirmed) {
+      // Would normally make API call here
+      alert("Payout request submitted successfully");
+      // Refresh data
+      loadFinanceData();
     }
   };
 
-  const saveCompanySettings = async (e) => {
+  // Save company settings
+  const saveCompanySettings = (e) => {
     e.preventDefault();
-    try {
-      setLoading(true);
-      const response = await api.post("company/settings", companySettings);
+    setLoading(true);
 
-      if (response.data.status === "success") {
-        Swal.fire({
-          title: "Success",
-          text: "Company settings updated successfully",
-          icon: "success",
-          confirmButtonColor: "#FFC107",
-        });
-      }
-    } catch (error) {
-      Swal.fire({
-        title: "Error",
-        text: error.response?.data?.message || "Failed to update settings",
-        icon: "error",
-        confirmButtonColor: "#FFC107",
-      });
-    } finally {
+    // Simulate API call
+    setTimeout(() => {
+      // Would normally make API call here
+      alert("Company settings updated successfully");
       setLoading(false);
-    }
+    }, 500);
   };
 
+  // Helper functions for UI
   const getKycStatusColor = (status) => {
     switch (status) {
       case "approved":
@@ -276,7 +218,8 @@ const CompanyDashboard = () => {
   };
 
   const getDeliveryStatusClass = (status) => {
-    switch (status.toLowerCase()) {
+    const statusStr = String(status).toLowerCase();
+    switch (statusStr) {
       case "completed":
         return styles.statusCompleted;
       case "in_transit":
@@ -295,7 +238,7 @@ const CompanyDashboard = () => {
     setSidebarCollapsed(!sidebarCollapsed);
   };
 
-  // Render dashboard content based on active tab
+  // Tab content rendering functions
   const renderContent = () => {
     switch (activeTab) {
       case "dashboard":
@@ -374,9 +317,11 @@ const CompanyDashboard = () => {
             <FaMoneyBillWave />
           </div>
           <div className={styles.statInfo}>
-            <h3 className={styles.statTitle}>Pending Payout</h3>
+            <h3 className={styles.statTitle}>Total Revenue</h3>
             <p className={styles.statValue}>
-              ₦{revenue.pendingPayout.toLocaleString()}
+              {loading
+                ? "Loading..."
+                : `₦${(revenue.total_revenue || 0).toLocaleString()}`}
             </p>
           </div>
         </div>
@@ -440,6 +385,7 @@ const CompanyDashboard = () => {
     </>
   );
 
+  // Workers Tab Content
   const renderWorkers = () => (
     <div className={styles.workersSection}>
       <div className={styles.sectionHeader}>
@@ -521,6 +467,7 @@ const CompanyDashboard = () => {
     </div>
   );
 
+  // Deliveries Tab Content
   const renderDeliveries = () => (
     <div className={styles.deliveriesSection}>
       <h2>Recent Deliveries</h2>
@@ -531,17 +478,17 @@ const CompanyDashboard = () => {
           recentDeliveries.map((delivery) => (
             <div key={delivery.id} className={styles.deliveryCard}>
               <div className={styles.deliveryHeader}>
-                <h4>{delivery.itemName}</h4>
+                <h4>{delivery.itemName || "Unnamed Delivery"}</h4>
                 <span className={getDeliveryStatusClass(delivery.status)}>
-                  {delivery.status_display}
+                  {delivery.status_display || delivery.status}
                 </span>
               </div>
               <div className={styles.deliveryDetails}>
                 <p>
-                  <strong>From:</strong> {delivery.pickupCity}
+                  <strong>From:</strong> {delivery.pickupCity || "Unknown"}
                 </p>
                 <p>
-                  <strong>To:</strong> {delivery.deliveryCity}
+                  <strong>To:</strong> {delivery.deliveryCity || "Unknown"}
                 </p>
                 <p>
                   <strong>Worker:</strong>{" "}
@@ -549,7 +496,7 @@ const CompanyDashboard = () => {
                 </p>
                 <p>
                   <strong>Price:</strong> ₦
-                  {delivery.estimated_price.toLocaleString()}
+                  {delivery.estimated_price?.toLocaleString() || "0"}
                 </p>
               </div>
             </div>
@@ -561,6 +508,7 @@ const CompanyDashboard = () => {
     </div>
   );
 
+  // Fleet Tab Content
   const renderFleet = () => (
     <div className={styles.fleetSection}>
       <h2>Fleet Statistics</h2>
@@ -594,227 +542,21 @@ const CompanyDashboard = () => {
     </div>
   );
 
-  const renderSettings = () => (
-    <div className={styles.settingsSection}>
-      <h2>Company Settings</h2>
-      <form onSubmit={saveCompanySettings} className={styles.settingsForm}>
-        <div className={styles.formGrid}>
-          <div className={styles.formGroup}>
-            <label>Company Name</label>
-            <input
-              type="text"
-              name="name"
-              value={companySettings.name}
-              onChange={handleInputChange}
-            />
-          </div>
-          {/* Add more form fields for other settings */}
-        </div>
-        <button type="submit" className={styles.saveButton} disabled={loading}>
-          {loading ? "Saving..." : "Save Settings"}
-        </button>
-      </form>
-    </div>
-  );
-
-  // Workers Tab Content
-  const renderWorkersOld = () => (
-    <>
-      <div className={styles.header}>
-        <div className={styles.headerLeft}>
-          <h1 className={styles.pageTitle}>Workers</h1>
-        </div>
-        <div className={styles.headerRight}>
-          <Link to="/worker/new">
-            <button className={styles.btnSecondary}>
-              <FaUserPlus /> Add Worker
-            </button>
-          </Link>
-        </div>
-      </div>
-
-      <div className={styles.filterBar}>
-        <div className={styles.filterGroup}>
-          <label htmlFor="kycFilter">KYC Status:</label>
-          <select
-            id="kycFilter"
-            value={kycFilter}
-            onChange={(e) => setKycFilter(e.target.value)}
-          >
-            <option value="all">All</option>
-            <option value="approved">Approved</option>
-            <option value="pending">Pending</option>
-            <option value="rejected">Rejected</option>
-          </select>
-        </div>
-      </div>
-
-      <div className={styles.workersList}>
-        {loading ? (
-          <div className={styles.loading}>Loading workers data...</div>
-        ) : filteredWorkers.length > 0 ? (
-          filteredWorkers.map((worker) => (
-            <div key={worker.id} className={styles.workerCard}>
-              <div className={styles.workerHeader}>
-                <img
-                  src={worker.avatar}
-                  alt={worker.name}
-                  className={styles.workerAvatar}
-                />
-                <div className={styles.workerInfo}>
-                  <h4>{worker.name}</h4>
-                  <span
-                    className={`${styles.kycBadge} ${getKycStatusColor(
-                      worker.kyc_status
-                    )}`}
-                  >
-                    {worker.kyc_status.toUpperCase()}
-                  </span>
-                </div>
-                <div className={styles.workerStats}>
-                  <div className={styles.stat}>
-                    <span>Completed</span>
-                    <p>{worker.deliveries.completed}</p>
-                  </div>
-                  <div className={styles.stat}>
-                    <span>Active</span>
-                    <p>{worker.deliveries.in_transit}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))
-        ) : (
-          <div className={styles.noData}>No workers found</div>
-        )}
-      </div>
-    </>
-  );
-
-  // Deliveries Tab Content
-  const renderDeliveriesOld = () => (
-    <>
-      <div className={styles.header}>
-        <div className={styles.headerLeft}>
-          <h1 className={styles.pageTitle}>Recent Deliveries</h1>
-        </div>
-      </div>
-
-      <div className={styles.deliveriesList}>
-        {loading ? (
-          <div className={styles.loading}>Loading deliveries data...</div>
-        ) : recentDeliveries.length > 0 ? (
-          recentDeliveries.map((delivery) => (
-            <div key={delivery.id} className={styles.deliveryCard}>
-              <div className={styles.deliveryHeader}>
-                <h4>{delivery.customer_name}</h4>
-                <span className={getDeliveryStatusClass(delivery.status)}>
-                  {delivery.status.toUpperCase()}
-                </span>
-              </div>
-              <div className={styles.deliveryInfo}>
-                <p>
-                  <strong>Pickup:</strong> {delivery.pickup_address}
-                </p>
-                <p>
-                  <strong>Dropoff:</strong> {delivery.dropoff_address}
-                </p>
-                <p>
-                  <strong>Fee:</strong> ₦{delivery.fee.toLocaleString()}
-                </p>
-              </div>
-            </div>
-          ))
-        ) : (
-          <div className={styles.noData}>No recent deliveries found</div>
-        )}
-      </div>
-    </>
-  );
-
-  // Fleet Tab Content
-  const renderFleetOld = () => (
-    <>
-      <div className={styles.header}>
-        <div className={styles.headerLeft}>
-          <h1 className={styles.pageTitle}>Fleet Overview</h1>
-        </div>
-      </div>
-
-      <div className={styles.fleetGrid}>
-        <div className={styles.fleetCard}>
-          <div className={styles.fleetIcon}>
-            <FaCarAlt />
-          </div>
-          <div className={styles.fleetInfo}>
-            <h3 className={styles.fleetTitle}>Bikes</h3>
-            <p className={styles.fleetValue}>{fleetStats.bike.count}</p>
-            <p className={styles.fleetDeliveries}>
-              Deliveries: {fleetStats.bike.deliveries}
-            </p>
-            <p className={styles.fleetRevenue}>
-              Revenue: ₦{fleetStats.bike.revenue.toLocaleString()}
-            </p>
-          </div>
-        </div>
-
-        <div className={styles.fleetCard}>
-          <div className={styles.fleetIcon}>
-            <FaCarAlt />
-          </div>
-          <div className={styles.fleetInfo}>
-            <h3 className={styles.fleetTitle}>Cars</h3>
-            <p className={styles.fleetValue}>{fleetStats.car.count}</p>
-            <p className={styles.fleetDeliveries}>
-              Deliveries: {fleetStats.car.deliveries}
-            </p>
-            <p className={styles.fleetRevenue}>
-              Revenue: ₦{fleetStats.car.revenue.toLocaleString()}
-            </p>
-          </div>
-        </div>
-
-        <div className={styles.fleetCard}>
-          <div className={styles.fleetIcon}>
-            <FaWarehouse />
-          </div>
-          <div className={styles.fleetInfo}>
-            <h3 className={styles.fleetTitle}>Vans</h3>
-            <p className={styles.fleetValue}>{fleetStats.van.count}</p>
-            <p className={styles.fleetDeliveries}>
-              Deliveries: {fleetStats.van.deliveries}
-            </p>
-            <p className={styles.fleetRevenue}>
-              Revenue: ₦{fleetStats.van.revenue.toLocaleString()}
-            </p>
-          </div>
-        </div>
-
-        <div className={styles.fleetCard}>
-          <div className={styles.fleetIcon}>
-            <FaTruck />
-          </div>
-          <div className={styles.fleetInfo}>
-            <h3 className={styles.fleetTitle}>Trucks</h3>
-            <p className={styles.fleetValue}>{fleetStats.truck.count}</p>
-            <p className={styles.fleetDeliveries}>
-              Deliveries: {fleetStats.truck.deliveries}
-            </p>
-            <p className={styles.fleetRevenue}>
-              Revenue: ₦{fleetStats.truck.revenue.toLocaleString()}
-            </p>
-          </div>
-        </div>
-      </div>
-    </>
-  );
-
   // Finance Tab Content
   const renderFinance = () => (
     <>
       <div className={styles.header}>
         <div className={styles.headerLeft}>
           <h1 className={styles.pageTitle}>Finance Overview</h1>
+        </div>
+        <div className={styles.headerRight}>
+          <button
+            className={styles.btnPrimary}
+            onClick={handlePayoutRequest}
+            disabled={revenue.pendingPayout <= 0}
+          >
+            <FaMoneyBillWave /> Request Payout
+          </button>
         </div>
       </div>
 
@@ -871,142 +613,89 @@ const CompanyDashboard = () => {
   );
 
   // Settings Tab Content
-  const renderSettingsOld = () => (
-    <>
-      <div className={styles.header}>
-        <div className={styles.headerLeft}>
-          <h1 className={styles.pageTitle}>Company Settings</h1>
+  const renderSettings = () => (
+    <div className={styles.settingsSection}>
+      <h2>Company Settings</h2>
+      <form onSubmit={saveCompanySettings} className={styles.settingsForm}>
+        <div className={styles.formGrid}>
+          <div className={styles.formGroup}>
+            <label>Company Name</label>
+            <input
+              type="text"
+              name="name"
+              value={companySettings.name}
+              onChange={handleInputChange}
+            />
+          </div>
+          <div className={styles.formGroup}>
+            <label>Email</label>
+            <input
+              type="email"
+              name="email"
+              value={companySettings.email}
+              onChange={handleInputChange}
+            />
+          </div>
+          <div className={styles.formGroup}>
+            <label>Phone</label>
+            <input
+              type="tel"
+              name="phone"
+              value={companySettings.phone}
+              onChange={handleInputChange}
+            />
+          </div>
+          <div className={styles.formGroup}>
+            <label>Address</label>
+            <input
+              type="text"
+              name="address"
+              value={companySettings.address}
+              onChange={handleInputChange}
+            />
+          </div>
+          <div className={styles.formGroup}>
+            <label>City</label>
+            <input
+              type="text"
+              name="city"
+              value={companySettings.city}
+              onChange={handleInputChange}
+            />
+          </div>
+          <div className={styles.formGroup}>
+            <label>State</label>
+            <input
+              type="text"
+              name="state"
+              value={companySettings.state}
+              onChange={handleInputChange}
+            />
+          </div>
+          <div className={styles.formGroup}>
+            <label>Bank Name</label>
+            <input
+              type="text"
+              name="bankName"
+              value={companySettings.bankName}
+              onChange={handleInputChange}
+            />
+          </div>
+          <div className={styles.formGroup}>
+            <label>Account Number</label>
+            <input
+              type="text"
+              name="accountNumber"
+              value={companySettings.accountNumber}
+              onChange={handleInputChange}
+            />
+          </div>
         </div>
-      </div>
-
-      <form className={styles.settingsForm} onSubmit={saveCompanySettings}>
-        <div className={styles.formGroup}>
-          <label htmlFor="name">Company Name</label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={companySettings.name}
-            onChange={handleInputChange}
-            required
-          />
-        </div>
-
-        <div className={styles.formGroup}>
-          <label htmlFor="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={companySettings.email}
-            onChange={handleInputChange}
-            required
-          />
-        </div>
-
-        <div className={styles.formGroup}>
-          <label htmlFor="phone">Phone</label>
-          <input
-            type="tel"
-            id="phone"
-            name="phone"
-            value={companySettings.phone}
-            onChange={handleInputChange}
-            required
-          />
-        </div>
-
-        <div className={styles.formGroup}>
-          <label htmlFor="address">Address</label>
-          <input
-            type="text"
-            id="address"
-            name="address"
-            value={companySettings.address}
-            onChange={handleInputChange}
-            required
-          />
-        </div>
-
-        <div className={styles.formGroup}>
-          <label htmlFor="city">City</label>
-          <input
-            type="text"
-            id="city"
-            name="city"
-            value={companySettings.city}
-            onChange={handleInputChange}
-            required
-          />
-        </div>
-
-        <div className={styles.formGroup}>
-          <label htmlFor="state">State</label>
-          <input
-            type="text"
-            id="state"
-            name="state"
-            value={companySettings.state}
-            onChange={handleInputChange}
-            required
-          />
-        </div>
-
-        <div className={styles.formGroup}>
-          <label htmlFor="logo">Logo URL</label>
-          <input
-            type="text"
-            id="logo"
-            name="logo"
-            value={companySettings.logo}
-            onChange={handleInputChange}
-            required
-          />
-        </div>
-
-        <div className={styles.formGroup}>
-          <label htmlFor="bankName">Bank Name</label>
-          <input
-            type="text"
-            id="bankName"
-            name="bankName"
-            value={companySettings.bankName}
-            onChange={handleInputChange}
-            required
-          />
-        </div>
-
-        <div className={styles.formGroup}>
-          <label htmlFor="accountNumber">Account Number</label>
-          <input
-            type="text"
-            id="accountNumber"
-            name="accountNumber"
-            value={companySettings.accountNumber}
-            onChange={handleInputChange}
-            required
-          />
-        </div>
-
-        <div className={styles.formGroup}>
-          <label htmlFor="taxId">Tax ID</label>
-          <input
-            type="text"
-            id="taxId"
-            name="taxId"
-            value={companySettings.taxId}
-            onChange={handleInputChange}
-            required
-          />
-        </div>
-
-        <div className={styles.formGroup}>
-          <button type="submit" className={styles.btnPrimary}>
-            Save Settings
-          </button>
-        </div>
+        <button type="submit" className={styles.saveButton} disabled={loading}>
+          {loading ? "Saving..." : "Save Settings"}
+        </button>
       </form>
-    </>
+    </div>
   );
 
   return (
@@ -1029,42 +718,54 @@ const CompanyDashboard = () => {
         </div>
         <div className={styles.sidebarMenu}>
           <div
-            className={styles.menuItem}
+            className={`${styles.menuItem} ${
+              activeTab === "dashboard" ? styles.active : ""
+            }`}
             onClick={() => setActiveTab("dashboard")}
           >
             <FaTachometerAlt />
             <span>Dashboard</span>
           </div>
           <div
-            className={styles.menuItem}
+            className={`${styles.menuItem} ${
+              activeTab === "workers" ? styles.active : ""
+            }`}
             onClick={() => setActiveTab("workers")}
           >
             <FaUsers />
             <span>Workers</span>
           </div>
           <div
-            className={styles.menuItem}
+            className={`${styles.menuItem} ${
+              activeTab === "deliveries" ? styles.active : ""
+            }`}
             onClick={() => setActiveTab("deliveries")}
           >
             <FaClipboardList />
             <span>Deliveries</span>
           </div>
           <div
-            className={styles.menuItem}
+            className={`${styles.menuItem} ${
+              activeTab === "fleet" ? styles.active : ""
+            }`}
             onClick={() => setActiveTab("fleet")}
           >
             <FaTruck />
             <span>Fleet</span>
           </div>
           <div
-            className={styles.menuItem}
+            className={`${styles.menuItem} ${
+              activeTab === "finance" ? styles.active : ""
+            }`}
             onClick={() => setActiveTab("finance")}
           >
             <FaWallet />
             <span>Finance</span>
           </div>
           <div
-            className={styles.menuItem}
+            className={`${styles.menuItem} ${
+              activeTab === "settings" ? styles.active : ""
+            }`}
             onClick={() => setActiveTab("settings")}
           >
             <FaCog />

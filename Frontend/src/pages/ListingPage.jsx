@@ -65,12 +65,25 @@ const CourierListings = () => {
         fetchDeliveries(); // Refresh the list
       }
     } catch (error) {
-      Swal.fire({
-        title: "Error",
-        text: error.response?.data?.message || "Failed to accept delivery",
-        icon: "error",
-        confirmButtonColor: "#007BFF",
-      });
+      if (error.response?.data?.message?.includes("active deliveries")) {
+        Swal.fire({
+          title: "Cannot Accept Delivery",
+          text: "Please complete your current delivery before accepting a new one",
+          icon: "warning",
+          confirmButtonText: "Got it",
+          confirmButtonColor: "#FFA500",
+          showCancelButton: false,
+          allowOutsideClick: false,
+          footer: '<a href="/worker/dashboard">Go to Dashboard</a>',
+        });
+      } else {
+        Swal.fire({
+          title: "Error",
+          text: error.response?.data?.message || "Failed to accept delivery",
+          icon: "error",
+          confirmButtonColor: "#dc3545",
+        });
+      }
     }
   };
 

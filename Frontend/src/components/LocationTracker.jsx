@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
@@ -19,7 +19,23 @@ L.Icon.Default.mergeOptions({
 
 const LocationTracker = ({ deliveryId, isWorker }) => {
   const [position, setPosition] = useState(null);
+  const [totalDistance, setTotalDistance] = useState(0);
+  const lastPosition = useRef(null);
   const [watchId, setWatchId] = useState(null);
+
+  const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371; // Earth's radius in km
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLon = ((lon2 - lon1) * Math.PI) / 180;
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos((lat1 * Math.PI) / 180) *
+        Math.cos((lat2 * Math.PI) / 180) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c; // Distance in km
+  };
 
   useEffect(() => {
     if (isWorker) {
@@ -31,6 +47,30 @@ const LocationTracker = ({ deliveryId, isWorker }) => {
             lng: position.coords.longitude,
           };
           setPosition(newPosition);
+
+          // Calculate distance if we have a previous position
+          if (lastPosition.current) {
+            const distance = calculateDistance(
+              lastPosition.current.lat,
+              lastPosition.current.lng,
+              newPosition.lat,
+              newPosition.lng
+            );
+            setTotalDistance((prev) => prev + distance);
+
+            // Update backend with new distance
+            try {
+              await api.post(`deliveries/${deliveryId}/update-distance/`, {
+                distance: totalDistance + distance,
+                current_latitude: newPosition.lat,
+                current_longitude: newPosition.lng,
+              });
+            } catch (error) {
+              console.error("Error updating distance:", error);
+            }
+          }
+
+          lastPosition.current = newPosition;
 
           // Update location in backend
           try {
@@ -68,7 +108,7 @@ const LocationTracker = ({ deliveryId, isWorker }) => {
     return () => {
       if (watchId) navigator.geolocation.clearWatch(watchId);
     };
-  }, [deliveryId, isWorker]);
+  }, [deliveryId, isWorker, totalDistance]);
 
   if (!position) return <div>Loading location...</div>;
 

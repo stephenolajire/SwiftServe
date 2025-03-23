@@ -14,9 +14,16 @@ import Swal from "sweetalert2";
 import ChatModal from "../components/ChatModal";
 import NotificationBadge from "../components/NotificationBadge";
 import LocationTracker from "../components/LocationTracker";
+import PaymentModal from "../components/PaymentModal";
 
-// Update DeliveryCard to include debug logging
-const DeliveryCard = ({ delivery, onOpenChat, unreadMessages }) => {
+// Update DeliveryCard props to include payment handling
+const DeliveryCard = ({
+  delivery,
+  onOpenChat,
+  unreadMessages,
+  onConfirmDelivery,
+  onInitiatePayment, // Add new prop
+}) => {
   const hasUnreadMessages = unreadMessages && unreadMessages[delivery.id] > 0;
 
   return (
@@ -52,27 +59,49 @@ const DeliveryCard = ({ delivery, onOpenChat, unreadMessages }) => {
           <p>₦{delivery.estimated_price}</p>
         </div>
       </div>
-      {delivery.worker && (
-        <div className={styles.cardActions}>
-          <div className={styles.workerInfo}>
-            <span>Driver:</span>
-            <p>{delivery.worker_name}</p>
-          </div>
-          <button
-            onClick={() => onOpenChat(delivery)}
-            className={`${styles.chatButton} ${
-              hasUnreadMessages ? styles.hasUnread : ""
-            }`}
-          >
-            <div className={styles.chatButtonContent}>
-              Chat with Driver
-              {hasUnreadMessages && (
-                <NotificationBadge count={unreadMessages[delivery.id]} />
-              )}
+      <div className={styles.cardActions}>
+        {delivery.worker && delivery.status !== "RECEIVED" && (
+          <>
+            <div className={styles.workerInfo}>
+              <span>Driver:</span>
+              <p>{delivery.worker_name}</p>
             </div>
+            <button
+              onClick={() => onOpenChat(delivery)}
+              className={`${styles.chatButton} ${
+                hasUnreadMessages ? styles.hasUnread : ""
+              }`}
+            >
+              <div className={styles.chatButtonContent}>
+                Chat with Driver
+                {hasUnreadMessages && (
+                  <NotificationBadge count={unreadMessages[delivery.id]} />
+                )}
+              </div>
+            </button>
+          </>
+        )}
+      </div>
+      <div className={styles.cardActionss}>
+        {delivery.status === "DELIVERED" && (
+          <button
+            onClick={() => onConfirmDelivery(delivery)}
+            className={`${styles.actionButton} ${styles.confirmButton}`}
+          >
+            Confirm Delivery Received
           </button>
-        </div>
-      )}
+        )}
+
+        {/* Show payment button for unpaid deliveries */}
+        {delivery.payment_status !== "COMPLETED" && (
+          <button
+            onClick={() => onInitiatePayment(delivery)}
+            className={`${styles.actionButton} ${styles.paymentButton}`}
+          >
+            Proceed to Payment
+          </button>
+        )}
+      </div>
     </div>
   );
 };
@@ -82,6 +111,7 @@ const ClientDashboard = () => {
     active: [],
     pending: [],
     completed: [],
+    recieved: [],
   });
 
   const [filter, setFilter] = useState("all");
@@ -89,6 +119,9 @@ const ClientDashboard = () => {
   const [userName, setUserName] = useState("");
   const [selectedDelivery, setSelectedDelivery] = useState(null);
   const [unreadMessages, setUnreadMessages] = useState({});
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [deliveryToConfirm, setDeliveryToConfirm] = useState(null);
+  const [result, setResult] = useState([]);
 
   useEffect(() => {
     const initializeDashboard = async () => {
@@ -101,9 +134,21 @@ const ClientDashboard = () => {
 
     initializeDashboard();
 
-    // Poll for new messages every 5 seconds
-    const messageInterval = setInterval(checkNewMessages, 5000);
-    return () => clearInterval(messageInterval);
+    // Only set up polling if there are non-RECEIVED deliveries
+    const activeDeliveries = getFilteredDeliveries().filter(
+      (d) => d.status !== "RECEIVED"
+    );
+
+    let messageInterval;
+    if (activeDeliveries.length > 0) {
+      messageInterval = setInterval(checkNewMessages, 5000);
+    }
+
+    return () => {
+      if (messageInterval) {
+        clearInterval(messageInterval);
+      }
+    };
   }, []);
 
   const fetchUserProfile = async () => {
@@ -137,6 +182,7 @@ const ClientDashboard = () => {
         ),
         pending: deliveriesData.filter((d) => d.status === "PENDING"),
         completed: deliveriesData.filter((d) => d.status === "DELIVERED"),
+        recieved: deliveriesData.filter((d) => d.status === "RECEIVED"),
       };
 
       setDeliveries(categorizedDeliveries);
@@ -159,6 +205,7 @@ const ClientDashboard = () => {
         ...deliveries.active,
         ...deliveries.pending,
         ...deliveries.completed,
+        ...deliveries.recieved,
       ];
     }
     return deliveries[filter] || [];
@@ -175,16 +222,88 @@ const ClientDashboard = () => {
 
   const checkNewMessages = async () => {
     try {
-      const response = await api.get("deliveries/messages/unread/");
-      console.log("Unread messages response:", response.data);
+      // Get all active deliveries (not RECEIVED)
+      const activeDeliveries = getFilteredDeliveries().filter(
+        (d) => d.status !== "RECEIVED"
+      );
 
-      if (response.data.status === "success") {
-        console.log("Setting unread messages:", response.data.data);
-        setUnreadMessages(response.data.data);
+      if (activeDeliveries.length > 0) {
+        const response = await api.get("deliveries/messages/unread/");
+        if (response.data.status === "success") {
+          // Filter out messages for RECEIVED deliveries
+          const filteredUnreadMessages = Object.entries(
+            response.data.data
+          ).reduce((acc, [deliveryId, count]) => {
+            const delivery = activeDeliveries.find(
+              (d) => d.id.toString() === deliveryId
+            );
+            if (delivery) {
+              acc[deliveryId] = count;
+            }
+            return acc;
+          }, {});
+          setUnreadMessages(filteredUnreadMessages);
+        }
+      } else {
+        // Clear unread messages if no active deliveries
+        setUnreadMessages({});
       }
     } catch (error) {
       console.error("Error checking messages:", error);
     }
+  };
+
+  const handleDeliveryConfirmation = async (delivery) => {
+    try {
+      const result = await Swal.fire({
+        title: "Confirm Delivery",
+        text: "Have you received your package?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#28a745",
+        cancelButtonColor: "#dc3545",
+        confirmButtonText: "Yes, received!",
+        cancelButtonText: "No, not yet",
+      });
+
+      if (result.isConfirmed) {
+        const response = await api.post(
+          `deliveries/${delivery.id}/confirm-delivery/`
+        );
+
+        if (response.data.status === "success") {
+          await fetchDeliveries(); // Refresh deliveries list
+
+          // Show payment prompt
+          const payNow = await Swal.fire({
+            title: "Make Payment",
+            text: "Would you like to make the payment now?",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#2563eb",
+            cancelButtonColor: "#6b7280",
+            confirmButtonText: "Yes, pay now",
+            cancelButtonText: "Later",
+          });
+
+          if (payNow.isConfirmed) {
+            setDeliveryToConfirm(delivery);
+            setShowPaymentModal(true);
+          }
+        }
+      }
+    } catch (error) {
+      Swal.fire({
+        title: "Error",
+        text: error.response?.data?.message || "Failed to confirm delivery",
+        icon: "error",
+      });
+    }
+  };
+
+  const handleInitiatePayment = (delivery) => {
+    setDeliveryToConfirm(delivery);
+    setShowPaymentModal(true);
   };
 
   return (
@@ -225,7 +344,7 @@ const ClientDashboard = () => {
           </div>
           <div className={styles.statInfo}>
             <h5>Completed Deliveries</h5>
-            <p>{deliveries.completed.length}</p>
+            <p>{deliveries.recieved.length}</p>
           </div>
         </div>
       </div>
@@ -261,6 +380,8 @@ const ClientDashboard = () => {
                   delivery={delivery}
                   onOpenChat={handleOpenChat}
                   unreadMessages={unreadMessages}
+                  onConfirmDelivery={handleDeliveryConfirmation}
+                  onInitiatePayment={handleInitiatePayment} // Pass the new handler
                 />
               ))
             ) : (
@@ -278,6 +399,17 @@ const ClientDashboard = () => {
                 setSelectedDelivery(null);
                 // Refresh unread messages when closing chat
                 checkNewMessages();
+              }}
+            />
+          )}
+
+          {/* Add Payment Modal */}
+          {showPaymentModal && deliveryToConfirm && (
+            <PaymentModal
+              delivery={deliveryToConfirm}
+              onClose={() => {
+                setShowPaymentModal(false);
+                setDeliveryToConfirm(null);
               }}
             />
           )}

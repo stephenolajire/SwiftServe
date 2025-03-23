@@ -11,7 +11,8 @@ class Delivery(models.Model):
         ('PICKED_UP', 'Picked Up'),
         ('IN_TRANSIT', 'In Transit'),
         ('DELIVERED', 'Delivered'),
-        ('CANCELLED', 'Cancelled')
+        ('CANCELLED', 'Cancelled'),
+        ('RECEIVED', 'Received')
     ]
 
     CATEGORY_CHOICES = [
@@ -135,6 +136,31 @@ class Delivery(models.Model):
     transit_start_time = models.DateTimeField(null=True, blank=True)
     delivery_completed_at = models.DateTimeField(null=True, blank=True)
 
+    distance_covered = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0,
+        help_text="Distance covered in kilometers"
+    )
+    base_price_per_km = models.DecimalField(
+        max_digits=6,
+        decimal_places=2,
+        default=100.00,  # Default base price per km in Naira
+    )
+
+    payment_status = models.CharField(
+        max_length=20,
+        choices=[
+            ('PENDING', 'Pending'),
+            ('PROCESSING', 'Processing'),
+            ('COMPLETED', 'Completed'),
+            ('FAILED', 'Failed')
+        ],
+        default='PENDING'
+    )
+    payment_reference = models.CharField(max_length=100, null=True, blank=True)
+    paid_at = models.DateTimeField(null=True, blank=True)
+
     @property
     def last_read(self):
         try:
@@ -160,6 +186,20 @@ class Delivery(models.Model):
             'IN_TRANSIT': ['DELIVERED'],
         }
         return new_status in valid_transitions.get(self.status, [])
+
+    def calculate_final_price(self):
+        """Calculate final price based on distance and base rate"""
+        base_price = float(self.distance_covered) * float(self.base_price_per_km)
+        
+        # Add additional charges based on weight if applicable
+        weight_charge = 0
+        if self.weight > 10:  # If weight is more than 10kg
+            weight_charge = (self.weight - 10) * 50  # ₦50 per kg over 10kg
+
+        # Add fragile item handling charge if applicable
+        fragile_charge = 500 if self.fragile else 0
+
+        return base_price + weight_charge + fragile_charge
 
 class ChatMessage(models.Model):
     MESSAGE_TYPES = [

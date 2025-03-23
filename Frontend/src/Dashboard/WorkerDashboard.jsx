@@ -36,16 +36,29 @@ const WorkerDashboard = () => {
     fetchWorkerData();
     checkNewMessages();
 
-    // Poll for new messages every 30 seconds
-    const messageInterval = setInterval(checkNewMessages, 5000);
-    return () => clearInterval(messageInterval);
-  }, []);
+    // Only set up polling if there are non-RECEIVED deliveries
+    const activeDeliveries = [
+      ...deliveries.active,
+      ...deliveries.pending,
+    ].filter((d) => d.status !== "RECEIVED");
+
+    let messageInterval;
+    if (activeDeliveries.length > 0) {
+      messageInterval = setInterval(checkNewMessages, 5000);
+    }
+
+    return () => {
+      if (messageInterval) {
+        clearInterval(messageInterval);
+      }
+    };
+  }, [deliveries.active, deliveries.pending]);
 
   const fetchWorkerData = async () => {
     try {
       setLoading(true);
       const response = await api.get("deliveries/worker/");
-      // console.log("API Response:", response.data);
+      console.log("API Response:", response.data);
 
       // Extract worker data
       setWorker(response.data.data.worker);
@@ -57,9 +70,11 @@ const WorkerDashboard = () => {
       const organized = {
         pending: deliveriesData.filter((d) => d.status === "PENDING"),
         active: deliveriesData.filter((d) =>
-          ["ACCEPTED", "PICKED_UP", "IN_TRANSIT"].includes(d.status)
+          ["ACCEPTED", "PICKED_UP", "IN_TRANSIT", "DELIVERED"].includes(
+            d.status
+          )
         ),
-        completed: deliveriesData.filter((d) => d.status === "DELIVERED"),
+        completed: deliveriesData.filter((d) => d.status === "RECEIVED"),
       };
 
       setDeliveries(organized);
@@ -82,10 +97,37 @@ const WorkerDashboard = () => {
     }
   };
 
+  // Modify the checkNewMessages function
   const checkNewMessages = async () => {
     try {
-      const response = await api.get("deliveries/messages/unread/");
-      setUnreadMessages(response.data.data);
+      // Get all non-RECEIVED deliveries
+      const activeDeliveries = [
+        ...deliveries.active,
+        ...deliveries.pending,
+      ].filter((d) => d.status !== "RECEIVED");
+
+      if (activeDeliveries.length > 0) {
+        const response = await api.get("deliveries/messages/unread/");
+
+        if (response.data.status === "success") {
+          // Filter out messages for RECEIVED deliveries
+          const filteredUnreadMessages = Object.entries(
+            response.data.data
+          ).reduce((acc, [deliveryId, count]) => {
+            const delivery = activeDeliveries.find(
+              (d) => d.id.toString() === deliveryId
+            );
+            if (delivery) {
+              acc[deliveryId] = count;
+            }
+            return acc;
+          }, {});
+          setUnreadMessages(filteredUnreadMessages);
+        }
+      } else {
+        // Clear unread messages if no active deliveries
+        setUnreadMessages({});
+      }
     } catch (error) {
       console.error("Error checking messages:", error);
     }
@@ -134,7 +176,11 @@ const WorkerDashboard = () => {
           <strong>To:</strong> {delivery.deliveryAddress}
         </p>
         <p>
-          <strong>Price:</strong> ₦{delivery.estimated_price?.toLocaleString()}
+          <strong>Distance:</strong> {delivery.distance_covered?.toFixed(2)} km
+        </p>
+        <p>
+          <strong>Current Price:</strong> ₦
+          {delivery.estimated_price?.toLocaleString()}
         </p>
       </div>
 

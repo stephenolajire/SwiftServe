@@ -16,11 +16,15 @@ const ChatModal = ({ delivery, onClose }) => {
   };
 
   useEffect(() => {
-    fetchMessages();
-    markMessagesAsRead();
-    const interval = setInterval(fetchMessages, 5000); // Poll every 5 seconds
-    return () => clearInterval(interval);
-  }, [delivery.id]);
+    fetchMessages(); // Fetch messages once initially
+
+    // Only set up polling and mark messages as read if delivery is not RECEIVED
+    if (delivery.status !== "RECEIVED") {
+      markMessagesAsRead();
+      const interval = setInterval(fetchMessages, 5000); // Poll every 5 seconds
+      return () => clearInterval(interval);
+    }
+  }, [delivery.id, delivery.status]);
 
   useEffect(() => {
     scrollToBottom();
@@ -38,10 +42,13 @@ const ChatModal = ({ delivery, onClose }) => {
   };
 
   const markMessagesAsRead = async () => {
-    try {
-      await api.post(`deliveries/${delivery.id}/mark-read/`);
-    } catch (error) {
-      console.error("Error marking messages as read:", error);
+    // Only mark messages as read if delivery is not RECEIVED
+    if (delivery.status !== "RECEIVED") {
+      try {
+        await api.post(`deliveries/${delivery.id}/mark-read/`);
+      } catch (error) {
+        console.error("Error marking messages as read:", error);
+      }
     }
   };
 

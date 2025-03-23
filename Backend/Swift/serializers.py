@@ -58,7 +58,7 @@ class DeliverySerializer(serializers.ModelSerializer):
             # Metadata
             'status', 'status_display', 'client', 'client_name',
             'worker', 'worker_name',
-            'created_at', 'updated_at'
+            'created_at', 'updated_at','payment_status'
         ]
         read_only_fields = [
             'client', 'worker', 'status', 'created_at',
