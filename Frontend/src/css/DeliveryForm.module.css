@@ -58,10 +58,10 @@
 .input {
   height: 4rem;
   padding: 0 1.5rem;
-  border: 0.1rem solid var(--text-grey);
+  border: 0.1rem solid var(--primary-color);
   /* border-radius: var(--border-radius); */
   font-size: var(--font-body);
-  color: var(--primary-color);
+  color: var(--text-dark);
   transition: border-color 0.3s ease;
 }
 
@@ -285,4 +285,8 @@ input[type="time"] {
 .formGroup label {
   font-size: var(--font-body);
   color: var(--text-grey);
+}
+
+.section h5 {
+  margin-bottom: 1rem;
 }
