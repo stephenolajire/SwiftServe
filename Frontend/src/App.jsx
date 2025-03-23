@@ -84,7 +84,7 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/company" element={<CompanyRegistration />} />
         <Route path="/register" element={<RegistrationType />} />
-        <Route path="/client" element={<ClientRegistration />} />
+        <Route path="/register/client" element={<ClientRegistration />} />
         <Route path="/worker" element={<WorkerRegistration />} />
         <Route path="/kyc-status" element={<KYCPendingStatus />} />
         <Route path="/add-item" element={<DeliveryForm />} />
