@@ -17,8 +17,7 @@ import Swal from "sweetalert2";
 import StatCard from "../components/StatCard";
 import RevenueChart from "../components/RevenueChart";
 import UserActivityChart from "../components/UserActivityChart";
-
-const BASE_URL = "http://localhost:8000";
+import { MEDIA_BASE_URL } from "../constant/api";
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState("overview");
@@ -320,12 +319,12 @@ const AdminDashboard = () => {
                   </div>
                   <div className={styles.kycDocuments}>
                     <img
-                      src={kyc.idDocument ? `${BASE_URL}${kyc.idDocument}` : ""}
+                      src={kyc.idDocument ? `${MEDIA_BASE_URL}${kyc.idDocument}` : ""}
                       alt="ID Document"
                     />
                     <img
                       src={
-                        kyc.selfieImage ? `${BASE_URL}${kyc.selfieImage}` : ""
+                        kyc.selfieImage ? `${MEDIA_BASE_URL}${kyc.selfieImage}` : ""
                       }
                       alt="Selfie"
                     />
