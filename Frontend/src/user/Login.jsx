@@ -173,11 +173,11 @@ const Login = () => {
             } else if (response.data.kyc_status === "REJECTED") {
               navigate("/kyc-rejected");
             } else {
-              navigate("/worker/dashboard");
+              navigate("/client/dashboard");
             }
             break;
           default:
-            navigate("/dashboard");
+            navigate("/");
         }
       }
 
