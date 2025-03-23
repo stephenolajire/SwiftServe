@@ -17,10 +17,10 @@
   border-bottom: 1px solid #eee;
 }
 
-.section h2 {
+.section h5 {
   color: #333;
   margin-bottom: 1.5rem;
-  font-size: var(--font-h3);
+  /* font-size: var(--font-h3); */
 }
 
 .formGroup {

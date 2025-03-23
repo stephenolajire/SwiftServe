@@ -156,10 +156,10 @@ const KYCVerification = () => {
   return (
     <div className={styles.container}>
       <div className={styles.formWrapper}>
-        <h1>KYC Verification</h1>
+        <h4>KYC Verification</h4>
         <form onSubmit={handleSubmit}>
           <div className={styles.section}>
-            <h2>Personal Information</h2>
+            <h5>Personal Information</h5>
 
             <div className={styles.formGroup}>
               <label>First Name</label>
@@ -196,7 +196,7 @@ const KYCVerification = () => {
           </div>
 
           <div className={styles.section}>
-            <h2>ID Verification</h2>
+            <h4>ID Verification</h4>
 
             <div className={styles.formGroup}>
               <label>ID Type</label>
