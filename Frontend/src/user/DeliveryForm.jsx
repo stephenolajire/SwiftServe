@@ -298,7 +298,7 @@ const DeliveryForm = ({ onSubmit, onClose }) => {
     <div className={styles.formOverlay}>
       <div className={styles.formContainer}>
         <div className={styles.formHeader}>
-          <h2 className={styles.formTitle}>New Delivery Request</h2>
+          <h4 className={styles.formTitle}>New Delivery Request</h4>
           <button type="button" className={styles.closeBtn} onClick={onClose}>
             <FaTimes />
           </button>
@@ -307,9 +307,9 @@ const DeliveryForm = ({ onSubmit, onClose }) => {
         <form onSubmit={handleSubmit} className={styles.form}>
           {/* Package Information Section */}
           <section className={styles.section}>
-            <h3>
+            <h5>
               <FaBox /> Package Details
-            </h3>
+            </h5>
 
             <div className={styles.formGroup}>
               <label>Item Name *</label>
@@ -418,9 +418,9 @@ const DeliveryForm = ({ onSubmit, onClose }) => {
 
           {/* Pickup Details Section */}
           <section className={styles.section}>
-            <h3>
+            <h5>
               <FaMapMarkerAlt /> Pickup Details
-            </h3>
+            </h5>
 
             <div className={styles.formGroup}>
               <label>Pickup Address *</label>
@@ -588,9 +588,9 @@ const DeliveryForm = ({ onSubmit, onClose }) => {
 
           {/* Delivery Details Section */}
           <section className={styles.section}>
-            <h3>
+            <h5>
               <FaUser /> Recipient Details
-            </h3>
+            </h5>
 
             <div className={styles.formGroup}>
               <label>Delivery Address *</label>

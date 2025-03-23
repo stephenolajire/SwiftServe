@@ -17,10 +17,10 @@
   margin-top: 3rem;
 }
 
-.formHeader h2 {
-  font-size: var(--font-h4);
-  color: var(--primary-black);
-  font-weight: var(--font-semi-bold);
+.formHeader h4 {
+  /* font-size: var(--font-h4); */
+  color: var(--primary-color);
+  /* font-weight: var(--font-semi-bold); */
 }
 
 .closeButton {
@@ -33,7 +33,7 @@
 }
 
 .closeButton:hover {
-  color: var(--primary-black);
+  color: var(--primary-color);
 }
 
 .formRow {
@@ -51,23 +51,23 @@
 
 .formGroup label {
   font-size: var(--font-body);
-  color: var(--dark-grey);
-  font-weight: var(--font-medium);
+  color: var(--text-grey);
+  /* font-weight: var(--font-medium); */
 }
 
 .input {
   height: 4rem;
   padding: 0 1.5rem;
-  border: 0.1rem solid var(--light-grey);
-  border-radius: var(--border-radius);
+  border: 0.1rem solid var(--text-grey);
+  /* border-radius: var(--border-radius); */
   font-size: var(--font-body);
-  color: var(--primary-black);
+  color: var(--primary-color);
   transition: border-color 0.3s ease;
 }
 
 .input:focus {
   outline: none;
-  border-color: var(--accent-blue);
+  border-color: var(--secondary-color);
 }
 
 .inputError {
@@ -140,8 +140,8 @@
 
 .submitBtn,
 .cancelBtn {
-  background-color: var(--accent-blue);
-  color: var(--white);
+  background-color: var(--secondary-color);
+  color: var(--bg-light);
   width: 20rem;
   height: 4rem;
   border: none;
@@ -150,24 +150,23 @@
 }
 
 .submitBtn:hover {
-  background-color: #0056b3;
+  opacity: 0.7;
 }
 
 .cancelBtn {
-  background-color: var(--background-color);
-  color: var(--dark-grey);
+  background-color: var(--primary-color);
+  color: var(--bg-light);
 }
 
 .cancelBtn:hover {
-  background-color: var(--light-grey);
-  color: var(--white);
+  opacity: 0.7;
 }
 
 .sectionHeader {
-  font-size: var(--font-h5);
-  color: var(--primary-black);
+  /* font-size: var(--font-h5); */
+  color: var(--primary-color);
   margin: 2.5rem 0 1.5rem;
-  font-weight: var(--font-medium);
+  /* font-weight: var(--font-medium); */
 }
 
 /* Responsive Design */
@@ -281,4 +280,9 @@ input[type="time"] {
 
 .removeImageBtn:hover {
   background-color: var(--primary-black);
+}
+
+.formGroup label {
+  font-size: var(--font-body);
+  color: var(--text-grey);
 }
