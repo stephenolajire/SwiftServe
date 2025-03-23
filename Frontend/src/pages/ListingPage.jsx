@@ -23,6 +23,7 @@ const CourierListings = () => {
     try {
       setLoading(true);
       const response = await api.get("deliveries/");
+      console.log("Deliveries:", response.data.data);
 
       const formattedDeliveries = response.data.data.map((delivery) => {
         // Initialize loading state for each image
