@@ -187,9 +187,16 @@ const CourierListings = () => {
 
             <div className={styles.modalContent}>
               <img
-                src={selectedItem.image}
+                src={
+                  selectedItem.image?.startsWith("http")
+                    ? selectedItem.image
+                    : `${MEDIA_BASE_URL}${selectedItem.image}`
+                }
                 alt={selectedItem.name}
                 className={styles.modalImage}
+                onError={(e) => {
+                  e.target.src = "https://via.placeholder.com/300";
+                }}
               />
 
               <div className={styles.modalDetails}>
