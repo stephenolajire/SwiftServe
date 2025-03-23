@@ -242,7 +242,7 @@ const KYCVerification = () => {
           </div>
 
           <div className={styles.section}>
-            <h2>Selfie Verification</h2>
+            <h4>Selfie Verification</h4>
             {!selfieImage && !showCamera ? (
               <button
                 type="button"
